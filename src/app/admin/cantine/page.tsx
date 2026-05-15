@@ -2,6 +2,14 @@ import { db } from "@/lib/db";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreateCantinaDialog } from "@/components/admin/create-cantina-dialog";
+import type { Prisma } from "@prisma/client";
+
+type CantinaWithUser = Prisma.CantinaGetPayload<{
+  include: {
+    user: { select: { email: true; isBlocked: true } };
+    _count: { select: { collections: true; nfts: true } };
+  };
+}>;
 
 export default async function AdminCantinePage() {
   const cantine = await db.cantina.findMany({
@@ -43,7 +51,7 @@ export default async function AdminCantinePage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y">
-                  {cantine.map((c) => (
+                  {cantine.map((c: CantinaWithUser) => (
                     <tr key={c.id}>
                       <td className="py-3 pr-4 font-semibold">{c.name}</td>
                       <td className="py-3 pr-4 text-stone-500">{c.user.email}</td>

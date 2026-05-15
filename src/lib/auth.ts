@@ -4,7 +4,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
-import type { Role } from "@prisma/client";
+type Role = "ADMIN" | "CANTINA" | "COLLECTOR";
 
 const loginSchema = z.object({
   email: z.string().email(),

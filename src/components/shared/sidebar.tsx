@@ -8,7 +8,7 @@ import {
   LayoutDashboard, Users, Gem, ShoppingCart, BarChart3,
   Settings, LogOut, Wine, Flame, Package
 } from "lucide-react";
-import type { Role } from "@prisma/client";
+type Role = "ADMIN" | "CANTINA" | "COLLECTOR";
 
 const adminLinks = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },

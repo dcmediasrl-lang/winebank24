@@ -1,0 +1,194 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  CANTINA
+  COLLECTOR
+}
+
+enum NftStatus {
+  MINTED
+  LISTED
+  SOLD
+  BURN_REQUESTED
+  BURNED
+}
+
+enum TransactionType {
+  MINT
+  BUY
+  SELL
+  BURN
+  FEE
+}
+
+enum PaymentMethod {
+  FIAT
+  CRYPTO
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          Role      @default(COLLECTOR)
+  isBlocked     Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts         Account[]
+  sessions         Session[]
+  cantina          Cantina?
+  nftsOwned        Nft[]           @relation("NftOwner")
+  buyTransactions  Transaction[]   @relation("Buyer")
+  sellTransactions Transaction[]   @relation("Seller")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Cantina {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  name        String
+  description String?
+  location    String?
+  website     String?
+  vatNumber   String?
+  logoUrl     String?
+  isVerified  Boolean  @default(false)
+  isBlocked   Boolean  @default(false)
+  royaltyPct  Float    @default(5.0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  collections Collection[]
+  nfts        Nft[]
+}
+
+model Collection {
+  id          String   @id @default(cuid())
+  cantinaId   String
+  name        String
+  description String?
+  vintage     Int?
+  grape       String?
+  region      String?
+  coverImage  String?
+  totalSupply Int
+  minted      Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  cantina     Cantina  @relation(fields: [cantinaId], references: [id], onDelete: Cascade)
+  nfts        Nft[]
+}
+
+model Nft {
+  id              String    @id @default(cuid())
+  tokenId         Int?      @unique
+  txHash          String?
+  contractAddress String?
+  collectionId    String
+  cantinaId       String
+  ownerId         String
+  name            String
+  description     String?
+  imageUrl        String?
+  metadataUri     String?
+  status          NftStatus @default(MINTED)
+  price           Float?
+  isListed        Boolean   @default(false)
+  bottleNumber    Int
+  vintage         Int?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  collection   Collection    @relation(fields: [collectionId], references: [id])
+  cantina      Cantina       @relation(fields: [cantinaId], references: [id])
+  owner        User          @relation("NftOwner", fields: [ownerId], references: [id])
+  transactions Transaction[]
+  burnRequest  BurnRequest?
+}
+
+model Transaction {
+  id            String          @id @default(cuid())
+  nftId         String
+  buyerId       String?
+  sellerId      String?
+  type          TransactionType
+  amount        Float
+  platformFee   Float           @default(0)
+  cantinaFee    Float           @default(0)
+  paymentMethod PaymentMethod   @default(FIAT)
+  stripeId      String?
+  txHash        String?
+  createdAt     DateTime        @default(now())
+
+  nft    Nft   @relation(fields: [nftId], references: [id])
+  buyer  User? @relation("Buyer", fields: [buyerId], references: [id])
+  seller User? @relation("Seller", fields: [sellerId], references: [id])
+}
+
+model BurnRequest {
+  id          String    @id @default(cuid())
+  nftId       String    @unique
+  requestedBy String
+  address     String
+  notes       String?
+  approved    Boolean   @default(false)
+  processedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  nft Nft @relation(fields: [nftId], references: [id])
+}
+
+model PlatformConfig {
+  id             String   @id @default(cuid())
+  platformFeePct Float    @default(2.5)
+  cantinaFeePct  Float    @default(5.0)
+  updatedAt      DateTime @updatedAt
+}

@@ -1,0 +1,67 @@
+import { db } from "@/lib/db";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { UserActions } from "@/components/admin/user-actions";
+
+export default async function AdminUsersPage() {
+  const users = await db.user.findMany({
+    orderBy: { createdAt: "desc" },
+    include: { cantina: { select: { name: true, isVerified: true } } },
+  });
+
+  return (
+    <div>
+      <h1 className="text-2xl font-bold text-stone-900 mb-6">Gestione Utenti & Cantine</h1>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Tutti gli utenti ({users.length})</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b text-stone-500 text-left">
+                  <th className="pb-3 pr-4">Nome</th>
+                  <th className="pb-3 pr-4">Email</th>
+                  <th className="pb-3 pr-4">Ruolo</th>
+                  <th className="pb-3 pr-4">Stato</th>
+                  <th className="pb-3 pr-4">Registrato</th>
+                  <th className="pb-3">Azioni</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {users.map((u) => (
+                  <tr key={u.id} className="py-3">
+                    <td className="py-3 pr-4 font-medium">
+                      {u.name || "—"}
+                      {u.cantina && (
+                        <span className="block text-xs text-stone-400">{u.cantina.name}</span>
+                      )}
+                    </td>
+                    <td className="py-3 pr-4 text-stone-600">{u.email}</td>
+                    <td className="py-3 pr-4">
+                      <Badge variant={u.role === "ADMIN" ? "destructive" : u.role === "CANTINA" ? "default" : "secondary"}>
+                        {u.role}
+                      </Badge>
+                    </td>
+                    <td className="py-3 pr-4">
+                      <Badge variant={u.isBlocked ? "destructive" : "outline"}>
+                        {u.isBlocked ? "Bloccato" : "Attivo"}
+                      </Badge>
+                    </td>
+                    <td className="py-3 pr-4 text-stone-400">
+                      {new Date(u.createdAt).toLocaleDateString("it-IT")}
+                    </td>
+                    <td className="py-3">
+                      <UserActions userId={u.id} isBlocked={u.isBlocked} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

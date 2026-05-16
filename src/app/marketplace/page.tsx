@@ -3,23 +3,41 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BuyButton } from "@/components/collector/buy-button";
 import { InvestFractionDialog } from "@/components/collector/invest-fraction-dialog";
+import { BuyFractionButton } from "@/components/collector/buy-fraction-button";
 import { auth } from "@/lib/auth";
-import { Wine, TrendingUp } from "lucide-react";
+import { Wine, TrendingUp, Users } from "lucide-react";
 
 export default async function MarketplacePage() {
   const session = await auth();
-  const allListedNfts = await db.nft.findMany({
-    where: { isListed: true, status: "LISTED" },
-    include: {
-      cantina: { select: { name: true } },
-      collection: { select: { name: true, vintage: true, grape: true } },
-      owner: { select: { id: true, name: true } },
-    },
-    orderBy: { updatedAt: "desc" },
-  });
+  const [allListedNfts, listedFractions] = await Promise.all([
+    db.nft.findMany({
+      where: { isListed: true, status: "LISTED" },
+      include: {
+        cantina: { select: { name: true } },
+        collection: { select: { name: true, vintage: true, grape: true } },
+        owner: { select: { id: true, name: true } },
+      },
+      orderBy: { updatedAt: "desc" },
+    }),
+    db.nftFraction.findMany({
+      where: { isListed: true },
+      include: {
+        nft: {
+          include: {
+            cantina: { select: { name: true } },
+            collection: { select: { name: true, vintage: true } },
+          },
+        },
+        owner: { select: { id: true, name: true, email: true } },
+      },
+      orderBy: { updatedAt: "desc" },
+    }),
+  ]);
 
   const nfts = allListedNfts.filter((n) => !n.isFractionable);
   const fractionableNfts = allListedNfts.filter((n) => n.isFractionable);
+  // Exclude fractions owned by the current user
+  const availableFractions = listedFractions.filter((f) => f.ownerId !== session?.user.id);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-10">
@@ -89,6 +107,63 @@ export default async function MarketplacePage() {
                   </Card>
                 );
               })}
+            </div>
+          </section>
+        )}
+
+        {/* Listed fractions from collectors */}
+        {availableFractions.length > 0 && (
+          <section className="mb-12">
+            <div className="flex items-center gap-2 mb-4">
+              <Users className="w-5 h-5 text-blue-600" />
+              <h2 className="text-xl font-bold text-stone-900">Quote in vendita</h2>
+            </div>
+            <p className="text-stone-500 text-sm mb-5">Quote di bottiglie messe in vendita da altri collezionisti.</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              {availableFractions.map((fraction) => (
+                <Card key={fraction.id} className="overflow-hidden hover:shadow-lg transition-shadow border-blue-100">
+                  <div className="h-48 bg-stone-200 overflow-hidden relative">
+                    {fraction.nft.imageUrl ? (
+                      <img src={fraction.nft.imageUrl} alt={fraction.nft.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Wine className="w-12 h-12 text-stone-400" />
+                      </div>
+                    )}
+                    <Badge className="absolute top-2 right-2 bg-blue-500 text-white text-xs">Quota</Badge>
+                  </div>
+                  <CardHeader className="pb-2 pt-4">
+                    <CardTitle className="text-sm font-semibold leading-tight">{fraction.nft.name}</CardTitle>
+                    <p className="text-xs text-stone-500">{fraction.nft.cantina.name}</p>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex flex-wrap gap-1">
+                      {fraction.nft.collection.vintage && (
+                        <Badge variant="outline" className="text-xs">{fraction.nft.collection.vintage}</Badge>
+                      )}
+                    </div>
+                    <div className="space-y-1 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-stone-500">Quota:</span>
+                        <span className="font-bold text-amber-600">{Number(fraction.percentage).toFixed(2)}%</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-stone-500">Investimento originale:</span>
+                        <span className="text-stone-700">€ {Number(fraction.investedAmount).toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-stone-500">Venditore:</span>
+                        <span className="text-stone-700">{fraction.owner.name || fraction.owner.email}</span>
+                      </div>
+                    </div>
+                    <BuyFractionButton
+                      fractionId={fraction.id}
+                      askingPrice={Number(fraction.askingPrice)}
+                      isLoggedIn={!!session}
+                    />
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </section>
         )}

@@ -3,10 +3,21 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { CheckCircle } from "lucide-react";
 
-export function UserActions({ userId, isBlocked }: { userId: string; isBlocked: boolean }) {
+export function UserActions({
+  userId,
+  isBlocked,
+  emailVerified,
+}: {
+  userId: string;
+  isBlocked: boolean;
+  emailVerified: boolean;
+}) {
   const [blocked, setBlocked] = useState(isBlocked);
+  const [verified, setVerified] = useState(emailVerified);
   const [loading, setLoading] = useState(false);
+  const [verifying, setVerifying] = useState(false);
 
   async function toggleBlock() {
     setLoading(true);
@@ -26,14 +37,44 @@ export function UserActions({ userId, isBlocked }: { userId: string; isBlocked: 
     }
   }
 
+  async function verifyEmail() {
+    setVerifying(true);
+    try {
+      const res = await fetch(`/api/admin/users/${userId}/verify-email`, {
+        method: "PATCH",
+      });
+      if (!res.ok) throw new Error();
+      setVerified(true);
+      toast.success("Email verificata manualmente");
+    } catch {
+      toast.error("Errore nella verifica");
+    } finally {
+      setVerifying(false);
+    }
+  }
+
   return (
-    <Button
-      variant={blocked ? "outline" : "destructive"}
-      size="sm"
-      onClick={toggleBlock}
-      disabled={loading}
-    >
-      {blocked ? "Sblocca" : "Blocca"}
-    </Button>
+    <div className="flex items-center gap-2">
+      {!verified && (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={verifyEmail}
+          disabled={verifying}
+          className="text-green-700 border-green-300 hover:bg-green-50 text-xs"
+        >
+          <CheckCircle className="w-3 h-3 mr-1" />
+          {verifying ? "..." : "Verifica email"}
+        </Button>
+      )}
+      <Button
+        variant={blocked ? "outline" : "destructive"}
+        size="sm"
+        onClick={toggleBlock}
+        disabled={loading}
+      >
+        {blocked ? "Sblocca" : "Blocca"}
+      </Button>
+    </div>
   );
 }

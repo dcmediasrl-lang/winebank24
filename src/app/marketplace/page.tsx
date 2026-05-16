@@ -22,8 +22,7 @@ export default async function MarketplacePage() {
   const fractionableNfts = allListedNfts.filter((n) => n.isFractionable);
 
   return (
-    <div className="min-h-screen bg-stone-50">
-      <div className="max-w-7xl mx-auto px-4 py-10">
+    <div className="max-w-7xl mx-auto px-4 py-10">
         <div className="flex items-center gap-3 mb-8">
           <Wine className="w-8 h-8 text-amber-600" />
           <div>
@@ -143,7 +142,6 @@ export default async function MarketplacePage() {
             </div>
           </>
         ) : null}
-      </div>
     </div>
   );
 }

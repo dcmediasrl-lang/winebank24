@@ -22,11 +22,10 @@ export default async function CantinaDashboard() {
       <h1 className="text-2xl font-bold text-stone-900 mb-2">
         Benvenuta, {cantina?.name || "Cantina"}
       </h1>
-      <p className="text-stone-500 mb-6">Gestisci le tue collezioni e i tuoi NFT</p>
+      <p className="text-stone-500 mb-6">Gestisci i tuoi certificati digitali di bottiglia</p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatCard title="Collezioni" value={cantina?._count.collections ?? 0} icon={Wine} color="text-amber-600" />
-        <StatCard title="NFT mintati" value={cantina?._count.nfts ?? 0} icon={Gem} color="text-purple-600" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        <StatCard title="Certificati emessi" value={cantina?._count.nfts ?? 0} icon={Gem} color="text-amber-600" />
         <StatCard title="Royalties (€)" value={`€ ${(revenue._sum.cantinaFee ?? 0).toFixed(2)}`} icon={TrendingUp} color="text-green-600" />
         <StatCard title="Fatturato (€)" value={`€ ${(revenue._sum.amount ?? 0).toFixed(2)}`} icon={Package} color="text-blue-600" />
       </div>
@@ -66,14 +65,14 @@ async function RecentNfts({ cantinaId }: { cantinaId?: string }) {
       <CardHeader><CardTitle className="text-base">Ultimi NFT mintati</CardTitle></CardHeader>
       <CardContent>
         {nfts.length === 0 ? (
-          <p className="text-stone-400 text-sm">Nessun NFT ancora. Crea una collezione per iniziare.</p>
+          <p className="text-stone-400 text-sm">Nessun certificato ancora. Vai in <strong>I miei certificati</strong> per creare il primo.</p>
         ) : (
           <div className="space-y-3">
             {nfts.map((nft) => (
               <div key={nft.id} className="flex items-center justify-between text-sm">
                 <div>
                   <p className="font-medium">{nft.name}</p>
-                  <p className="text-stone-400 text-xs">{nft.collection.name} · Bottiglia #{nft.bottleNumber}</p>
+                  <p className="text-stone-400 text-xs">Bottiglia #{nft.bottleNumber}{nft.vintage ? ` · ${nft.vintage}` : ""}</p>
                 </div>
                 <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                   nft.status === "LISTED" ? "bg-green-100 text-green-700" :

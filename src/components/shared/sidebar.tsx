@@ -55,7 +55,6 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
 
   const cantinaLinks = [
     { href: p("/cantina"), label: dict.dashboard, icon: LayoutDashboard },
-    { href: p("/cantina/collections"), label: dict.collections, icon: Wine },
     { href: p("/cantina/nfts"), label: dict.my_nfts, icon: Gem },
     { href: p("/cantina/reports"), label: dict.reports, icon: BarChart3 },
   ];

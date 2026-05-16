@@ -4,12 +4,16 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { z } from "zod";
 
+// Direct single-bottle minting — no collection step required
 const schema = z.object({
-  collectionId: z.string(),
   cantinaId: z.string(),
   name: z.string().min(1),
+  description: z.string().optional(),
+  vintage: z.number().min(1900).max(2100).optional(),
+  grape: z.string().optional(),
+  region: z.string().optional(),
   bottleNumber: z.number().min(1),
-  price: z.number().optional(),
+  price: z.number().positive().optional(),
   imageUrl: z.preprocess(
     (v) => (typeof v === "string" && v.trim() === "" ? undefined : v),
     z.string().url().optional()
@@ -38,20 +42,33 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Non autorizzato" }, { status: 403 });
     }
 
-    const collection = await db.collection.findUnique({ where: { id: body.collectionId } });
-    if (!collection || collection.minted >= collection.totalSupply) {
-      return NextResponse.json({ error: "Collezione esaurita o non trovata" }, { status: 400 });
-    }
+    // Auto-create a singleton collection to satisfy the DB relationship.
+    // This is a technical detail — the UI never exposes collections.
+    const collection = await db.collection.create({
+      data: {
+        cantinaId: cantina.id,
+        name: body.name,
+        description: body.description,
+        vintage: body.vintage,
+        grape: body.grape,
+        region: body.region,
+        totalSupply: 1,
+        minted: 0,
+      },
+    });
+
+    const isFractionable = !!body.isFractionable;
 
     const metadata = {
       name: body.name,
-      description: `${cantina.name} — ${collection.name}`,
+      description: body.description || `${cantina.name} — ${body.name}`,
       image: body.imageUrl || "",
       attributes: [
         { trait_type: "Cantina", value: cantina.name },
-        { trait_type: "Collezione", value: collection.name },
+        { trait_type: "Vitigno", value: body.grape || "" },
+        { trait_type: "Regione", value: body.region || "" },
         { trait_type: "Numero Bottiglia", value: body.bottleNumber },
-        { trait_type: "Annata", value: collection.vintage },
+        { trait_type: "Annata", value: body.vintage || "" },
       ],
     };
     const tokenUri = `data:application/json;base64,${Buffer.from(JSON.stringify(metadata)).toString("base64")}`;
@@ -59,7 +76,6 @@ export async function POST(req: Request) {
     let txHash: string | undefined;
     let tokenId: number | null = null;
 
-    // Minting on-chain solo se wallet e contratto sono configurati
     if (blockchainReady) {
       try {
         const { mintNft } = await import("@/lib/blockchain");
@@ -71,7 +87,7 @@ export async function POST(req: Request) {
           cantinaId: cantina.id,
           collectionId: collection.id,
           bottleNumber: body.bottleNumber.toString(),
-          vintage: collection.vintage ?? 0,
+          vintage: body.vintage ?? 0,
         });
         txHash = result.txHash;
         tokenId = result.tokenId;
@@ -80,33 +96,32 @@ export async function POST(req: Request) {
       }
     }
 
-    const isFractionable = !!body.isFractionable;
     const nft = await db.nft.create({
       data: {
         tokenId,
         txHash,
         contractAddress: process.env.NFT_CONTRACT_ADDRESS || null,
-        collectionId: body.collectionId,
-        cantinaId: body.cantinaId,
+        collectionId: collection.id,
+        cantinaId: cantina.id,
         ownerId: session.user.id,
         name: body.name,
+        description: body.description,
         imageUrl: body.imageUrl || null,
         metadataUri: tokenUri,
-        price: isFractionable ? null : body.price,
+        price: isFractionable ? null : (body.price ?? null),
         bottleNumber: body.bottleNumber,
-        vintage: collection.vintage,
+        vintage: body.vintage,
         isFractionable,
         totalValue: isFractionable && body.totalValue ? body.totalValue : null,
         availableValue: isFractionable && body.totalValue ? body.totalValue : null,
-        // Se frazionabile: sempre in listing per investimento; altrimenti usa prezzo normale
         isListed: isFractionable ? true : !!body.price,
         status: isFractionable ? "LISTED" : (body.price ? "LISTED" : "MINTED"),
       },
     });
 
     await db.collection.update({
-      where: { id: body.collectionId },
-      data: { minted: { increment: 1 } },
+      where: { id: collection.id },
+      data: { minted: 1 },
     });
 
     await db.transaction.create({
@@ -120,13 +135,7 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json({
-      success: true,
-      tokenId,
-      txHash,
-      nftId: nft.id,
-      onChain: !!txHash,
-    });
+    return NextResponse.json({ success: true, tokenId, txHash, nftId: nft.id, onChain: !!txHash });
   } catch (err) {
     if (err instanceof z.ZodError) return NextResponse.json({ error: err.issues[0].message }, { status: 400 });
     console.error(err);

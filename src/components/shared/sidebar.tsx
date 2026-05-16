@@ -31,6 +31,7 @@ const collectorLinks = [
   { href: "/collector/portfolio", label: "La mia Collezione", icon: Package },
   { href: "/marketplace", label: "Marketplace", icon: ShoppingCart },
   { href: "/collector/reports", label: "Storico", icon: BarChart3 },
+  { href: "/collector/settings", label: "Sicurezza", icon: Settings },
 ];
 
 interface SidebarProps {

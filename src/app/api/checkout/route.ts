@@ -3,10 +3,19 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getStripe } from "@/lib/stripe";
+import { rateLimit, rateLimitKey, getClientIp } from "@/lib/rate-limit";
+import { logActivity } from "@/lib/activity";
 
 export async function POST(req: Request) {
   const session = await auth();
   if (!session) return NextResponse.json({ error: "Devi effettuare il login" }, { status: 401 });
+
+  // Rate limit: max 10 checkout attempts per user per hour
+  const { allowed } = await rateLimit(rateLimitKey(session.user.id, "checkout"), 10, 3600);
+  if (!allowed) {
+    return NextResponse.json({ error: "Troppi tentativi. Riprova tra un'ora." }, { status: 429 });
+  }
+  const ip = getClientIp(req);
 
   const { nftId } = await req.json();
 
@@ -52,5 +61,6 @@ export async function POST(req: Request) {
     cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/marketplace`,
   });
 
+  await logActivity(session.user.id, "NFT_PURCHASED", `NFT: ${nft.id}, IP: ${ip}`);
   return NextResponse.json({ url: checkoutSession.url });
 }

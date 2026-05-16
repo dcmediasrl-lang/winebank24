@@ -47,6 +47,23 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
+  // KYC light
+  firstName     String?
+  lastName      String?
+  birthDate     DateTime?
+  country       String?
+  fiscalCode    String?
+  documentUrl   String?
+  kycVerifiedAt DateTime?
+
+  // Security
+  failedLoginAttempts Int      @default(0)
+  lockedUntil         DateTime?
+  emailVerifyToken    String?
+  emailVerifyExpiry   DateTime?
+  twoFactorSecret     String?
+  twoFactorEnabled    Boolean  @default(false)
+
   accounts         Account[]
   sessions         Session[]
   cantina          Cantina?
@@ -54,6 +71,7 @@ model User {
   buyTransactions  Transaction[]   @relation("Buyer")
   sellTransactions Transaction[]   @relation("Seller")
   nftFractions     NftFraction[]
+  activityLogs     ActivityLog[]
 }
 
 model Account {
@@ -213,4 +231,28 @@ model PlatformConfig {
   platformFeePct Float    @default(2.5)
   cantinaFeePct  Float    @default(5.0)
   updatedAt      DateTime @updatedAt
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String
+  details   String?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model RateLimit {
+  id      String   @id @default(cuid())
+  key     String   @unique
+  count   Int      @default(0)
+  resetAt DateTime
+
+  @@index([key])
 }

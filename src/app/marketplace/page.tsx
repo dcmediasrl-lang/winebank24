@@ -31,7 +31,7 @@ export default async function MarketplacePage() {
         owner: { select: { id: true, name: true, email: true } },
       },
       orderBy: { updatedAt: "desc" },
-    }),
+    }).catch(() => []),
   ]);
 
   const nfts = allListedNfts.filter((n) => !n.isFractionable);

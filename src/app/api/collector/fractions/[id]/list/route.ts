@@ -7,6 +7,9 @@ import { z } from "zod";
 const schema = z.object({
   isListed: z.boolean(),
   askingPrice: z.number().positive().optional(),
+  // How much of the fraction to sell (percentage points, e.g. 10 = 10%)
+  // If omitted when listing, the entire fraction is sold
+  listedPercentage: z.number().positive().optional(),
 });
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -22,11 +25,25 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       return NextResponse.json({ error: "Non autorizzato" }, { status: 403 });
     }
 
+    // Validate that listed percentage doesn't exceed owned percentage
+    if (body.isListed && body.listedPercentage !== undefined) {
+      const ownedPct = Number(fraction.percentage);
+      if (body.listedPercentage > ownedPct) {
+        return NextResponse.json(
+          { error: `Non puoi cedere più di quello che possiedi (${ownedPct.toFixed(4)}%)` },
+          { status: 400 }
+        );
+      }
+    }
+
     await db.nftFraction.update({
       where: { id },
       data: {
         isListed: body.isListed,
         askingPrice: body.isListed ? (body.askingPrice ?? null) : null,
+        listedPercentage: body.isListed
+          ? (body.listedPercentage ?? null)   // null = entire fraction
+          : null,
       },
     });
 

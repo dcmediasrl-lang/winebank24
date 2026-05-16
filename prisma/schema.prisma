@@ -219,6 +219,9 @@ model NftFraction {
   investedAmount Decimal  @db.Decimal(10,2)
   isListed       Boolean  @default(false)
   askingPrice    Decimal? @db.Decimal(10,2)
+  // Partial sale: how much of this fraction is listed for sale
+  // If null when isListed=true, the entire fraction is for sale
+  listedPercentage Decimal? @db.Decimal(8,4)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 

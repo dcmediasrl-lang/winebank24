@@ -122,6 +122,9 @@ export default async function CollectorPortfolioPage() {
                     fractionId={fraction.id}
                     isListed={fraction.isListed}
                     askingPrice={fraction.askingPrice ? Number(fraction.askingPrice) : null}
+                    ownedPercentage={Number(fraction.percentage)}
+                    investedAmount={Number(fraction.investedAmount)}
+                    listedPercentage={fraction.listedPercentage ? Number(fraction.listedPercentage) : null}
                   />
                 </CardContent>
               </Card>

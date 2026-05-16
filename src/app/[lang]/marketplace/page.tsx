@@ -145,8 +145,18 @@ export default async function MarketplacePage() {
                     </div>
                     <div className="space-y-1 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-stone-500">Quota:</span>
-                        <span className="font-bold text-amber-600">{Number(fraction.percentage).toFixed(2)}%</span>
+                        <span className="text-stone-500">
+                          {fraction.listedPercentage !== null ? "Quota in vendita:" : "Quota:"}
+                        </span>
+                        <span className="font-bold text-amber-600">
+                          {(fraction.listedPercentage !== null
+                            ? Number(fraction.listedPercentage)
+                            : Number(fraction.percentage)
+                          ).toFixed(2)}%
+                          {fraction.listedPercentage !== null && (
+                            <span className="text-xs text-blue-500 ml-1">(parziale)</span>
+                          )}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-stone-500">Venditore:</span>
@@ -156,6 +166,8 @@ export default async function MarketplacePage() {
                     <BuyFractionButton
                       fractionId={fraction.id}
                       askingPrice={Number(fraction.askingPrice)}
+                      listedPercentage={fraction.listedPercentage !== null ? Number(fraction.listedPercentage) : null}
+                      totalPercentage={Number(fraction.percentage)}
                       isLoggedIn={!!session}
                     />
                   </CardContent>

@@ -116,6 +116,15 @@ export default async function MarketplacePage() {
                         isLoggedIn={!!session}
                         needsTermsAcceptance={!!session && needsTermsAcceptance}
                       />
+                      {session?.user.id !== nft.owner.id && availableValue > 0 && (
+                        <MakeOfferButton
+                          nftId={nft.id}
+                          listedPrice={totalValue}
+                          isLoggedIn={!!session}
+                          currentUserId={session?.user.id}
+                          sellerId={nft.owner.id}
+                        />
+                      )}
                     </CardContent>
                   </Card>
                 );

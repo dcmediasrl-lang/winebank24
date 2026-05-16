@@ -65,37 +65,90 @@ export async function PATCH(
     // action === "accept"
     await db.$transaction(async (tx) => {
       if (offer.nftId && offer.nft) {
-        // Transfer NFT ownership
-        await tx.nft.update({
-          where: { id: offer.nftId },
-          data: {
-            ownerId: offer.buyerId,
-            isListed: false,
-            status: "SOLD",
-            price: null,
-          },
-        });
+        const nft = offer.nft;
 
-        await tx.transaction.create({
-          data: {
-            nftId: offer.nftId,
-            buyerId: offer.buyerId,
-            sellerId: offer.sellerId,
-            type: "BUY",
-            amount: offer.amount,
-            paymentMethod: "FIAT",
-          },
-        });
+        if (nft.isFractionable) {
+          // ── Fractionable NFT: create a fraction for the buyer ──────────────
+          const totalValue = Number(nft.totalValue ?? 0);
+          const availableValue = Number(nft.availableValue ?? 0);
 
-        // Auto-reject all other pending offers for this NFT
-        await tx.offer.updateMany({
-          where: {
-            nftId: offer.nftId,
-            status: "PENDING",
-            id: { not: id },
-          },
-          data: { status: "REJECTED" },
-        });
+          if (offer.amount > availableValue) {
+            throw new Error("Valore non più disponibile per questo importo");
+          }
+
+          const pct = totalValue > 0 ? (offer.amount / totalValue) * 100 : 0;
+          const newAvailable = availableValue - offer.amount;
+
+          // Update available value on NFT
+          await tx.nft.update({
+            where: { id: nft.id },
+            data: { availableValue: newAvailable },
+          });
+
+          // Merge with existing buyer fraction if present
+          const existing = await tx.nftFraction.findFirst({
+            where: { nftId: nft.id, ownerId: offer.buyerId },
+          });
+          if (existing) {
+            await tx.nftFraction.update({
+              where: { id: existing.id },
+              data: {
+                percentage: Number(existing.percentage) + pct,
+                investedAmount: Number(existing.investedAmount) + offer.amount,
+              },
+            });
+          } else {
+            await tx.nftFraction.create({
+              data: {
+                nftId: nft.id,
+                ownerId: offer.buyerId,
+                percentage: pct,
+                investedAmount: offer.amount,
+              },
+            });
+          }
+
+          await tx.transaction.create({
+            data: {
+              nftId: nft.id,
+              buyerId: offer.buyerId,
+              sellerId: offer.sellerId,
+              type: "BUY",
+              amount: offer.amount,
+              paymentMethod: "FIAT",
+            },
+          });
+
+          // For fractionable NFTs other offers can still be accepted — don't auto-reject
+        } else {
+          // ── Whole NFT: transfer ownership ──────────────────────────────────
+          await tx.nft.update({
+            where: { id: offer.nftId },
+            data: {
+              ownerId: offer.buyerId,
+              isListed: false,
+              status: "SOLD",
+              price: null,
+            },
+          });
+
+          await tx.transaction.create({
+            data: {
+              nftId: offer.nftId,
+              buyerId: offer.buyerId,
+              sellerId: offer.sellerId,
+              type: "BUY",
+              amount: offer.amount,
+              paymentMethod: "FIAT",
+            },
+          });
+
+          // Auto-reject all other pending offers for this NFT
+          await tx.offer.updateMany({
+            where: { nftId: offer.nftId, status: "PENDING", id: { not: id } },
+            data: { status: "REJECTED" },
+          });
+        }
       } else if (offer.fractionId && offer.fraction) {
         const fraction = offer.fraction;
         const totalPct = Number(fraction.percentage);

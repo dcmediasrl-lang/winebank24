@@ -37,7 +37,7 @@ export default async function OffertePage({
     db.offer.findMany({
       where: { sellerId: session.user.id },
       include: {
-        nft: { select: { id: true, name: true, price: true } },
+        nft: { select: { id: true, name: true, price: true, isFractionable: true, totalValue: true } },
         fraction: {
           select: {
             id: true,
@@ -52,7 +52,7 @@ export default async function OffertePage({
     db.offer.findMany({
       where: { buyerId: session.user.id },
       include: {
-        nft: { select: { id: true, name: true, price: true } },
+        nft: { select: { id: true, name: true, price: true, isFractionable: true, totalValue: true } },
         fraction: {
           select: {
             id: true,
@@ -77,8 +77,11 @@ export default async function OffertePage({
     return "Articolo sconosciuto";
   }
 
-  function getListedPrice(nft: { price?: number | null } | null, fraction: { askingPrice?: unknown } | null): number {
-    if (nft) return nft.price ?? 0;
+  function getListedPrice(
+    nft: { price?: number | null; isFractionable?: boolean; totalValue?: unknown } | null,
+    fraction: { askingPrice?: unknown } | null
+  ): number {
+    if (nft) return nft.isFractionable ? Number(nft.totalValue ?? 0) : (nft.price ?? 0);
     if (fraction) return Number(fraction.askingPrice ?? 0);
     return 0;
   }

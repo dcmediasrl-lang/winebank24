@@ -33,11 +33,18 @@ export async function POST(req: Request) {
     if (nftId) {
       const nft = await db.nft.findUnique({
         where: { id: nftId, isListed: true },
-        select: { ownerId: true, price: true },
+        select: { ownerId: true, price: true, isFractionable: true, totalValue: true, availableValue: true },
       });
       if (!nft) return NextResponse.json({ error: "NFT non trovato o non in vendita" }, { status: 404 });
       sellerId = nft.ownerId;
-      listedPrice = nft.price ?? 0;
+      // For fractionable NFTs use totalValue; for whole NFTs use price
+      listedPrice = nft.isFractionable
+        ? Number(nft.totalValue ?? 0)
+        : (nft.price ?? 0);
+      // Extra check: fractionable NFT must still have available value
+      if (nft.isFractionable && Number(nft.availableValue ?? 0) <= 0) {
+        return NextResponse.json({ error: "Non ci sono più quote disponibili per questo NFT" }, { status: 400 });
+      }
     } else {
       const fraction = await db.nftFraction.findUnique({
         where: { id: fractionId!, isListed: true },
@@ -101,7 +108,7 @@ export async function GET() {
       db.offer.findMany({
         where: { sellerId: session.user.id },
         include: {
-          nft: { select: { id: true, name: true, price: true, imageUrl: true } },
+          nft: { select: { id: true, name: true, price: true, isFractionable: true, totalValue: true, imageUrl: true } },
           fraction: { select: { id: true, askingPrice: true, nft: { select: { name: true } } } },
           buyer: { select: { id: true, name: true, email: true } },
         },
@@ -110,7 +117,7 @@ export async function GET() {
       db.offer.findMany({
         where: { buyerId: session.user.id },
         include: {
-          nft: { select: { id: true, name: true, price: true, imageUrl: true } },
+          nft: { select: { id: true, name: true, price: true, isFractionable: true, totalValue: true, imageUrl: true } },
           fraction: { select: { id: true, askingPrice: true, nft: { select: { name: true } } } },
           seller: { select: { id: true, name: true, email: true } },
         },

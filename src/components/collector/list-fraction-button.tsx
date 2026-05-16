@@ -44,7 +44,7 @@ export function ListFractionButton({ fractionId, isListed, askingPrice }: {
         body: JSON.stringify({ isListed: true, askingPrice: parseFloat(newPrice) || undefined }),
       });
       if (!res.ok) throw new Error();
-      toast.success("Quota messa in vendita!");
+      toast.success("Quota ceduta con successo!");
       setOpen(false);
       router.refresh();
     } catch {
@@ -65,17 +65,17 @@ export function ListFractionButton({ fractionId, isListed, askingPrice }: {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger className={cn(buttonVariants({ size: "sm" }), "flex-1 bg-amber-500 hover:bg-amber-600 text-stone-950")}>
-        Metti in vendita
+        Cedi la tua quota
       </DialogTrigger>
       <DialogContent className="max-w-sm">
-        <DialogHeader><DialogTitle>Vendi la tua quota</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>Cedi la tua quota</DialogTitle></DialogHeader>
         <div className="space-y-4">
           <div className="space-y-1">
             <Label>Prezzo di vendita (€)</Label>
             <Input type="number" step="0.01" min="0" value={newPrice} onChange={e => setNewPrice(e.target.value)} placeholder="100.00" />
           </div>
           <Button onClick={list} disabled={loading || !newPrice} className="w-full bg-amber-500 hover:bg-amber-600 text-stone-950">
-            {loading ? "Pubblicazione..." : "Metti in vendita"}
+            {loading ? "Pubblicazione..." : "Cedi la tua quota"}
           </Button>
         </div>
       </DialogContent>

@@ -55,9 +55,9 @@ export default async function MarketplacePage() {
           <section className="mb-12">
             <div className="flex items-center gap-2 mb-4">
               <TrendingUp className="w-5 h-5 text-amber-600" />
-              <h2 className="text-xl font-bold text-stone-900">Investi in una bottiglia</h2>
+              <h2 className="text-xl font-bold text-stone-900">Diventa co-proprietario</h2>
             </div>
-            <p className="text-stone-500 text-sm mb-5">Acquista una quota di un'esclusiva bottiglia di vino. La bottiglia rimane custodita dalla cantina.</p>
+            <p className="text-stone-500 text-sm mb-5">Acquista una quota di un'esclusiva bottiglia di vino. La bottiglia originale è custodita e certificata dalla cantina.</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {fractionableNfts.map((nft) => {
                 const totalValue = Number(nft.totalValue ?? 0);
@@ -73,7 +73,7 @@ export default async function MarketplacePage() {
                           <Wine className="w-12 h-12 text-stone-400" />
                         </div>
                       )}
-                      <Badge className="absolute top-2 right-2 bg-amber-500 text-stone-950 text-xs">Frazionabile</Badge>
+                      <Badge className="absolute top-2 right-2 bg-amber-500 text-stone-950 text-xs">Co-proprietà</Badge>
                     </div>
                     <CardHeader className="pb-2 pt-4">
                       <CardTitle className="text-sm font-semibold leading-tight">{nft.name}</CardTitle>
@@ -117,9 +117,9 @@ export default async function MarketplacePage() {
           <section className="mb-12">
             <div className="flex items-center gap-2 mb-4">
               <Users className="w-5 h-5 text-blue-600" />
-              <h2 className="text-xl font-bold text-stone-900">Quote in vendita</h2>
+              <h2 className="text-xl font-bold text-stone-900">Certificati di co-proprietà disponibili</h2>
             </div>
-            <p className="text-stone-500 text-sm mb-5">Quote di bottiglie messe in vendita da altri collezionisti.</p>
+            <p className="text-stone-500 text-sm mb-5">Certificati di co-proprietà di bottiglie ceduti da altri collezionisti.</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {availableFractions.map((fraction) => (
                 <Card key={fraction.id} className="overflow-hidden hover:shadow-lg transition-shadow border-blue-100">

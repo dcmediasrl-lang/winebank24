@@ -28,7 +28,7 @@ const cantinaLinks = [
 
 const collectorLinks = [
   { href: "/collector", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/collector/portfolio", label: "La mia Vetrina", icon: Package },
+  { href: "/collector/portfolio", label: "La mia Collezione", icon: Package },
   { href: "/marketplace", label: "Marketplace", icon: ShoppingCart },
   { href: "/collector/reports", label: "Storico", icon: BarChart3 },
 ];

@@ -32,7 +32,7 @@ export default async function CollectorPortfolioPage() {
   return (
     <div className="space-y-10">
       <div>
-        <h1 className="text-2xl font-bold text-stone-900 mb-6">La mia Vetrina</h1>
+        <h1 className="text-2xl font-bold text-stone-900 mb-6">La mia Collezione</h1>
         {nfts.length === 0 ? (
           <div className="text-center py-16 text-stone-400">
             <p className="text-lg mb-2">Nessun NFT in tuo possesso</p>
@@ -73,12 +73,12 @@ export default async function CollectorPortfolioPage() {
       <div>
         <div className="flex items-center gap-2 mb-4">
           <TrendingUp className="w-5 h-5 text-amber-600" />
-          <h2 className="text-xl font-bold text-stone-900">Le mie quote</h2>
+          <h2 className="text-xl font-bold text-stone-900">Le mie co-proprietà</h2>
         </div>
         {fractions.length === 0 ? (
           <div className="text-center py-12 text-stone-400 bg-stone-50 rounded-lg border border-stone-200">
             <p className="text-base mb-1">Nessuna quota in tuo possesso</p>
-            <p className="text-sm">Investi in una bottiglia frazionabile nel Marketplace</p>
+            <p className="text-sm">Acquista una quota di co-proprietà nel Marketplace</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -96,11 +96,11 @@ export default async function CollectorPortfolioPage() {
                 <CardContent className="space-y-3">
                   <div className="rounded-md bg-stone-50 p-2 text-sm space-y-1">
                     <div className="flex justify-between">
-                      <span className="text-stone-500">Quota posseduta:</span>
+                      <span className="text-stone-500">Quota di proprietà:</span>
                       <span className="font-bold text-amber-700">{Number(fraction.percentage).toFixed(4)}%</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-stone-500">Investimento:</span>
+                      <span className="text-stone-500">Valore acquisto:</span>
                       <span className="font-semibold text-stone-800">€ {Number(fraction.investedAmount).toFixed(2)}</span>
                     </div>
                     {fraction.isListed && fraction.askingPrice && (
@@ -112,7 +112,7 @@ export default async function CollectorPortfolioPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge variant={fraction.isListed ? "default" : "secondary"} className="text-xs">
-                      {fraction.isListed ? "In vendita" : "In portafoglio"}
+                      {fraction.isListed ? "Disponibile" : "In collezione"}
                     </Badge>
                     {fraction.nft.status === "LIQUIDATION_REQUESTED" && (
                       <Badge variant="destructive" className="text-xs">Liquidazione richiesta</Badge>

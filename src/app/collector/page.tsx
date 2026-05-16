@@ -50,7 +50,7 @@ export default async function CollectorDashboardPage() {
         <Card>
           <CardContent className="pt-5">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-xs text-stone-500">Totale investito</span>
+              <span className="text-xs text-stone-500">Totale quote acquistate</span>
               <BarChart3 className="w-4 h-4 text-green-600" />
             </div>
             <div className="text-2xl font-bold text-stone-900">€ {totaleInvestito.toFixed(2)}</div>
@@ -74,7 +74,7 @@ export default async function CollectorDashboardPage() {
               <div className="flex items-center gap-3">
                 <Gem className="w-8 h-8 text-amber-500" />
                 <div>
-                  <p className="font-semibold text-stone-900">La mia Vetrina</p>
+                  <p className="font-semibold text-stone-900">La mia Collezione</p>
                   <p className="text-xs text-stone-500">Gestisci i tuoi NFT e quote</p>
                 </div>
               </div>

@@ -42,7 +42,7 @@ export function BuyFractionButton({ fractionId, askingPrice, isLoggedIn }: {
       className="w-full bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold"
     >
       <TrendingUp className="w-4 h-4 mr-2" />
-      {loading ? "Acquisto..." : `Acquista quota · € ${askingPrice.toFixed(2)}`}
+      {loading ? "Acquisizione..." : `Acquisisci quota · € ${askingPrice.toFixed(2)}`}
     </Button>
   );
 }

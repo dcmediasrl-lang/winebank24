@@ -46,12 +46,12 @@ export function InvestFractionDialog({
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      toast.success(`Investimento completato! Quota acquisita: ${data.percentage.toFixed(4)}%`);
+      toast.success(`Quota di proprietà acquisita: ${data.percentage.toFixed(4)}%`);
       setOpen(false);
       setAmount("");
       router.refresh();
     } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : "Errore nell'investimento");
+      toast.error(err instanceof Error ? err.message : "Errore nell'acquisto della quota");
     } finally {
       setLoading(false);
     }
@@ -61,11 +61,11 @@ export function InvestFractionDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger className={cn(buttonVariants(), "w-full bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold")}>
         <TrendingUp className="w-4 h-4 mr-2" />
-        Investi
+        Acquista quota
       </DialogTrigger>
       <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle>Investi in {nftName}</DialogTitle>
+          <DialogTitle>Diventa co-proprietario di {nftName}</DialogTitle>
         </DialogHeader>
         <form onSubmit={invest} className="space-y-4">
           <div className="rounded-lg bg-stone-100 p-3 text-sm space-y-1">
@@ -79,7 +79,7 @@ export function InvestFractionDialog({
             </div>
           </div>
           <div className="space-y-1">
-            <Label>Importo da investire (€) *</Label>
+            <Label>Importo per la quota (€) *</Label>
             <Input
               type="number"
               step="0.01"
@@ -103,7 +103,7 @@ export function InvestFractionDialog({
             disabled={loading || parsedAmount <= 0 || parsedAmount > availableValue}
             className="w-full bg-amber-500 hover:bg-amber-600 text-stone-950"
           >
-            {loading ? "Investimento in corso..." : "Conferma investimento"}
+            {loading ? "Acquisizione in corso..." : "Conferma acquisizione quota"}
           </Button>
         </form>
       </DialogContent>

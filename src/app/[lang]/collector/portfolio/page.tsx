@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ListNftButton } from "@/components/collector/list-nft-button";
 import { BurnRequestButton } from "@/components/collector/burn-request-button";
 import { ListFractionButton } from "@/components/collector/list-fraction-button";
+import { NftImageGallery } from "@/components/shared/nft-image-gallery";
 import { TrendingUp } from "lucide-react";
 
 export default async function CollectorPortfolioPage() {
@@ -42,11 +43,12 @@ export default async function CollectorPortfolioPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {nfts.map((nft) => (
               <Card key={nft.id} className="overflow-hidden hover:shadow-md transition-shadow">
-                {nft.imageUrl && (
-                  <div className="h-44 overflow-hidden">
-                    <img src={nft.imageUrl} alt={nft.name} className="w-full h-full object-cover" />
-                  </div>
-                )}
+                <NftImageGallery
+                  images={(nft as any).imageGallery ?? []}
+                  fallbackUrl={nft.imageUrl ?? undefined}
+                  alt={nft.name}
+                  className="h-44"
+                />
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base">{nft.name}</CardTitle>
                   <div className="text-xs text-stone-400">{nft.cantina.name} · {nft.collection.name}</div>

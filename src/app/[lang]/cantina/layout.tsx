@@ -2,6 +2,8 @@ import { auth } from "@/lib/auth";
 import { redirect, notFound } from "next/navigation";
 import { Sidebar } from "@/components/shared/sidebar";
 import { getDictionary, hasLocale } from "../dictionaries";
+import { db } from "@/lib/db";
+import { headers } from "next/headers";
 
 export default async function CantinaLayout({
   children,
@@ -15,6 +17,24 @@ export default async function CantinaLayout({
   const session = await auth();
   if (!session || (session.user.role !== "CANTINA" && session.user.role !== "ADMIN")) {
     redirect(`/${lang}/login`);
+  }
+
+  // Contract gate — cantina must accept contract before accessing the dashboard
+  if (session.user.role === "CANTINA") {
+    const headersList = await headers();
+    const pathname = headersList.get("x-pathname") ?? headersList.get("x-invoke-path") ?? "";
+    const isOnContrattoPage = pathname.endsWith("/cantina/contratto");
+
+    if (!isOnContrattoPage) {
+      const cantina = await db.cantina.findUnique({
+        where: { userId: session.user.id },
+        select: { contractAcceptedAt: true },
+      });
+      // Only redirect if cantina profile exists but contract not yet accepted
+      if (cantina && !cantina.contractAcceptedAt) {
+        redirect(`/${lang}/cantina/contratto`);
+      }
+    }
   }
 
   const dict = await getDictionary(lang);

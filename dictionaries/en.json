@@ -117,7 +117,8 @@
     "admin": "Administrator",
     "winery": "Winery",
     "collector": "Collector",
-    "blog": "Blog"
+    "blog": "Blog",
+    "offerte": "Offers"
   },
   "blog": {
     "title": "Blog",

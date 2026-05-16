@@ -117,7 +117,8 @@
     "admin": "Amministratore",
     "winery": "Cantina",
     "collector": "Collezionista",
-    "blog": "Blog"
+    "blog": "Blog",
+    "offerte": "Offerte"
   },
   "blog": {
     "title": "Blog",

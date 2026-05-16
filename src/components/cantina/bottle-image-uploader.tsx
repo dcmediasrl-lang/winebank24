@@ -1,0 +1,250 @@
+"use client";
+
+import { useRef, useState, useCallback } from "react";
+import { Upload, X, ImageIcon, Star } from "lucide-react";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+
+const MAX_FILES = 4;
+const ACCEPT = "image/jpeg,image/jpg,image/png,image/webp,image/heic";
+
+export interface UploadedImage {
+  url: string;
+  previewUrl: string; // object URL for local preview
+  file?: File;        // present before upload, null after
+  uploading?: boolean;
+  error?: string;
+}
+
+interface Props {
+  images: UploadedImage[];
+  onChange: (images: UploadedImage[]) => void;
+  disabled?: boolean;
+}
+
+export function BottleImageUploader({ images, onChange, disabled }: Props) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [dragging, setDragging] = useState(false);
+
+  function addFiles(files: FileList | File[]) {
+    const arr = Array.from(files);
+    const remaining = MAX_FILES - images.length;
+    if (remaining <= 0) {
+      toast.error(`Puoi caricare al massimo ${MAX_FILES} immagini`);
+      return;
+    }
+    const toAdd = arr.slice(0, remaining);
+
+    const newImages: UploadedImage[] = toAdd.map(file => ({
+      url: "",
+      previewUrl: URL.createObjectURL(file),
+      file,
+      uploading: false,
+    }));
+
+    const updated = [...images, ...newImages];
+    onChange(updated);
+    uploadFiles(updated, images.length);
+  }
+
+  async function uploadFiles(current: UploadedImage[], startIndex: number) {
+    // Upload each new file sequentially, updating state as we go
+    for (let i = startIndex; i < current.length; i++) {
+      const img = current[i];
+      if (!img.file || img.url) continue;
+
+      // Mark as uploading
+      current = current.map((m, idx) => idx === i ? { ...m, uploading: true } : m);
+      onChange([...current]);
+
+      try {
+        const fd = new FormData();
+        fd.append("files", img.file);
+        const res = await fetch("/api/upload", { method: "POST", body: fd });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Errore upload");
+
+        current = current.map((m, idx) =>
+          idx === i ? { ...m, url: data.urls[0], uploading: false, file: undefined } : m
+        );
+        onChange([...current]);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : "Errore";
+        current = current.map((m, idx) =>
+          idx === i ? { ...m, uploading: false, error: msg } : m
+        );
+        onChange([...current]);
+        toast.error(msg);
+      }
+    }
+  }
+
+  function remove(index: number) {
+    const img = images[index];
+    if (img.previewUrl.startsWith("blob:")) URL.revokeObjectURL(img.previewUrl);
+    onChange(images.filter((_, i) => i !== index));
+  }
+
+  function moveToFront(index: number) {
+    if (index === 0) return;
+    const next = [...images];
+    const [item] = next.splice(index, 1);
+    next.unshift(item);
+    onChange(next);
+  }
+
+  const onDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+    addFiles(e.dataTransfer.files);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [images]);
+
+  const onDragOver = (e: React.DragEvent) => { e.preventDefault(); setDragging(true); };
+  const onDragLeave = () => setDragging(false);
+
+  const canAddMore = images.length < MAX_FILES && !disabled;
+
+  return (
+    <div className="space-y-3">
+      {/* Preview grid */}
+      {images.length > 0 && (
+        <div className="grid grid-cols-4 gap-2">
+          {images.map((img, i) => (
+            <div
+              key={img.previewUrl}
+              className={cn(
+                "relative rounded-lg overflow-hidden border-2 aspect-square bg-stone-100 group",
+                i === 0 ? "border-amber-400" : "border-stone-200"
+              )}
+            >
+              {/* Image or skeleton */}
+              {img.previewUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={img.previewUrl}
+                  alt={`foto ${i + 1}`}
+                  className={cn(
+                    "w-full h-full object-cover transition-opacity",
+                    img.uploading ? "opacity-40" : "opacity-100"
+                  )}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <ImageIcon className="w-6 h-6 text-stone-300" />
+                </div>
+              )}
+
+              {/* Uploading spinner */}
+              {img.uploading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-white/50">
+                  <div className="w-5 h-5 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+                </div>
+              )}
+
+              {/* Error overlay */}
+              {img.error && !img.uploading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-red-50/80">
+                  <span className="text-red-600 text-xs text-center px-1">Errore</span>
+                </div>
+              )}
+
+              {/* Cover badge */}
+              {i === 0 && (
+                <div className="absolute top-1 left-1 bg-amber-500 text-stone-950 text-[10px] font-bold px-1.5 py-0.5 rounded">
+                  Cover
+                </div>
+              )}
+
+              {/* Actions on hover */}
+              {!img.uploading && !disabled && (
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5">
+                  {i !== 0 && (
+                    <button
+                      type="button"
+                      onClick={() => moveToFront(i)}
+                      className="w-7 h-7 bg-white rounded-full flex items-center justify-center hover:bg-amber-100"
+                      title="Imposta come cover"
+                    >
+                      <Star className="w-3.5 h-3.5 text-amber-600" />
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => remove(i)}
+                    className="w-7 h-7 bg-white rounded-full flex items-center justify-center hover:bg-red-100"
+                    title="Rimuovi"
+                  >
+                    <X className="w-3.5 h-3.5 text-red-600" />
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+
+          {/* Placeholder slots */}
+          {Array.from({ length: MAX_FILES - images.length }).map((_, i) => (
+            <div
+              key={`placeholder-${i}`}
+              className="aspect-square rounded-lg border-2 border-dashed border-stone-200 bg-stone-50 flex items-center justify-center"
+            >
+              <ImageIcon className="w-5 h-5 text-stone-300" />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Drop zone */}
+      {canAddMore && (
+        <div
+          onDrop={onDrop}
+          onDragOver={onDragOver}
+          onDragLeave={onDragLeave}
+          onClick={() => inputRef.current?.click()}
+          className={cn(
+            "border-2 border-dashed rounded-lg p-5 text-center cursor-pointer transition-colors",
+            dragging
+              ? "border-amber-400 bg-amber-50"
+              : "border-stone-300 bg-stone-50 hover:border-amber-400 hover:bg-amber-50/40"
+          )}
+        >
+          <Upload className="w-6 h-6 text-stone-400 mx-auto mb-2" />
+          <p className="text-sm text-stone-600 font-medium">
+            {images.length === 0 ? "Carica la foto della bottiglia" : "Aggiungi altra foto"}
+          </p>
+          <p className="text-xs text-stone-400 mt-1">
+            JPG, PNG, WebP · max 8 MB · {images.length}/{MAX_FILES} foto
+            {images.length === 0 && <span className="text-red-500 font-medium"> · obbligatoria</span>}
+          </p>
+          <p className="text-xs text-stone-400">Trascina qui o clicca per selezionare</p>
+        </div>
+      )}
+
+      {/* Hidden input */}
+      <input
+        ref={inputRef}
+        type="file"
+        accept={ACCEPT}
+        multiple
+        className="hidden"
+        onChange={e => e.target.files && addFiles(e.target.files)}
+      />
+
+      {/* Helper text */}
+      <p className="text-xs text-stone-400">
+        {images.length === 0 ? (
+          <span className="text-red-500">⚠ Almeno 1 foto è obbligatoria (contratto A.1)</span>
+        ) : images[0]?.uploading ? (
+          <span className="text-amber-600">Caricamento in corso...</span>
+        ) : images.some(i => i.error) ? (
+          <span className="text-red-500">Alcuni file hanno avuto errori. Rimuovili e riprova.</span>
+        ) : (
+          <span className="text-green-700">
+            ✓ {images.filter(i => i.url).length} foto caricate
+            {images.length > 1 && " · La prima è la copertina — clicca ★ per cambiarla"}
+          </span>
+        )}
+      </p>
+    </div>
+  );
+}

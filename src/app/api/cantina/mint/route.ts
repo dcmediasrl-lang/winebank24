@@ -14,10 +14,8 @@ const schema = z.object({
   region: z.string().optional(),
   bottleNumber: z.number().min(1),
   price: z.number().positive().optional(),
-  imageUrl: z.preprocess(
-    (v) => (typeof v === "string" && v.trim() === "" ? undefined : v),
-    z.string().url().optional()
-  ),
+  imageUrl: z.string().url({ message: "La foto della bottiglia è obbligatoria" }),
+  imageGallery: z.array(z.string().url()).min(1).max(4).optional(),
   isFractionable: z.boolean().optional(),
   totalValue: z.number().positive().optional(),
 });
@@ -59,10 +57,12 @@ export async function POST(req: Request) {
 
     const isFractionable = !!body.isFractionable;
 
+    const gallery = body.imageGallery ?? [body.imageUrl];
     const metadata = {
       name: body.name,
       description: body.description || `${cantina.name} — ${body.name}`,
-      image: body.imageUrl || "",
+      image: body.imageUrl,
+      images: gallery,
       attributes: [
         { trait_type: "Cantina", value: cantina.name },
         { trait_type: "Vitigno", value: body.grape || "" },
@@ -106,7 +106,8 @@ export async function POST(req: Request) {
         ownerId: session.user.id,
         name: body.name,
         description: body.description,
-        imageUrl: body.imageUrl || null,
+        imageUrl: body.imageUrl,
+        imageGallery: body.imageGallery ?? [body.imageUrl],
         metadataUri: tokenUri,
         price: isFractionable ? null : (body.price ?? null),
         bottleNumber: body.bottleNumber,

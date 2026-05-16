@@ -12,6 +12,13 @@ enum Role {
   COLLECTOR
 }
 
+enum OfferStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+}
+
 enum NftStatus {
   MINTED
   LISTED
@@ -63,6 +70,9 @@ model User {
   emailVerifyExpiry   DateTime?
   twoFactorSecret     String?
   twoFactorEnabled    Boolean  @default(false)
+  // Buyer contract
+  buyerContractAcceptedAt DateTime?
+  buyerContractVersion    String?
 
   accounts         Account[]
   sessions         Session[]
@@ -72,6 +82,8 @@ model User {
   sellTransactions Transaction[]   @relation("Seller")
   nftFractions     NftFraction[]
   activityLogs     ActivityLog[]
+  offersMade       Offer[]         @relation("OfferBuyer")
+  offersReceived   Offer[]         @relation("OfferSeller")
 }
 
 model Account {
@@ -122,6 +134,9 @@ model Cantina {
   isVerified  Boolean  @default(false)
   isBlocked   Boolean  @default(false)
   royaltyPct  Float    @default(5.0)
+  // Contractual
+  contractAcceptedAt      DateTime?
+  contractVersion         String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -158,7 +173,8 @@ model Nft {
   ownerId         String
   name            String
   description     String?
-  imageUrl        String?
+  imageUrl        String?   // cover image (first of gallery)
+  imageGallery    String[]  // all uploaded image URLs (1–4)
   metadataUri     String?
   status          NftStatus @default(MINTED)
   price           Float?
@@ -177,6 +193,7 @@ model Nft {
   transactions Transaction[]
   burnRequest  BurnRequest?
   fractions    NftFraction[]
+  offers       Offer[]
 }
 
 model Transaction {
@@ -225,8 +242,9 @@ model NftFraction {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  nft   Nft  @relation(fields: [nftId], references: [id])
-  owner User @relation(fields: [ownerId], references: [id])
+  nft     Nft     @relation(fields: [nftId], references: [id])
+  owner   User    @relation(fields: [ownerId], references: [id])
+  offers  Offer[]
 }
 
 model PlatformConfig {
@@ -258,6 +276,25 @@ model RateLimit {
   resetAt DateTime
 
   @@index([key])
+}
+
+model Offer {
+  id         String      @id @default(cuid())
+  nftId      String?
+  fractionId String?
+  buyerId    String
+  sellerId   String
+  amount     Float
+  message    String?
+  status     OfferStatus @default(PENDING)
+  expiresAt  DateTime?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  nft      Nft?         @relation(fields: [nftId], references: [id])
+  fraction NftFraction? @relation(fields: [fractionId], references: [id])
+  buyer    User         @relation("OfferBuyer",  fields: [buyerId],  references: [id])
+  seller   User         @relation("OfferSeller", fields: [sellerId], references: [id])
 }
 
 model BlogPost {

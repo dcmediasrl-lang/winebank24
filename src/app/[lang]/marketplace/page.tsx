@@ -4,11 +4,23 @@ import { Badge } from "@/components/ui/badge";
 import { BuyButton } from "@/components/collector/buy-button";
 import { InvestFractionDialog } from "@/components/collector/invest-fraction-dialog";
 import { BuyFractionButton } from "@/components/collector/buy-fraction-button";
+import { MakeOfferButton } from "@/components/collector/make-offer-button";
+import { NftImageGallery } from "@/components/shared/nft-image-gallery";
 import { auth } from "@/lib/auth";
 import { Wine, TrendingUp, Users } from "lucide-react";
 
 export default async function MarketplacePage() {
   const session = await auth();
+
+  // Check whether the logged-in user has already accepted buyer terms
+  let needsTermsAcceptance = false;
+  if (session?.user?.id) {
+    const user = await db.user.findUnique({
+      where: { id: session.user.id },
+      select: { buyerContractAcceptedAt: true },
+    }).catch(() => null);
+    needsTermsAcceptance = !user?.buyerContractAcceptedAt;
+  }
 
   const [allListedNfts, listedFractions] = await Promise.all([
     db.nft.findMany({
@@ -65,15 +77,14 @@ export default async function MarketplacePage() {
                 const soldPct = totalValue > 0 ? ((totalValue - availableValue) / totalValue) * 100 : 0;
                 return (
                   <Card key={nft.id} className="overflow-hidden hover:shadow-lg transition-shadow group border-amber-200">
-                    <div className="h-48 bg-stone-200 overflow-hidden relative">
-                      {nft.imageUrl ? (
-                        <img src={nft.imageUrl} alt={nft.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <Wine className="w-12 h-12 text-stone-400" />
-                        </div>
-                      )}
-                      <Badge className="absolute top-2 right-2 bg-amber-500 text-stone-950 text-xs">Co-proprietà</Badge>
+                    <div className="h-48 relative">
+                      <NftImageGallery
+                        images={nft.imageGallery ?? []}
+                        fallbackUrl={nft.imageUrl ?? undefined}
+                        alt={nft.name}
+                        className="h-48"
+                      />
+                      <Badge className="absolute top-2 right-2 bg-amber-500 text-stone-950 text-xs z-10">Co-proprietà</Badge>
                     </div>
                     <CardHeader className="pb-2 pt-4">
                       <CardTitle className="text-sm font-semibold leading-tight">{nft.name}</CardTitle>
@@ -103,6 +114,7 @@ export default async function MarketplacePage() {
                         totalValue={totalValue}
                         availableValue={availableValue}
                         isLoggedIn={!!session}
+                        needsTermsAcceptance={!!session && needsTermsAcceptance}
                       />
                     </CardContent>
                   </Card>
@@ -123,15 +135,14 @@ export default async function MarketplacePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {availableFractions.map((fraction) => (
                 <Card key={fraction.id} className="overflow-hidden hover:shadow-lg transition-shadow border-blue-100">
-                  <div className="h-48 bg-stone-200 overflow-hidden relative">
-                    {fraction.nft.imageUrl ? (
-                      <img src={fraction.nft.imageUrl} alt={fraction.nft.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Wine className="w-12 h-12 text-stone-400" />
-                      </div>
-                    )}
-                    <Badge className="absolute top-2 right-2 bg-blue-500 text-white text-xs">Quota</Badge>
+                  <div className="h-48 relative">
+                    <NftImageGallery
+                      images={fraction.nft.imageGallery ?? []}
+                      fallbackUrl={fraction.nft.imageUrl ?? undefined}
+                      alt={fraction.nft.name}
+                      className="h-48"
+                    />
+                    <Badge className="absolute top-2 right-2 bg-blue-500 text-white text-xs z-10">Quota</Badge>
                   </div>
                   <CardHeader className="pb-2 pt-4">
                     <CardTitle className="text-sm font-semibold leading-tight">{fraction.nft.name}</CardTitle>
@@ -163,13 +174,23 @@ export default async function MarketplacePage() {
                         <span className="text-stone-700">{fraction.owner.name || fraction.owner.email}</span>
                       </div>
                     </div>
-                    <BuyFractionButton
-                      fractionId={fraction.id}
-                      askingPrice={Number(fraction.askingPrice)}
-                      listedPercentage={fraction.listedPercentage !== null ? Number(fraction.listedPercentage) : null}
-                      totalPercentage={Number(fraction.percentage)}
-                      isLoggedIn={!!session}
-                    />
+                    <div className="space-y-2">
+                      <BuyFractionButton
+                        fractionId={fraction.id}
+                        askingPrice={Number(fraction.askingPrice)}
+                        listedPercentage={fraction.listedPercentage !== null ? Number(fraction.listedPercentage) : null}
+                        totalPercentage={Number(fraction.percentage)}
+                        isLoggedIn={!!session}
+                        needsTermsAcceptance={!!session && needsTermsAcceptance}
+                      />
+                      <MakeOfferButton
+                        fractionId={fraction.id}
+                        listedPrice={Number(fraction.askingPrice)}
+                        isLoggedIn={!!session}
+                        currentUserId={session?.user.id}
+                        sellerId={fraction.owner.id}
+                      />
+                    </div>
                   </CardContent>
                 </Card>
               ))}
@@ -193,15 +214,12 @@ export default async function MarketplacePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {nfts.map((nft) => (
                 <Card key={nft.id} className="overflow-hidden hover:shadow-lg transition-shadow group">
-                  <div className="h-48 bg-stone-200 overflow-hidden relative">
-                    {nft.imageUrl ? (
-                      <img src={nft.imageUrl} alt={nft.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Wine className="w-12 h-12 text-stone-400" />
-                      </div>
-                    )}
-                  </div>
+                  <NftImageGallery
+                    images={nft.imageGallery ?? []}
+                    fallbackUrl={nft.imageUrl ?? undefined}
+                    alt={nft.name}
+                    className="h-48"
+                  />
                   <CardHeader className="pb-2 pt-4">
                     <CardTitle className="text-sm font-semibold leading-tight">{nft.name}</CardTitle>
                     <p className="text-xs text-stone-500">{nft.cantina.name}</p>
@@ -216,7 +234,16 @@ export default async function MarketplacePage() {
                       <span className="text-xs text-stone-400">Bottiglia #{nft.bottleNumber}</span>
                     </div>
                     {session?.user.id !== nft.owner.id ? (
-                      <BuyButton nftId={nft.id} price={nft.price!} nftName={nft.name} isLoggedIn={!!session} />
+                      <div className="space-y-2">
+                        <BuyButton nftId={nft.id} price={nft.price!} nftName={nft.name} isLoggedIn={!!session} needsTermsAcceptance={!!session && needsTermsAcceptance} />
+                        <MakeOfferButton
+                          nftId={nft.id}
+                          listedPrice={nft.price!}
+                          isLoggedIn={!!session}
+                          currentUserId={session?.user.id}
+                          sellerId={nft.owner.id}
+                        />
+                      </div>
                     ) : (
                       <Badge variant="outline" className="w-full justify-center py-1.5">Il tuo NFT</Badge>
                     )}

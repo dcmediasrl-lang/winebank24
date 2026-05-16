@@ -7,8 +7,9 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Plus, Gem } from "lucide-react";
+import { Plus, Gem, AlertTriangle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { BottleImageUploader, type UploadedImage } from "./bottle-image-uploader";
 
 const GRAPES = [
   "Nebbiolo", "Sangiovese", "Barolo", "Barbaresco", "Brunello",
@@ -29,6 +30,7 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isFractionable, setIsFractionable] = useState(false);
+  const [images, setImages] = useState<UploadedImage[]>([]);
   const [form, setForm] = useState({
     name: "",
     description: "",
@@ -37,7 +39,6 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
     region: "",
     bottleNumber: "1",
     price: "",
-    imageUrl: "",
     totalValue: "",
   });
 
@@ -45,10 +46,33 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
     setForm(f => ({ ...f, [field]: value }));
   }
 
+  function resetForm() {
+    setForm({ name: "", description: "", vintage: new Date().getFullYear().toString(), grape: "", region: "", bottleNumber: "1", price: "", totalValue: "" });
+    setImages([]);
+    setIsFractionable(false);
+  }
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+
+    // Validate images
+    const readyImages = images.filter(i => i.url);
+    if (readyImages.length === 0) {
+      toast.error("Carica almeno 1 foto della bottiglia (obbligatoria per contratto)");
+      return;
+    }
+    if (images.some(i => i.uploading)) {
+      toast.error("Attendi il completamento del caricamento immagini");
+      return;
+    }
+    if (images.some(i => i.error)) {
+      toast.error("Rimuovi le immagini con errore prima di procedere");
+      return;
+    }
+
     setLoading(true);
     try {
+      const imageUrls = readyImages.map(i => i.url);
       const res = await fetch("/api/cantina/mint", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -61,7 +85,8 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
           region: form.region || undefined,
           bottleNumber: parseInt(form.bottleNumber),
           price: !isFractionable && form.price ? parseFloat(form.price) : undefined,
-          imageUrl: form.imageUrl.trim() || undefined,
+          imageUrl: imageUrls[0],
+          imageGallery: imageUrls,
           isFractionable,
           totalValue: isFractionable && form.totalValue ? parseFloat(form.totalValue) : undefined,
         }),
@@ -72,8 +97,7 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
         ? `Certificato creato su blockchain! Token ID: ${data.tokenId}`
         : "Certificato digitale creato con successo!");
       setOpen(false);
-      setForm({ name: "", description: "", vintage: new Date().getFullYear().toString(), grape: "", region: "", bottleNumber: "1", price: "", imageUrl: "", totalValue: "" });
-      setIsFractionable(false);
+      resetForm();
       router.refresh();
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Errore nella creazione");
@@ -97,6 +121,16 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
         </DialogHeader>
 
         <form onSubmit={submit} className="space-y-4 pt-2">
+
+          {/* Indisponibilità reminder */}
+          <div className="flex gap-2 bg-red-50 border border-red-200 rounded-lg p-3">
+            <AlertTriangle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+            <p className="text-xs text-red-800 leading-relaxed">
+              <strong>Vincolo di indisponibilità:</strong> dal momento della creazione del certificato,
+              la bottiglia fisica non può essere venduta, spostata, data in pegno o consumata
+              fino alla liquidazione. Violazioni comportano una penale del <strong>200%</strong> del valore.
+            </p>
+          </div>
 
           {/* Identità della bottiglia */}
           <div className="space-y-3 p-4 bg-stone-50 rounded-lg">
@@ -175,12 +209,14 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
             </div>
 
             <div className="space-y-1">
-              <Label>Foto della bottiglia (URL) <span className="text-stone-400 font-normal">(opzionale)</span></Label>
-              <Input
-                type="url"
-                value={form.imageUrl}
-                onChange={e => set("imageUrl", e.target.value)}
-                placeholder="https://..."
+              <Label>
+                Foto della bottiglia <span className="text-red-500 font-semibold">*</span>{" "}
+                <span className="text-stone-400 font-normal">(1–4 immagini)</span>
+              </Label>
+              <BottleImageUploader
+                images={images}
+                onChange={setImages}
+                disabled={loading}
               />
             </div>
           </div>

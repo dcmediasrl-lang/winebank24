@@ -29,7 +29,12 @@ export function proxy(request: NextRequest) {
       pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
   );
 
-  if (hasLocale) return NextResponse.next();
+  if (hasLocale) {
+    // Forward the pathname so server layouts can read it
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set("x-pathname", pathname);
+    return NextResponse.next({ request: { headers: requestHeaders } });
+  }
 
   // Redirect to locale-prefixed URL
   const locale = getLocale(request);

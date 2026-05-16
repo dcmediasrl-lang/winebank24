@@ -6,7 +6,7 @@ import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard, Users, Gem, ShoppingCart, BarChart3,
-  Settings, LogOut, Wine, Package, FileText, Shield
+  Settings, LogOut, Wine, Package, FileText, Shield, Tag
 } from "lucide-react";
 
 type Role = "ADMIN" | "CANTINA" | "COLLECTOR";
@@ -30,6 +30,7 @@ type SidebarDict = {
   winery: string;
   collector: string;
   blog: string;
+  offerte: string;
 };
 
 interface SidebarProps {
@@ -63,6 +64,7 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
     { href: p("/collector"), label: dict.dashboard, icon: LayoutDashboard },
     { href: p("/collector/portfolio"), label: dict.my_collection, icon: Package },
     { href: p("/marketplace"), label: dict.marketplace, icon: ShoppingCart },
+    { href: p("/collector/offerte"), label: dict.offerte, icon: Tag },
     { href: p("/collector/reports"), label: dict.history, icon: BarChart3 },
     { href: p("/collector/settings"), label: dict.security, icon: Shield },
   ];

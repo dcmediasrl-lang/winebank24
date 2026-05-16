@@ -6,43 +6,70 @@ import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard, Users, Gem, ShoppingCart, BarChart3,
-  Settings, LogOut, Wine, Flame, Package
+  Settings, LogOut, Wine, Package, FileText, Shield
 } from "lucide-react";
+
 type Role = "ADMIN" | "CANTINA" | "COLLECTOR";
 
-const adminLinks = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/users", label: "Utenti", icon: Users },
-  { href: "/admin/cantine", label: "Cantine", icon: Wine },
-  { href: "/admin/nfts", label: "NFT & Minting", icon: Gem },
-  { href: "/admin/transactions", label: "Transazioni", icon: ShoppingCart },
-  { href: "/admin/settings", label: "Configurazione", icon: Settings },
-];
-
-const cantinaLinks = [
-  { href: "/cantina", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/cantina/collections", label: "Collezioni", icon: Wine },
-  { href: "/cantina/nfts", label: "I miei NFT", icon: Gem },
-  { href: "/cantina/reports", label: "Reportistica", icon: BarChart3 },
-];
-
-const collectorLinks = [
-  { href: "/collector", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/collector/portfolio", label: "La mia Collezione", icon: Package },
-  { href: "/marketplace", label: "Marketplace", icon: ShoppingCart },
-  { href: "/collector/reports", label: "Storico", icon: BarChart3 },
-  { href: "/collector/settings", label: "Sicurezza", icon: Settings },
-];
+type SidebarDict = {
+  dashboard: string;
+  my_collection: string;
+  marketplace: string;
+  history: string;
+  security: string;
+  collections: string;
+  my_nfts: string;
+  reports: string;
+  users: string;
+  wineries: string;
+  nft_minting: string;
+  transactions: string;
+  settings: string;
+  logout: string;
+  admin: string;
+  winery: string;
+  collector: string;
+  blog: string;
+};
 
 interface SidebarProps {
   role: Role;
   userName: string;
+  lang: string;
+  dict: SidebarDict;
 }
 
-export function Sidebar({ role, userName }: SidebarProps) {
+export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
   const pathname = usePathname();
+  const p = (path: string) => `/${lang}${path}`;
+
+  const adminLinks = [
+    { href: p("/admin"), label: dict.dashboard, icon: LayoutDashboard },
+    { href: p("/admin/users"), label: dict.users, icon: Users },
+    { href: p("/admin/cantine"), label: dict.wineries, icon: Wine },
+    { href: p("/admin/nfts"), label: dict.nft_minting, icon: Gem },
+    { href: p("/admin/transactions"), label: dict.transactions, icon: ShoppingCart },
+    { href: p("/admin/blog"), label: dict.blog, icon: FileText },
+    { href: p("/admin/settings"), label: dict.settings, icon: Settings },
+  ];
+
+  const cantinaLinks = [
+    { href: p("/cantina"), label: dict.dashboard, icon: LayoutDashboard },
+    { href: p("/cantina/collections"), label: dict.collections, icon: Wine },
+    { href: p("/cantina/nfts"), label: dict.my_nfts, icon: Gem },
+    { href: p("/cantina/reports"), label: dict.reports, icon: BarChart3 },
+  ];
+
+  const collectorLinks = [
+    { href: p("/collector"), label: dict.dashboard, icon: LayoutDashboard },
+    { href: p("/collector/portfolio"), label: dict.my_collection, icon: Package },
+    { href: p("/marketplace"), label: dict.marketplace, icon: ShoppingCart },
+    { href: p("/collector/reports"), label: dict.history, icon: BarChart3 },
+    { href: p("/collector/settings"), label: dict.security, icon: Shield },
+  ];
+
   const links = role === "ADMIN" ? adminLinks : role === "CANTINA" ? cantinaLinks : collectorLinks;
-  const roleLabel = role === "ADMIN" ? "Amministratore" : role === "CANTINA" ? "Cantina" : "Collezionista";
+  const roleLabel = role === "ADMIN" ? dict.admin : role === "CANTINA" ? dict.winery : dict.collector;
 
   return (
     <aside className="flex flex-col w-64 min-h-screen bg-stone-950 text-stone-100 px-4 py-6">
@@ -74,11 +101,11 @@ export function Sidebar({ role, userName }: SidebarProps) {
       </nav>
 
       <button
-        onClick={() => signOut({ callbackUrl: "/login" })}
+        onClick={() => signOut({ callbackUrl: `/${lang}/login` })}
         className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-stone-400 hover:bg-stone-800 hover:text-red-400 transition-colors mt-4"
       >
         <LogOut className="w-4 h-4" />
-        Esci
+        {dict.logout}
       </button>
     </aside>
   );

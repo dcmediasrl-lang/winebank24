@@ -256,3 +256,24 @@ model RateLimit {
 
   @@index([key])
 }
+
+model BlogPost {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  titleIt     String
+  titleEn     String
+  excerptIt   String?
+  excerptEn   String?
+  contentIt   String
+  contentEn   String
+  coverImage  String?
+  category    String?
+  isPublished Boolean   @default(false)
+  publishedAt DateTime?
+  authorId    String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([slug])
+  @@index([isPublished, publishedAt])
+}

@@ -1,26 +1,42 @@
-import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-export default auth((req) => {
-  const { pathname } = req.nextUrl;
-  const user = req.auth?.user;
+const locales = ["it", "en"];
+const defaultLocale = "it";
 
-  const isLoggedIn = !!user;
-  const role = user?.role;
+function getLocale(request: NextRequest): string {
+  const acceptLang = request.headers.get("accept-language") || "";
+  const preferred = acceptLang.split(",")[0].split("-")[0].toLowerCase();
+  return locales.includes(preferred) ? preferred : defaultLocale;
+}
 
-  if (pathname.startsWith("/admin") && role !== "ADMIN") {
-    return NextResponse.redirect(new URL("/login", req.url));
+export function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // Skip API routes, static files, Next.js internals
+  if (
+    pathname.startsWith("/api/") ||
+    pathname.startsWith("/_next/") ||
+    pathname.startsWith("/favicon") ||
+    pathname.includes(".")
+  ) {
+    return NextResponse.next();
   }
-  if (pathname.startsWith("/cantina") && role !== "CANTINA" && role !== "ADMIN") {
-    return NextResponse.redirect(new URL("/login", req.url));
-  }
-  if (pathname.startsWith("/collector") && !isLoggedIn) {
-    return NextResponse.redirect(new URL("/login", req.url));
-  }
 
-  return NextResponse.next();
-});
+  // Check if pathname already has a locale prefix
+  const hasLocale = locales.some(
+    (locale) =>
+      pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
+  );
+
+  if (hasLocale) return NextResponse.next();
+
+  // Redirect to locale-prefixed URL
+  const locale = getLocale(request);
+  request.nextUrl.pathname = `/${locale}${pathname}`;
+  return NextResponse.redirect(request.nextUrl);
+}
 
 export const config = {
-  matcher: ["/admin/:path*", "/cantina/:path*", "/collector/:path*"],
+  matcher: ["/((?!_next|api|favicon|.*\\..*).*)"],
 };

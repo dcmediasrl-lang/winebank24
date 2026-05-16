@@ -148,10 +148,6 @@ export default async function MarketplacePage() {
                         <span className="font-bold text-amber-600">{Number(fraction.percentage).toFixed(2)}%</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-stone-500">Investimento originale:</span>
-                        <span className="text-stone-700">€ {Number(fraction.investedAmount).toFixed(2)}</span>
-                      </div>
-                      <div className="flex justify-between">
                         <span className="text-stone-500">Venditore:</span>
                         <span className="text-stone-700">{fraction.owner.name || fraction.owner.email}</span>
                       </div>

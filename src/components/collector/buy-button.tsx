@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { ShoppingCart, AlertTriangle, CheckCircle } from "lucide-react";
 import { CONTRACT_BUYER_VERSION } from "@/lib/contracts";
+import { KycGateDialog } from "@/components/collector/kyc-gate-dialog";
 
 export function BuyButton({
   nftId,
@@ -14,18 +15,22 @@ export function BuyButton({
   nftName,
   isLoggedIn,
   needsTermsAcceptance = false,
+  kycComplete: kycCompleteProp = true,
 }: {
   nftId: string;
   price: number;
   nftName: string;
   isLoggedIn: boolean;
   needsTermsAcceptance?: boolean;
+  kycComplete?: boolean;
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(!needsTermsAcceptance);
   const [checks, setChecks] = useState({ c1: false, c2: false, c3: false, c4: false });
+  const [showKyc, setShowKyc] = useState(false);
+  const [kycDone, setKycDone] = useState(kycCompleteProp);
   const allChecked = Object.values(checks).every(Boolean);
   const toggle = (k: keyof typeof checks) => setChecks(p => ({ ...p, [k]: !p[k] }));
 
@@ -45,9 +50,7 @@ export function BuyButton({
     }
   }
 
-  async function buy() {
-    if (!isLoggedIn) { router.push("/login"); return; }
-    if (!termsAccepted) { setShowTerms(true); return; }
+  async function doBuy() {
     setLoading(true);
     try {
       const res = await fetch("/api/checkout", {
@@ -64,12 +67,32 @@ export function BuyButton({
     }
   }
 
+  function buy() {
+    if (!isLoggedIn) { router.push("/login"); return; }
+    if (!kycDone) { setShowKyc(true); return; }
+    if (!termsAccepted) { setShowTerms(true); return; }
+    doBuy();
+  }
+
+  function handleKycComplete() {
+    setKycDone(true);
+    setShowKyc(false);
+    if (!termsAccepted) {
+      setShowTerms(true);
+    } else {
+      doBuy();
+    }
+  }
+
   return (
     <>
       <Button onClick={buy} disabled={loading} className="w-full bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold">
         <ShoppingCart className="w-4 h-4 mr-2" />
         {loading ? "Reindirizzamento..." : `Acquista · € ${price.toFixed(2)}`}
       </Button>
+
+      {/* KYC gate dialog */}
+      <KycGateDialog open={showKyc} onOpenChange={setShowKyc} onComplete={handleKycComplete} />
 
       {/* Terms acceptance dialog */}
       <Dialog open={showTerms} onOpenChange={setShowTerms}>

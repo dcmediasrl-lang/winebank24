@@ -15,6 +15,7 @@ export type ActivityAction =
   | "FRACTION_LISTED"
   | "BURN_REQUESTED"
   | "KYC_SUBMITTED"
+  | "KYC_COMPLETED"
   | "ACCOUNT_LOCKED"
   | "ACCOUNT_UNLOCKED";
 

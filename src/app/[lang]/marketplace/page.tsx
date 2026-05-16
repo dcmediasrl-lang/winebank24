@@ -12,14 +12,20 @@ import { Wine, TrendingUp, Users } from "lucide-react";
 export default async function MarketplacePage() {
   const session = await auth();
 
-  // Check whether the logged-in user has already accepted buyer terms
+  // Check whether the logged-in user has already accepted buyer terms and completed KYC
   let needsTermsAcceptance = false;
+  let kycComplete = false;
   if (session?.user?.id) {
     const user = await db.user.findUnique({
       where: { id: session.user.id },
-      select: { buyerContractAcceptedAt: true },
+      select: {
+        buyerContractAcceptedAt: true,
+        firstName: true, lastName: true,
+        birthDate: true, country: true, fiscalCode: true,
+      },
     }).catch(() => null);
     needsTermsAcceptance = !user?.buyerContractAcceptedAt;
+    kycComplete = !!(user?.firstName && user?.lastName && user?.birthDate && user?.country && user?.fiscalCode);
   }
 
   const [allListedNfts, listedFractions] = await Promise.all([
@@ -115,6 +121,7 @@ export default async function MarketplacePage() {
                         availableValue={availableValue}
                         isLoggedIn={!!session}
                         needsTermsAcceptance={!!session && needsTermsAcceptance}
+                        kycComplete={!session || kycComplete}
                       />
                       {session?.user.id !== nft.owner.id && availableValue > 0 && (
                         <MakeOfferButton
@@ -123,6 +130,7 @@ export default async function MarketplacePage() {
                           isLoggedIn={!!session}
                           currentUserId={session?.user.id}
                           sellerId={nft.owner.id}
+                          kycComplete={!session || kycComplete}
                         />
                       )}
                     </CardContent>
@@ -191,6 +199,7 @@ export default async function MarketplacePage() {
                         totalPercentage={Number(fraction.percentage)}
                         isLoggedIn={!!session}
                         needsTermsAcceptance={!!session && needsTermsAcceptance}
+                        kycComplete={!session || kycComplete}
                       />
                       <MakeOfferButton
                         fractionId={fraction.id}
@@ -198,6 +207,7 @@ export default async function MarketplacePage() {
                         isLoggedIn={!!session}
                         currentUserId={session?.user.id}
                         sellerId={fraction.owner.id}
+                        kycComplete={!session || kycComplete}
                       />
                     </div>
                   </CardContent>
@@ -244,13 +254,21 @@ export default async function MarketplacePage() {
                     </div>
                     {session?.user.id !== nft.owner.id ? (
                       <div className="space-y-2">
-                        <BuyButton nftId={nft.id} price={nft.price!} nftName={nft.name} isLoggedIn={!!session} needsTermsAcceptance={!!session && needsTermsAcceptance} />
+                        <BuyButton
+                          nftId={nft.id}
+                          price={nft.price!}
+                          nftName={nft.name}
+                          isLoggedIn={!!session}
+                          needsTermsAcceptance={!!session && needsTermsAcceptance}
+                          kycComplete={!session || kycComplete}
+                        />
                         <MakeOfferButton
                           nftId={nft.id}
                           listedPrice={nft.price!}
                           isLoggedIn={!!session}
                           currentUserId={session?.user.id}
                           sellerId={nft.owner.id}
+                          kycComplete={!session || kycComplete}
                         />
                       </div>
                     ) : (

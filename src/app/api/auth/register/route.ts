@@ -9,16 +9,9 @@ import { rateLimit, rateLimitKey, getClientIp } from "@/lib/rate-limit";
 import { logActivity } from "@/lib/activity";
 
 const schema = z.object({
-  name: z.string().min(2),
   email: z.string().email(),
   password: z.string().min(8),
   role: z.literal("COLLECTOR"),
-  // KYC light
-  firstName: z.string().min(2),
-  lastName: z.string().min(2),
-  birthDate: z.string().min(1), // ISO date string
-  country: z.string().min(2),
-  fiscalCode: z.string().optional(),
 });
 
 export async function POST(req: Request) {
@@ -47,23 +40,15 @@ export async function POST(req: Request) {
 
     const user = await db.user.create({
       data: {
-        name: data.name,
         email: data.email,
         password: hashed,
         role: "COLLECTOR",
-        firstName: data.firstName,
-        lastName: data.lastName,
-        birthDate: new Date(data.birthDate),
-        country: data.country,
-        fiscalCode: data.fiscalCode,
         emailVerifyToken: verifyToken,
         emailVerifyExpiry: verifyExpiry,
       },
     });
 
     await logActivity(user.id, "REGISTER", `IP: ${ip}`);
-
-    // Send verification email (non-blocking)
     await sendVerificationEmail(data.email, verifyToken);
 
     return NextResponse.json({

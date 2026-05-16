@@ -11,6 +11,7 @@ import {
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Tag } from "lucide-react";
+import { KycGateDialog } from "@/components/collector/kyc-gate-dialog";
 
 interface MakeOfferButtonProps {
   nftId?: string;
@@ -19,6 +20,7 @@ interface MakeOfferButtonProps {
   isLoggedIn: boolean;
   currentUserId?: string;
   sellerId: string;
+  kycComplete?: boolean;
 }
 
 export function MakeOfferButton({
@@ -28,6 +30,7 @@ export function MakeOfferButton({
   isLoggedIn,
   currentUserId,
   sellerId,
+  kycComplete: kycCompleteProp = true,
 }: MakeOfferButtonProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -35,6 +38,8 @@ export function MakeOfferButton({
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [amountError, setAmountError] = useState("");
+  const [showKyc, setShowKyc] = useState(false);
+  const [kycDone, setKycDone] = useState(kycCompleteProp);
 
   const minOffer = listedPrice * 0.20;
 
@@ -59,12 +64,20 @@ export function MakeOfferButton({
     validateAmount(e.target.value);
   }
 
+  function handleOpenOffer() {
+    if (!isLoggedIn) { router.push("/login"); return; }
+    if (!kycDone) { setShowKyc(true); return; }
+    setOpen(true);
+  }
+
+  function handleKycComplete() {
+    setKycDone(true);
+    setShowKyc(false);
+    setOpen(true);
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!isLoggedIn) {
-      router.push("/login");
-      return;
-    }
 
     const num = parseFloat(amount);
     if (isNaN(num) || num < minOffer) {
@@ -106,16 +119,13 @@ export function MakeOfferButton({
 
   return (
     <>
+      {/* KYC gate dialog */}
+      <KycGateDialog open={showKyc} onOpenChange={setShowKyc} onComplete={handleKycComplete} />
+
       <Button
         variant="outline"
         className="w-full border-amber-400 text-amber-700 hover:bg-amber-50"
-        onClick={() => {
-          if (!isLoggedIn) {
-            router.push("/login");
-            return;
-          }
-          setOpen(true);
-        }}
+        onClick={handleOpenOffer}
       >
         <Tag className="w-4 h-4 mr-2" />
         Fai un&apos;offerta

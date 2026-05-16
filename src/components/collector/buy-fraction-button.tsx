@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { TrendingUp, AlertTriangle, CheckCircle } from "lucide-react";
 import { CONTRACT_BUYER_VERSION } from "@/lib/contracts";
+import { KycGateDialog } from "@/components/collector/kyc-gate-dialog";
 
 export function BuyFractionButton({
   fractionId,
@@ -15,6 +16,7 @@ export function BuyFractionButton({
   totalPercentage,
   isLoggedIn,
   needsTermsAcceptance = false,
+  kycComplete: kycCompleteProp = true,
 }: {
   fractionId: string;
   askingPrice: number;
@@ -22,12 +24,15 @@ export function BuyFractionButton({
   totalPercentage: number;
   isLoggedIn: boolean;
   needsTermsAcceptance?: boolean;
+  kycComplete?: boolean;
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(!needsTermsAcceptance);
   const [checks, setChecks] = useState({ c1: false, c2: false, c3: false, c4: false });
+  const [showKyc, setShowKyc] = useState(false);
+  const [kycDone, setKycDone] = useState(kycCompleteProp);
   const allChecked = Object.values(checks).every(Boolean);
   const toggle = (k: keyof typeof checks) => setChecks(p => ({ ...p, [k]: !p[k] }));
 
@@ -50,9 +55,7 @@ export function BuyFractionButton({
     }
   }
 
-  async function handleBuy() {
-    if (!isLoggedIn) { router.push("/login"); return; }
-    if (!termsAccepted) { setShowTerms(true); return; }
+  async function doBuy() {
     setLoading(true);
     try {
       const res = await fetch(`/api/collector/fractions/${fractionId}/buy`, { method: "POST" });
@@ -64,6 +67,23 @@ export function BuyFractionButton({
       toast.error(e instanceof Error ? e.message : "Errore nell'acquisto");
     } finally {
       setLoading(false);
+    }
+  }
+
+  function handleBuy() {
+    if (!isLoggedIn) { router.push("/login"); return; }
+    if (!kycDone) { setShowKyc(true); return; }
+    if (!termsAccepted) { setShowTerms(true); return; }
+    doBuy();
+  }
+
+  function handleKycComplete() {
+    setKycDone(true);
+    setShowKyc(false);
+    if (!termsAccepted) {
+      setShowTerms(true);
+    } else {
+      doBuy();
     }
   }
 
@@ -79,6 +99,9 @@ export function BuyFractionButton({
           ? "Acquisizione..."
           : `Acquisisci ${displayPct.toFixed(2)}%${isPartial ? " (parziale)" : ""} · € ${askingPrice.toFixed(2)}`}
       </Button>
+
+      {/* KYC gate dialog */}
+      <KycGateDialog open={showKyc} onOpenChange={setShowKyc} onComplete={handleKycComplete} />
 
       {/* Terms acceptance dialog */}
       <Dialog open={showTerms} onOpenChange={setShowTerms}>

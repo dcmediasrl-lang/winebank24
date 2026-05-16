@@ -9,6 +9,7 @@ import { Wine, TrendingUp, Users } from "lucide-react";
 
 export default async function MarketplacePage() {
   const session = await auth();
+
   const [allListedNfts, listedFractions] = await Promise.all([
     db.nft.findMany({
       where: { isListed: true, status: "LISTED" },
@@ -18,7 +19,7 @@ export default async function MarketplacePage() {
         owner: { select: { id: true, name: true } },
       },
       orderBy: { updatedAt: "desc" },
-    }),
+    }).catch(() => [] as any[]),
     db.nftFraction.findMany({
       where: { isListed: true },
       include: {
@@ -31,7 +32,7 @@ export default async function MarketplacePage() {
         owner: { select: { id: true, name: true, email: true } },
       },
       orderBy: { updatedAt: "desc" },
-    }).catch(() => []),
+    }).catch(() => [] as any[]),
   ]);
 
   const nfts = allListedNfts.filter((n) => !n.isFractionable);

@@ -14,6 +14,8 @@ const schema = z.object({
     (v) => (typeof v === "string" && v.trim() === "" ? undefined : v),
     z.string().url().optional()
   ),
+  isFractionable: z.boolean().optional(),
+  totalValue: z.number().positive().optional(),
 });
 
 const blockchainReady =
@@ -78,6 +80,7 @@ export async function POST(req: Request) {
       }
     }
 
+    const isFractionable = !!body.isFractionable;
     const nft = await db.nft.create({
       data: {
         tokenId,
@@ -89,12 +92,15 @@ export async function POST(req: Request) {
         name: body.name,
         imageUrl: body.imageUrl || null,
         metadataUri: tokenUri,
-        price: body.price,
+        price: isFractionable ? null : body.price,
         bottleNumber: body.bottleNumber,
         vintage: collection.vintage,
-        // Se viene inserito un prezzo lo pubblichiamo subito nel marketplace
-        isListed: !!body.price,
-        status: body.price ? "LISTED" : "MINTED",
+        isFractionable,
+        totalValue: isFractionable && body.totalValue ? body.totalValue : null,
+        availableValue: isFractionable && body.totalValue ? body.totalValue : null,
+        // Se frazionabile: sempre in listing per investimento; altrimenti usa prezzo normale
+        isListed: isFractionable ? true : !!body.price,
+        status: isFractionable ? "LISTED" : (body.price ? "LISTED" : "MINTED"),
       },
     });
 

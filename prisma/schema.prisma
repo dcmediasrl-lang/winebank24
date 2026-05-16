@@ -18,6 +18,8 @@ enum NftStatus {
   SOLD
   BURN_REQUESTED
   BURNED
+  LIQUIDATION_REQUESTED
+  LIQUIDATED
 }
 
 enum TransactionType {
@@ -51,6 +53,7 @@ model User {
   nftsOwned        Nft[]           @relation("NftOwner")
   buyTransactions  Transaction[]   @relation("Buyer")
   sellTransactions Transaction[]   @relation("Seller")
+  nftFractions     NftFraction[]
 }
 
 model Account {
@@ -144,6 +147,9 @@ model Nft {
   isListed        Boolean   @default(false)
   bottleNumber    Int
   vintage         Int?
+  isFractionable  Boolean   @default(false)
+  totalValue      Decimal?  @db.Decimal(10,2)
+  availableValue  Decimal?  @db.Decimal(10,2)
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
@@ -152,6 +158,7 @@ model Nft {
   owner        User          @relation("NftOwner", fields: [ownerId], references: [id])
   transactions Transaction[]
   burnRequest  BurnRequest?
+  fractions    NftFraction[]
 }
 
 model Transaction {
@@ -184,6 +191,21 @@ model BurnRequest {
   createdAt   DateTime  @default(now())
 
   nft Nft @relation(fields: [nftId], references: [id])
+}
+
+model NftFraction {
+  id             String   @id @default(cuid())
+  nftId          String
+  ownerId        String
+  percentage     Decimal  @db.Decimal(8,4)
+  investedAmount Decimal  @db.Decimal(10,2)
+  isListed       Boolean  @default(false)
+  askingPrice    Decimal? @db.Decimal(10,2)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  nft   Nft  @relation(fields: [nftId], references: [id])
+  owner User @relation(fields: [ownerId], references: [id])
 }
 
 model PlatformConfig {

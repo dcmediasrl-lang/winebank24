@@ -17,7 +17,7 @@ const schema = z.object({
 export async function POST(req: Request) {
   // Rate limit: max 5 registrations per IP per hour
   const ip = getClientIp(req);
-  const { allowed } = await rateLimit(rateLimitKey(ip, "register"), 5, 3600);
+  const { allowed } = await rateLimit(rateLimitKey(ip, "register"), 20, 3600);
   if (!allowed) {
     return NextResponse.json(
       { error: "Troppi tentativi. Riprova tra un'ora." },

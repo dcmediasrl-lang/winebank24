@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { HomeNav } from "@/components/shared/home-nav";
 import { AdSenseBanner } from "@/components/shared/adsense-banner";
+import { HeroSlider } from "@/components/shared/hero-slider";
 
 export default async function HomePage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
@@ -37,80 +38,89 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
       {/* NAV */}
       <HomeNav lang={lang} nav={dict.nav} />
 
-      {/* HERO */}
-      <section className="relative overflow-hidden" style={{ minHeight: "100vh", background: "var(--wine-bg)" }}>
-        {/* Background gradient orbs */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full opacity-20 blur-3xl" style={{ background: "var(--wine-gradient)" }} />
-        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 rounded-full opacity-10 blur-3xl" style={{ background: "#df071b" }} />
-
-        <div className="relative z-10 max-w-7xl mx-auto px-6 pt-32 pb-20">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Left: text */}
-            <div>
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-6 text-sm" style={{ borderColor: "var(--wine-border)", color: "var(--wine-muted)" }}>
-                <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: "var(--wine-red-2)" }} />
-                {lang === "it" ? "Piattaforma NFT per il vino italiano" : "NFT Platform for Italian Wine"}
-              </div>
-              <h1 className="text-5xl sm:text-6xl font-extrabold leading-tight mb-6">
-                {lang === "it" ? (
-                  <>Tokenizza il <span style={{ background: "var(--wine-gradient)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Grande Vino</span> Italiano</>
-                ) : (
-                  <>Tokenize <span style={{ background: "var(--wine-gradient)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Italian Fine</span> Wine</>
-                )}
-              </h1>
-              <p className="text-lg mb-10 max-w-lg" style={{ color: "var(--wine-muted)" }}>
-                {dict.home.hero_subtitle}
-              </p>
-              <div className="flex flex-wrap gap-4">
-                <Link href={`/${lang}/marketplace`} className="px-8 py-3 rounded-lg font-bold text-white transition-opacity hover:opacity-90" style={{ background: "var(--wine-gradient)" }}>
-                  {dict.home.cta_marketplace}
-                </Link>
-                <Link href={`/${lang}/register`} className="px-8 py-3 rounded-lg font-bold transition-colors" style={{ border: "1px solid rgba(255,255,255,0.2)", color: "white" }}>
-                  {dict.home.cta_register}
-                </Link>
-              </div>
-              {/* Stats */}
-              <div className="flex flex-wrap gap-8 mt-12">
-                {[
-                  { value: "12.500+", label: lang === "it" ? "NFT Bottiglie" : "NFT Bottles" },
-                  { value: "85+", label: lang === "it" ? "Cantine Partner" : "Partner Wineries" },
-                  { value: "3.200+", label: lang === "it" ? "Collezionisti" : "Collectors" },
-                ].map(({ value, label }) => (
-                  <div key={label}>
-                    <div className="text-3xl font-extrabold" style={{ background: "var(--wine-gradient)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{value}</div>
-                    <div className="text-sm mt-1" style={{ color: "var(--wine-muted)" }}>{label}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            {/* Right: hero image */}
-            <div className="relative">
-              <div className="relative rounded-2xl overflow-hidden" style={{ boxShadow: "0 8px 60px rgba(153,51,0,0.3)" }}>
-                <img
-                  src="https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=800&q=80"
-                  alt="Wine bottles"
-                  className="w-full h-auto object-cover"
-                  style={{ borderRadius: "16px", maxHeight: "500px", objectFit: "cover" }}
-                />
-                {/* Floating card */}
-                <div className="absolute bottom-6 left-6 right-6 p-4 rounded-xl backdrop-blur-md" style={{ background: "rgba(26,15,15,0.85)", border: "1px solid var(--wine-border)" }}>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-xs mb-1" style={{ color: "var(--wine-muted)" }}>{lang === "it" ? "NFT in evidenza" : "Featured NFT"}</div>
-                      <div className="font-bold">Barolo Riserva 2018</div>
-                      <div className="text-sm" style={{ color: "var(--wine-muted)" }}>Cantina Marchesi di Barolo</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-xs mb-1" style={{ color: "var(--wine-muted)" }}>{lang === "it" ? "Prezzo" : "Price"}</div>
-                      <div className="font-extrabold text-xl" style={{ background: "var(--wine-gradient)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>€ 450</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* HERO SLIDER */}
+      <HeroSlider
+        lang={lang}
+        slides={lang === "it" ? [
+          {
+            image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=1600&q=85",
+            tag: "Piattaforma NFT per il vino italiano",
+            title: "Il Grande Vino Italiano",
+            titleAccent: "diventa NFT",
+            subtitle: "Tokenizza, colleziona e investi in bottiglie di vino pregiato. Ogni NFT è un certificato digitale autentico su blockchain Polygon.",
+            cta: { label: "Esplora il Marketplace", href: `/${lang}/marketplace` },
+            ctaSecondary: { label: "Come funziona", href: `#how-it-works` },
+          },
+          {
+            image: "https://images.unsplash.com/photo-1474722883778-792e7990302f?w=1600&q=85",
+            tag: "Per i Collezionisti",
+            title: "Colleziona",
+            titleAccent: "bottiglie rare",
+            titleAfter: "ovunque nel mondo",
+            subtitle: "Acquista certificati NFT di vini esclusivi. Rivendi, regala o richiedi la consegna fisica della tua bottiglia quando vuoi.",
+            cta: { label: "Registrati come Collezionista", href: `/${lang}/register` },
+            ctaSecondary: { label: "Sfoglia i vini", href: `/${lang}/marketplace` },
+          },
+          {
+            image: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=1600&q=85",
+            tag: "Per le Cantine",
+            title: "Porta la tua cantina",
+            titleAccent: "nel futuro",
+            subtitle: "Emetti NFT delle tue migliori bottiglie. Raggiungi collezionisti in tutto il mondo e crea nuovi flussi di reddito per la tua produzione.",
+            cta: { label: "Iscriviti come Cantina", href: `/${lang}/register` },
+            ctaSecondary: { label: "Scopri i vantaggi", href: `#features` },
+          },
+          {
+            image: "https://images.unsplash.com/photo-1516594915697-87eb3b1c14ea?w=1600&q=85",
+            tag: "Blockchain & Sicurezza",
+            title: "Ogni bottiglia,",
+            titleAccent: "certificata",
+            titleAfter: "e tracciata",
+            subtitle: "Proprietà verificabile, trasferimenti tracciati. La tecnologia blockchain garantisce l'autenticità di ogni NFT e la storia completa della bottiglia.",
+            cta: { label: "Inizia ora", href: `/${lang}/register` },
+            ctaSecondary: { label: "Leggi di più", href: `/${lang}/blog` },
+          },
+        ] : [
+          {
+            image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=1600&q=85",
+            tag: "NFT Platform for Italian Wine",
+            title: "Italian Fine Wine",
+            titleAccent: "becomes NFT",
+            subtitle: "Tokenize, collect and invest in premium wine bottles. Every NFT is an authentic digital certificate on the Polygon blockchain.",
+            cta: { label: "Explore Marketplace", href: `/${lang}/marketplace` },
+            ctaSecondary: { label: "How it works", href: `#how-it-works` },
+          },
+          {
+            image: "https://images.unsplash.com/photo-1474722883778-792e7990302f?w=1600&q=85",
+            tag: "For Collectors",
+            title: "Collect",
+            titleAccent: "rare bottles",
+            titleAfter: "from anywhere",
+            subtitle: "Buy NFT certificates of exclusive wines. Resell, gift or request physical delivery of your bottle whenever you want.",
+            cta: { label: "Register as Collector", href: `/${lang}/register` },
+            ctaSecondary: { label: "Browse wines", href: `/${lang}/marketplace` },
+          },
+          {
+            image: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=1600&q=85",
+            tag: "For Wineries",
+            title: "Bring your winery",
+            titleAccent: "into the future",
+            subtitle: "Issue NFTs of your finest bottles. Reach collectors worldwide and create new revenue streams for your production.",
+            cta: { label: "Join as Winery", href: `/${lang}/register` },
+            ctaSecondary: { label: "Discover benefits", href: `#features` },
+          },
+          {
+            image: "https://images.unsplash.com/photo-1516594915697-87eb3b1c14ea?w=1600&q=85",
+            tag: "Blockchain & Security",
+            title: "Every bottle,",
+            titleAccent: "certified",
+            titleAfter: "and traced",
+            subtitle: "Verifiable ownership, tracked transfers. Blockchain technology guarantees the authenticity of every NFT and the complete history of the bottle.",
+            cta: { label: "Get started", href: `/${lang}/register` },
+            ctaSecondary: { label: "Read more", href: `/${lang}/blog` },
+          },
+        ]}
+      />
 
       {/* HOW IT WORKS */}
       <section className="py-20 px-6" style={{ background: "var(--wine-card)" }}>

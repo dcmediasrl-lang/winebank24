@@ -16,7 +16,7 @@ type Dict = {
 export function Footer({ dict, lang }: { dict: Dict; lang: string }) {
   const en = lang === "en";
   return (
-    <footer className="mt-auto text-white/70" style={{ background: "var(--ev-dark)" }}>
+    <footer className="mt-auto text-white/70" style={{ background: "var(--wine-card)" }}>
 
       {/* Main footer */}
       <div className="max-w-7xl mx-auto px-6 py-12">
@@ -33,11 +33,11 @@ export function Footer({ dict, lang }: { dict: Dict; lang: string }) {
             {/* Social */}
             <div className="flex items-center gap-4 pt-1">
               <a href="https://instagram.com/winebank24" target="_blank" rel="noopener noreferrer"
-                className="transition-colors text-sm hover:text-white" style={{ color: "var(--ev-coral)" }}>
+                className="transition-colors text-sm hover:text-white" style={{ color: "#df071b" }}>
                 Instagram
               </a>
               <a href="https://facebook.com/winebank24" target="_blank" rel="noopener noreferrer"
-                className="transition-colors text-sm hover:text-white" style={{ color: "var(--ev-coral)" }}>
+                className="transition-colors text-sm hover:text-white" style={{ color: "#df071b" }}>
                 Facebook
               </a>
             </div>
@@ -74,7 +74,7 @@ export function Footer({ dict, lang }: { dict: Dict; lang: string }) {
             </h4>
             <ul className="space-y-2 text-sm">
               <li className="flex items-center gap-2">
-                <Mail className="w-4 h-4 shrink-0" style={{ color: "var(--ev-coral)" }} />
+                <Mail className="w-4 h-4 shrink-0" style={{ color: "#df071b" }} />
                 <a href="mailto:info@winebank24.eu" className="text-white/70 hover:text-white transition-colors">
                   info@winebank24.eu
                 </a>
@@ -89,7 +89,7 @@ export function Footer({ dict, lang }: { dict: Dict; lang: string }) {
       </div>
 
       {/* Disclaimer + copyright */}
-      <div className="border-t border-white/10">
+      <div style={{ borderTop: "1px solid var(--wine-border)", background: "var(--wine-bg)" }}>
         <div className="max-w-7xl mx-auto px-6 py-5 space-y-2">
           <p className="text-xs text-white/40 leading-relaxed">
             ⚠️ {dict.footer.disclaimer}{" "}

@@ -55,6 +55,17 @@
   --ev-heading: #484d55;
   --ev-body: #919499;
   --ev-gray: #f3f3f3;
+  --wine-bg: #0d0705;
+  --wine-card: #1a0f0f;
+  --wine-card-hover: #231515;
+  --wine-red: #993300;
+  --wine-red-2: #df071b;
+  --wine-gradient: linear-gradient(135deg, #993300, #df071b);
+  --wine-gradient-45: linear-gradient(45deg, #993300, #df071b);
+  --wine-border: rgba(255, 255, 255, 0.07);
+  --wine-text: #ffffff;
+  --wine-muted: #999999;
+  --wine-header: rgba(13, 7, 5, 0.95);
 }
 
 :root {

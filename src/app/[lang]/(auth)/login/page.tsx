@@ -41,7 +41,7 @@ function LoginForm({ lang }: { lang: string }) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4" style={{ background: "var(--ev-dark)" }}>
+    <div className="min-h-screen flex items-center justify-center px-4" style={{ background: "var(--wine-bg)" }}>
       <div className="w-full max-w-sm">
         <div className="flex items-center justify-center gap-2 mb-8">
           <Wine className="w-8 h-8 text-[#e97770]" />
@@ -68,7 +68,7 @@ function LoginForm({ lang }: { lang: string }) {
           </div>
         )}
 
-        <Card className="border-t-4 border-[#e97770]">
+        <Card className="border-t-4" style={{ background: "var(--wine-card)", borderColor: "var(--wine-border)", borderTopColor: "#993300", borderTopWidth: "4px" }}>
           <CardHeader>
             <CardTitle className="text-center">{lang === "en" ? "Sign in" : "Accedi"}</CardTitle>
           </CardHeader>
@@ -112,7 +112,7 @@ function LoginForm({ lang }: { lang: string }) {
                 <Label>Password</Label>
                 <Input type="password" required value={password} onChange={e => setPassword(e.target.value)} />
               </div>
-              <Button type="submit" disabled={loading} className="w-full bg-[#e97770] hover:bg-[#f98780] text-white font-semibold">
+              <Button type="submit" disabled={loading} className="w-full text-white font-semibold" style={{ background: "var(--wine-gradient)" }}>
                 {loading
                   ? (lang === "en" ? "Signing in..." : "Accesso in corso...")
                   : (lang === "en" ? "Sign in" : "Accedi")}

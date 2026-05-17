@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { Plus, Gem, AlertTriangle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { BottleImageUploader, type UploadedImage } from "./bottle-image-uploader";
+import { WineDenominationPicker } from "@/components/shared/wine-denomination-picker";
 
 const GRAPES = [
   "Nebbiolo", "Sangiovese", "Barolo", "Barbaresco", "Brunello",
@@ -31,6 +32,8 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
   const [loading, setLoading] = useState(false);
   const [isFractionable, setIsFractionable] = useState(false);
   const [images, setImages] = useState<UploadedImage[]>([]);
+  const [denominationId, setDenominationId] = useState<string | undefined>(undefined);
+  const [denominationName, setDenominationName] = useState<string>("");
   const [form, setForm] = useState({
     name: "",
     description: "",
@@ -50,6 +53,8 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
     setForm({ name: "", description: "", vintage: new Date().getFullYear().toString(), grape: "", region: "", bottleNumber: "1", price: "", totalValue: "" });
     setImages([]);
     setIsFractionable(false);
+    setDenominationId(undefined);
+    setDenominationName("");
   }
 
   async function submit(e: React.FormEvent) {
@@ -89,6 +94,7 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
           imageGallery: imageUrls,
           isFractionable,
           totalValue: isFractionable && form.totalValue ? parseFloat(form.totalValue) : undefined,
+          denominationId: denominationId || undefined,
         }),
       });
       const data = await res.json();
@@ -144,6 +150,33 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
                 onChange={e => set("name", e.target.value)}
                 placeholder="es. Barolo Riserva DOCG"
               />
+            </div>
+
+            <div className="space-y-1">
+              <Label>Denominazione <span className="text-stone-400 font-normal">(opzionale — cerca DOC/DOCG)</span></Label>
+              <WineDenominationPicker
+                value={denominationName}
+                onSelect={(d) => {
+                  setDenominationId(d.id);
+                  setDenominationName(d.name);
+                  // Pre-fill region if not set
+                  if (!form.region) set("region", d.region);
+                  // Pre-fill grape if not set and exactly one grape
+                  if (!form.grape && d.grapes.length === 1) set("grape", d.grapes[0]);
+                }}
+              />
+              {denominationId && (
+                <p className="text-xs text-amber-600">
+                  Collegato a: {denominationName}
+                  <button
+                    type="button"
+                    onClick={() => { setDenominationId(undefined); setDenominationName(""); }}
+                    className="ml-2 text-stone-400 hover:text-red-500"
+                  >
+                    ✕ rimuovi
+                  </button>
+                </p>
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-3">

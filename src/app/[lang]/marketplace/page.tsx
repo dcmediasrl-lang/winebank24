@@ -10,14 +10,17 @@ import { NftImageGallery } from "@/components/shared/nft-image-gallery";
 import { AdSenseBanner } from "@/components/shared/adsense-banner";
 import { auth } from "@/lib/auth";
 import Link from "next/link";
-import { Wine, TrendingUp, Users } from "lucide-react";
+import { Wine, TrendingUp, Users, Filter } from "lucide-react";
 
 export default async function MarketplacePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ lang: string }>;
+  searchParams: Promise<{ region?: string; type?: string; q?: string }>;
 }) {
   const { lang } = await params;
+  const { region: filterRegion, type: filterType } = await searchParams;
   const session = await auth();
 
   // Check whether the logged-in user has already accepted buyer terms and completed KYC
@@ -45,11 +48,23 @@ export default async function MarketplacePage({
 
   const [allListedNfts, listedFractions] = await Promise.all([
     db.nft.findMany({
-      where: { isListed: true, status: "LISTED" },
+      where: {
+        isListed: true,
+        status: "LISTED",
+        ...(filterRegion || filterType
+          ? {
+              denomination: {
+                ...(filterRegion ? { region: filterRegion } : {}),
+                ...(filterType ? { type: filterType } : {}),
+              },
+            }
+          : {}),
+      },
       include: {
         cantina: { select: { id: true, name: true } },
         collection: { select: { name: true, vintage: true, grape: true } },
         owner: { select: { id: true, name: true } },
+        denomination: { select: { name: true, type: true, region: true } },
       },
       orderBy: { updatedAt: "desc" },
     }).catch(() => [] as any[]),
@@ -73,15 +88,69 @@ export default async function MarketplacePage({
   // Exclude fractions owned by the current user
   const availableFractions = listedFractions.filter((f) => f.ownerId !== session?.user.id);
 
+  // Unique regions from currently listed NFTs (with denomination data)
+  const uniqueRegions = Array.from(
+    new Set(allListedNfts.map((n) => n.denomination?.region).filter(Boolean) as string[])
+  ).sort();
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-10" style={{ color: "white" }}>
-        <div className="flex items-center gap-3 mb-8">
+        <div className="flex items-center gap-3 mb-6">
           <Wine className="w-8 h-8 text-[#df071b]" />
           <div>
             <h1 className="text-3xl font-bold text-white">Marketplace</h1>
             <p className="text-[var(--wine-muted)]">Acquista NFT di bottiglie di vino pregiate</p>
           </div>
         </div>
+
+        {/* Filter bar */}
+        {(uniqueRegions.length > 0 || filterRegion || filterType) && (
+          <div className="flex flex-wrap items-center gap-2 mb-8 p-3 rounded-lg bg-[var(--wine-card)] border border-[var(--wine-border)]">
+            <Filter className="w-4 h-4 text-white/40 shrink-0" />
+            <span className="text-xs text-white/40 mr-1">Filtri:</span>
+
+            {/* Type filters */}
+            {["DOCG", "DOC"].map((t) => (
+              <Link
+                key={t}
+                href={filterType === t ? `/${lang}/marketplace` : `/${lang}/marketplace?type=${t}`}
+                className={`text-xs px-3 py-1 rounded-full border font-medium transition-colors ${
+                  filterType === t
+                    ? t === "DOCG"
+                      ? "bg-red-700 border-red-700 text-white"
+                      : "bg-orange-600 border-orange-600 text-white"
+                    : "border-white/20 text-white/60 hover:border-white/40"
+                }`}
+              >
+                {t}
+              </Link>
+            ))}
+
+            {/* Region filters */}
+            {uniqueRegions.map((r) => (
+              <Link
+                key={r}
+                href={filterRegion === r ? `/${lang}/marketplace` : `/${lang}/marketplace?region=${encodeURIComponent(r)}`}
+                className={`text-xs px-3 py-1 rounded-full border transition-colors ${
+                  filterRegion === r
+                    ? "bg-amber-500 border-amber-500 text-stone-950 font-medium"
+                    : "border-white/20 text-white/60 hover:border-white/40"
+                }`}
+              >
+                {r}
+              </Link>
+            ))}
+
+            {(filterRegion || filterType) && (
+              <Link
+                href={`/${lang}/marketplace`}
+                className="text-xs text-white/40 hover:text-white ml-auto"
+              >
+                Rimuovi filtri ✕
+              </Link>
+            )}
+          </div>
+        )}
 
         {/* Fractionable NFTs — investment section */}
         {fractionableNfts.length > 0 && (
@@ -291,7 +360,15 @@ export default async function MarketplacePage({
                     <div className="flex flex-wrap gap-1">
                       {nft.collection.vintage && <Badge variant="outline" className="text-xs">{nft.collection.vintage}</Badge>}
                       {nft.collection.grape && <Badge variant="secondary" className="text-xs">{nft.collection.grape}</Badge>}
+                      {nft.denomination && (
+                        <Badge className={`text-xs ${nft.denomination.type === "DOCG" ? "bg-red-700" : nft.denomination.type === "DOC" ? "bg-orange-600" : "bg-gray-600"} text-white`}>
+                          {nft.denomination.type}
+                        </Badge>
+                      )}
                     </div>
+                    {nft.denomination && (
+                      <p className="text-xs text-white/50">{nft.denomination.name} · {nft.denomination.region}</p>
+                    )}
                     <div className="flex items-center justify-between">
                       <span className="text-lg font-bold text-white">€ {nft.price?.toFixed(2)}</span>
                       <span className="text-xs text-white/40">Bottiglia #{nft.bottleNumber}</span>

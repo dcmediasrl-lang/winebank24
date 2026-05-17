@@ -192,6 +192,9 @@ model Nft {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
+  denominationId String?
+  denomination   WineDenomination? @relation(fields: [denominationId], references: [id])
+
   collection   Collection    @relation(fields: [collectionId], references: [id])
   cantina      Cantina       @relation(fields: [cantinaId], references: [id])
   owner        User          @relation("NftOwner", fields: [ownerId], references: [id])
@@ -317,6 +320,23 @@ model WishlistItem {
   updatedAt DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model WineDenomination {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  type      String   // "DOCG" | "DOC" | "IGT"
+  region    String   // "Piemonte", "Toscana", etc.
+  grapes    String[] // ["Nebbiolo", "Sangiovese"]
+  wineTypes String[] // ["ROSSO", "BIANCO", "ROSATO", "SPUMANTE", "PASSITO"]
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  nfts Nft[]
+
+  @@index([region])
+  @@index([type])
 }
 
 model FavoriteNft {

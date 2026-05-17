@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import {
   LayoutDashboard, Users, Gem, ShoppingCart, BarChart3,
   Settings, LogOut, Wine, Package, FileText, Shield, Tag,
-  Menu, X,
+  Menu, X, Heart, BookmarkPlus,
 } from "lucide-react";
 
 type Role = "ADMIN" | "CANTINA" | "COLLECTOR";
@@ -63,6 +63,7 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
     { href: p("/cantina/nfts"), label: dict.my_nfts, icon: Gem },
     { href: p("/cantina/offerte"), label: dict.offerte, icon: Tag },
     { href: p("/cantina/reports"), label: dict.reports, icon: BarChart3 },
+    { href: p("/cantina/wishlist"), label: "Wishlist clienti", icon: BookmarkPlus },
   ];
 
   const collectorLinks = [
@@ -71,6 +72,8 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
     { href: p("/marketplace"), label: dict.marketplace, icon: ShoppingCart },
     { href: p("/collector/offerte"), label: dict.offerte, icon: Tag },
     { href: p("/collector/reports"), label: dict.history, icon: BarChart3 },
+    { href: p("/collector/preferiti"), label: "Preferiti", icon: Heart },
+    { href: p("/collector/wishlist"), label: "Wishlist", icon: BookmarkPlus },
     { href: p("/collector/settings"), label: dict.security, icon: Shield },
   ];
 

@@ -5,12 +5,19 @@ import { BuyButton } from "@/components/collector/buy-button";
 import { InvestFractionDialog } from "@/components/collector/invest-fraction-dialog";
 import { BuyFractionButton } from "@/components/collector/buy-fraction-button";
 import { MakeOfferButton } from "@/components/collector/make-offer-button";
+import { FavoriteButton } from "@/components/collector/favorite-button";
 import { NftImageGallery } from "@/components/shared/nft-image-gallery";
 import { AdSenseBanner } from "@/components/shared/adsense-banner";
 import { auth } from "@/lib/auth";
+import Link from "next/link";
 import { Wine, TrendingUp, Users } from "lucide-react";
 
-export default async function MarketplacePage() {
+export default async function MarketplacePage({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}) {
+  const { lang } = await params;
   const session = await auth();
 
   // Check whether the logged-in user has already accepted buyer terms and completed KYC
@@ -29,11 +36,18 @@ export default async function MarketplacePage() {
     kycComplete = !!(user?.firstName && user?.lastName && user?.birthDate && user?.country && user?.fiscalCode);
   }
 
+  const userFavoriteIds = session?.user?.id
+    ? await db.favoriteNft
+        .findMany({ where: { userId: session.user.id }, select: { nftId: true } })
+        .then((fs) => new Set(fs.map((f) => f.nftId)))
+        .catch(() => new Set<string>())
+    : new Set<string>();
+
   const [allListedNfts, listedFractions] = await Promise.all([
     db.nft.findMany({
       where: { isListed: true, status: "LISTED" },
       include: {
-        cantina: { select: { name: true } },
+        cantina: { select: { id: true, name: true } },
         collection: { select: { name: true, vintage: true, grape: true } },
         owner: { select: { id: true, name: true } },
       },
@@ -92,10 +106,20 @@ export default async function MarketplacePage() {
                         className="h-48"
                       />
                       <Badge className="absolute top-2 right-2 bg-amber-500 text-stone-950 text-xs z-10">Co-proprietà</Badge>
+                      {session && (
+                        <div className="absolute top-2 left-2 z-10">
+                          <FavoriteButton nftId={nft.id} initialFavorited={userFavoriteIds.has(nft.id)} />
+                        </div>
+                      )}
                     </div>
                     <CardHeader className="pb-2 pt-4">
                       <CardTitle className="text-sm font-semibold leading-tight">{nft.name}</CardTitle>
-                      <p className="text-xs text-stone-500">{nft.cantina.name}</p>
+                      <p className="text-xs text-stone-500">
+                        {nft.cantina.name}{" "}
+                        <Link href={`/${lang}/cantine/${nft.cantina.id}`} className="text-amber-600 hover:underline">
+                          Vedi cantina
+                        </Link>
+                      </p>
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <div className="flex flex-wrap gap-1">
@@ -241,15 +265,27 @@ export default async function MarketplacePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {nfts.map((nft) => (
                 <Card key={nft.id} className="overflow-hidden hover:shadow-lg transition-shadow group">
-                  <NftImageGallery
-                    images={nft.imageGallery ?? []}
-                    fallbackUrl={nft.imageUrl ?? undefined}
-                    alt={nft.name}
-                    className="h-48"
-                  />
+                  <div className="relative">
+                    <NftImageGallery
+                      images={nft.imageGallery ?? []}
+                      fallbackUrl={nft.imageUrl ?? undefined}
+                      alt={nft.name}
+                      className="h-48"
+                    />
+                    {session && (
+                      <div className="absolute top-2 left-2 z-10">
+                        <FavoriteButton nftId={nft.id} initialFavorited={userFavoriteIds.has(nft.id)} />
+                      </div>
+                    )}
+                  </div>
                   <CardHeader className="pb-2 pt-4">
                     <CardTitle className="text-sm font-semibold leading-tight">{nft.name}</CardTitle>
-                    <p className="text-xs text-stone-500">{nft.cantina.name}</p>
+                    <p className="text-xs text-stone-500">
+                      {nft.cantina.name}{" "}
+                      <Link href={`/${lang}/cantine/${nft.cantina.id}`} className="text-amber-600 hover:underline">
+                        Vedi cantina
+                      </Link>
+                    </p>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="flex flex-wrap gap-1">

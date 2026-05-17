@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { SecuritySettings } from "@/components/collector/security-settings";
+import { ProfileSettings } from "@/components/collector/profile-settings";
 
 export default async function SettingsPage() {
   const session = await auth();
@@ -17,6 +18,8 @@ export default async function SettingsPage() {
       kycVerifiedAt: true,
       emailVerified: true,
       twoFactorEnabled: true,
+      username: true,
+      avatarUrl: true,
     },
   });
 
@@ -26,6 +29,7 @@ export default async function SettingsPage() {
         <h1 className="text-2xl font-bold text-stone-900">Impostazioni account</h1>
         <p className="text-stone-500 text-sm mt-1">Gestisci la sicurezza e i tuoi dati personali</p>
       </div>
+      <ProfileSettings user={{ username: user?.username ?? null, avatarUrl: user?.avatarUrl ?? null }} />
       <SecuritySettings user={user!} />
     </div>
   );

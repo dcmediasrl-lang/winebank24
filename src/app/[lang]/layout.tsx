@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { hasLocale, getDictionary } from "./dictionaries";
 import { Footer } from "@/components/shared/footer";
+import { CookieBanner } from "@/components/shared/cookie-banner";
 import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
@@ -28,6 +29,7 @@ export default async function LocaleLayout({
     <>
       {children}
       <Footer dict={dict} lang={lang} />
+      <CookieBanner lang={lang} />
       <Toaster richColors position="top-right" />
     </>
   );

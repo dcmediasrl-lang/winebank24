@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import {
   LayoutDashboard, Users, Gem, ShoppingCart, BarChart3,
   Settings, LogOut, Wine, Package, FileText, Shield, Tag,
-  Menu, X, Heart, BookmarkPlus, Database,
+  Menu, X, Heart, BookmarkPlus, Database, Home,
 } from "lucide-react";
 
 type Role = "ADMIN" | "CANTINA" | "COLLECTOR";
@@ -48,7 +48,10 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
   const p = (path: string) => `/${lang}${path}`;
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  const homeLink = { href: `/${lang}`, label: "Homepage", icon: Home };
+
   const adminLinks = [
+    homeLink,
     { href: p("/admin"), label: dict.dashboard, icon: LayoutDashboard },
     { href: p("/admin/users"), label: dict.users, icon: Users },
     { href: p("/admin/cantine"), label: dict.wineries, icon: Wine },
@@ -60,6 +63,7 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
   ];
 
   const cantinaLinks = [
+    homeLink,
     { href: p("/cantina"), label: dict.dashboard, icon: LayoutDashboard },
     { href: p("/cantina/nfts"), label: dict.my_nfts, icon: Gem },
     { href: p("/cantina/offerte"), label: dict.offerte, icon: Tag },
@@ -68,6 +72,7 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
   ];
 
   const collectorLinks = [
+    homeLink,
     { href: p("/collector"), label: dict.dashboard, icon: LayoutDashboard },
     { href: p("/collector/portfolio"), label: dict.my_collection, icon: Package },
     { href: p("/marketplace"), label: dict.marketplace, icon: ShoppingCart },

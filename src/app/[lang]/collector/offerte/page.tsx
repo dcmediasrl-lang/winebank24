@@ -11,10 +11,10 @@ type OfferStatus = "PENDING" | "ACCEPTED" | "REJECTED" | "WITHDRAWN";
 
 function statusBadge(status: string) {
   const map: Record<string, { label: string; className: string }> = {
-    PENDING: { label: "In attesa", className: "bg-amber-100 text-amber-800" },
-    ACCEPTED: { label: "Accettata", className: "bg-green-100 text-green-800" },
-    REJECTED: { label: "Rifiutata", className: "bg-red-100 text-red-800" },
-    WITHDRAWN: { label: "Ritirata", className: "bg-stone-100 text-stone-600" },
+    PENDING: { label: "In attesa", className: "bg-yellow-900/40 text-yellow-400" },
+    ACCEPTED: { label: "Accettata", className: "bg-green-900/40 text-green-400" },
+    REJECTED: { label: "Rifiutata", className: "bg-red-900/40 text-red-400" },
+    WITHDRAWN: { label: "Ritirata", className: "bg-white/10 text-[var(--wine-muted)]" },
   };
   const { label, className } = map[status] ?? map.PENDING;
   return <Badge className={className}>{label}</Badge>;
@@ -89,24 +89,24 @@ export default async function OffertePage({
   return (
     <div className="space-y-10">
       <div className="flex items-center gap-3">
-        <Tag className="w-6 h-6 text-amber-600" />
-        <h1 className="text-2xl font-bold text-stone-900">Offerte</h1>
+        <Tag className="w-6 h-6 text-[#df071b]" />
+        <h1 className="text-2xl font-bold text-white">Offerte</h1>
       </div>
 
       {/* OFFERTE RICEVUTE */}
       <section>
         <div className="flex items-center gap-2 mb-4">
-          <Inbox className="w-5 h-5 text-stone-600" />
-          <h2 className="text-xl font-semibold text-stone-800">Offerte ricevute</h2>
+          <Inbox className="w-5 h-5 text-[var(--wine-muted)]" />
+          <h2 className="text-xl font-semibold text-white">Offerte ricevute</h2>
           {pendingReceived.length > 0 && (
-            <Badge className="bg-amber-500 text-stone-950 text-xs">
+            <Badge className="bg-[#993300] text-white text-xs">
               {pendingReceived.length}
             </Badge>
           )}
         </div>
 
         {pendingReceived.length === 0 && pastReceived.length === 0 ? (
-          <div className="text-center py-12 text-stone-400 bg-stone-50 rounded-lg border border-stone-200">
+          <div className="text-center py-12 text-[var(--wine-muted)] bg-[var(--wine-card)] rounded-lg border border-[var(--wine-border)]">
             <p className="text-base">Nessuna offerta ricevuta</p>
           </div>
         ) : (
@@ -125,32 +125,32 @@ export default async function OffertePage({
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-2 text-sm">
-                    <div className="grid grid-cols-2 gap-2 bg-stone-50 rounded-md p-3">
+                    <div className="grid grid-cols-2 gap-2 bg-[var(--wine-card)] rounded-md p-3">
                       <div>
-                        <span className="text-stone-500 text-xs">Da:</span>
+                        <span className="text-[var(--wine-muted)] text-xs">Da:</span>
                         <p className="font-medium">
                           {offer.buyer?.name || offer.buyer?.email || "—"}
                         </p>
                       </div>
                       <div>
-                        <span className="text-stone-500 text-xs">Offerta:</span>
-                        <p className="font-bold text-green-700">€ {offer.amount.toFixed(2)}</p>
+                        <span className="text-[var(--wine-muted)] text-xs">Offerta:</span>
+                        <p className="font-bold text-green-400">€ {offer.amount.toFixed(2)}</p>
                       </div>
                       <div>
-                        <span className="text-stone-500 text-xs">Prezzo richiesto:</span>
+                        <span className="text-[var(--wine-muted)] text-xs">Prezzo richiesto:</span>
                         <p className="font-medium">€ {price.toFixed(2)}</p>
                       </div>
                       <div>
-                        <span className="text-stone-500 text-xs">% del prezzo:</span>
+                        <span className="text-[var(--wine-muted)] text-xs">% del prezzo:</span>
                         <p className="font-medium">{pct}%</p>
                       </div>
                     </div>
                     {offer.message && (
-                      <p className="text-stone-600 italic text-xs bg-stone-50 rounded p-2">
+                      <p className="text-white/70 italic text-xs bg-[var(--wine-card)] rounded p-2">
                         &ldquo;{offer.message}&rdquo;
                       </p>
                     )}
-                    <p className="text-xs text-stone-400">{formatDate(offer.createdAt)}</p>
+                    <p className="text-xs text-white/70">{formatDate(offer.createdAt)}</p>
                     <OfferActions offerId={offer.id} mode="seller" />
                   </CardContent>
                 </Card>
@@ -160,7 +160,7 @@ export default async function OffertePage({
             {pastReceived.map((offer) => {
               const price = getListedPrice(offer.nft, offer.fraction);
               return (
-                <Card key={offer.id} className="opacity-60 border-stone-200">
+                <Card key={offer.id} className="opacity-60 border-[var(--wine-border)]">
                   <CardHeader className="pb-2 pt-4">
                     <div className="flex items-start justify-between">
                       <CardTitle className="text-sm font-semibold">
@@ -169,7 +169,7 @@ export default async function OffertePage({
                       {statusBadge(offer.status)}
                     </div>
                   </CardHeader>
-                  <CardContent className="text-sm text-stone-500 space-y-1">
+                  <CardContent className="text-sm text-[var(--wine-muted)] space-y-1">
                     <p>
                       Da: {offer.buyer?.name || offer.buyer?.email || "—"} &middot;{" "}
                       <span className="font-medium">€ {offer.amount.toFixed(2)}</span>
@@ -191,17 +191,17 @@ export default async function OffertePage({
       {/* OFFERTE INVIATE */}
       <section>
         <div className="flex items-center gap-2 mb-4">
-          <Send className="w-5 h-5 text-stone-600" />
-          <h2 className="text-xl font-semibold text-stone-800">Offerte inviate</h2>
+          <Send className="w-5 h-5 text-[var(--wine-muted)]" />
+          <h2 className="text-xl font-semibold text-white">Offerte inviate</h2>
           {pendingSent.length > 0 && (
-            <Badge className="bg-amber-500 text-stone-950 text-xs">
+            <Badge className="bg-[#993300] text-white text-xs">
               {pendingSent.length}
             </Badge>
           )}
         </div>
 
         {pendingSent.length === 0 && pastSent.length === 0 ? (
-          <div className="text-center py-12 text-stone-400 bg-stone-50 rounded-lg border border-stone-200">
+          <div className="text-center py-12 text-[var(--wine-muted)] bg-[var(--wine-card)] rounded-lg border border-[var(--wine-border)]">
             <p className="text-base">Nessuna offerta inviata</p>
           </div>
         ) : (
@@ -219,28 +219,28 @@ export default async function OffertePage({
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-2 text-sm">
-                    <div className="grid grid-cols-2 gap-2 bg-stone-50 rounded-md p-3">
+                    <div className="grid grid-cols-2 gap-2 bg-[var(--wine-card)] rounded-md p-3">
                       <div>
-                        <span className="text-stone-500 text-xs">Venditore:</span>
+                        <span className="text-[var(--wine-muted)] text-xs">Venditore:</span>
                         <p className="font-medium">
                           {offer.seller?.name || offer.seller?.email || "—"}
                         </p>
                       </div>
                       <div>
-                        <span className="text-stone-500 text-xs">La tua offerta:</span>
-                        <p className="font-bold text-amber-700">€ {offer.amount.toFixed(2)}</p>
+                        <span className="text-[var(--wine-muted)] text-xs">La tua offerta:</span>
+                        <p className="font-bold text-[#df071b]">€ {offer.amount.toFixed(2)}</p>
                       </div>
                       <div>
-                        <span className="text-stone-500 text-xs">Prezzo richiesto:</span>
+                        <span className="text-[var(--wine-muted)] text-xs">Prezzo richiesto:</span>
                         <p className="font-medium">€ {price.toFixed(2)}</p>
                       </div>
                     </div>
                     {offer.message && (
-                      <p className="text-stone-600 italic text-xs bg-stone-50 rounded p-2">
+                      <p className="text-white/70 italic text-xs bg-[var(--wine-card)] rounded p-2">
                         &ldquo;{offer.message}&rdquo;
                       </p>
                     )}
-                    <p className="text-xs text-stone-400">{formatDate(offer.createdAt)}</p>
+                    <p className="text-xs text-white/70">{formatDate(offer.createdAt)}</p>
                     <OfferActions offerId={offer.id} mode="buyer" />
                   </CardContent>
                 </Card>
@@ -250,7 +250,7 @@ export default async function OffertePage({
             {pastSent.map((offer) => {
               const price = getListedPrice(offer.nft, offer.fraction);
               return (
-                <Card key={offer.id} className="opacity-60 border-stone-200">
+                <Card key={offer.id} className="opacity-60 border-[var(--wine-border)]">
                   <CardHeader className="pb-2 pt-4">
                     <div className="flex items-start justify-between">
                       <CardTitle className="text-sm font-semibold">
@@ -259,7 +259,7 @@ export default async function OffertePage({
                       {statusBadge(offer.status)}
                     </div>
                   </CardHeader>
-                  <CardContent className="text-sm text-stone-500 space-y-1">
+                  <CardContent className="text-sm text-[var(--wine-muted)] space-y-1">
                     <p>
                       A: {offer.seller?.name || offer.seller?.email || "—"} &middot;{" "}
                       <span className="font-medium">€ {offer.amount.toFixed(2)}</span>

@@ -15,17 +15,17 @@ export default async function BlogPage({ params }: { params: Promise<{ lang: str
   }).catch(() => []);
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen bg-[var(--wine-bg)]">
       {/* Header */}
-      <header className="bg-stone-950 text-white px-8 py-5 flex items-center justify-between">
+      <header className="bg-[var(--wine-card)] text-white px-8 py-5 flex items-center justify-between">
         <Link href={`/${lang}`} className="flex items-center gap-2">
           <Wine className="w-6 h-6 text-amber-400" />
           <span className="font-bold text-lg">Wine Bank 24</span>
         </Link>
         <div className="flex gap-4 text-sm">
-          <Link href={`/${lang}/marketplace`} className="text-stone-300 hover:text-white">{dict.nav.marketplace}</Link>
-          <Link href={`/${lang}/login`} className="text-stone-300 hover:text-white">{dict.nav.login}</Link>
-          <Link href={lang === "en" ? "/it/blog" : "/en/blog"} className="text-stone-500 hover:text-amber-400">
+          <Link href={`/${lang}/marketplace`} className="text-white/70 hover:text-white">{dict.nav.marketplace}</Link>
+          <Link href={`/${lang}/login`} className="text-white/70 hover:text-white">{dict.nav.login}</Link>
+          <Link href={lang === "en" ? "/it/blog" : "/en/blog"} className="text-[var(--wine-muted)] hover:text-[#df071b]">
             {lang === "en" ? "🇮🇹 IT" : "🇬🇧 EN"}
           </Link>
         </div>
@@ -33,16 +33,16 @@ export default async function BlogPage({ params }: { params: Promise<{ lang: str
 
       <div className="max-w-5xl mx-auto px-6 py-16">
         <div className="mb-12">
-          <h1 className="text-4xl font-bold text-stone-900 mb-3">{dict.blog.title}</h1>
-          <p className="text-stone-500 text-lg">{dict.blog.subtitle}</p>
+          <h1 className="text-4xl font-bold text-white mb-3">{dict.blog.title}</h1>
+          <p className="text-[var(--wine-muted)] text-lg">{dict.blog.subtitle}</p>
         </div>
 
         {posts.length === 0 ? (
-          <p className="text-stone-400">{dict.blog.no_posts}</p>
+          <p className="text-white/40">{dict.blog.no_posts}</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {posts.map(post => (
-              <Link key={post.slug} href={`/${lang}/blog/${post.slug}`} className="group block bg-white rounded-xl border border-stone-200 overflow-hidden hover:shadow-md transition-shadow">
+              <Link key={post.slug} href={`/${lang}/blog/${post.slug}`} className="group block bg-[var(--wine-card)] rounded-xl border border-[var(--wine-border)] overflow-hidden hover:shadow-md transition-shadow hover:bg-[var(--wine-card-hover)]">
                 {post.coverImage && (
                   <div className="h-48 overflow-hidden">
                     <img src={post.coverImage} alt={lang === "en" ? post.titleEn : post.titleIt} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
@@ -52,15 +52,15 @@ export default async function BlogPage({ params }: { params: Promise<{ lang: str
                   {post.category && (
                     <span className="text-xs text-amber-600 font-semibold uppercase tracking-wide">{post.category}</span>
                   )}
-                  <h2 className="font-bold text-stone-900 mt-1 mb-2 line-clamp-2 group-hover:text-amber-600 transition-colors">
+                  <h2 className="font-bold text-white mt-1 mb-2 line-clamp-2 group-hover:text-[#df071b] transition-colors">
                     {lang === "en" ? post.titleEn : post.titleIt}
                   </h2>
                   {(lang === "en" ? post.excerptEn : post.excerptIt) && (
-                    <p className="text-stone-500 text-sm line-clamp-3 mb-4">
+                    <p className="text-[var(--wine-muted)] text-sm line-clamp-3 mb-4">
                       {lang === "en" ? post.excerptEn : post.excerptIt}
                     </p>
                   )}
-                  <div className="flex items-center gap-1 text-xs text-stone-400">
+                  <div className="flex items-center gap-1 text-xs text-white/40">
                     <Calendar className="w-3 h-3" />
                     {post.publishedAt ? new Date(post.publishedAt).toLocaleDateString(lang === "en" ? "en-GB" : "it-IT") : ""}
                   </div>

@@ -26,8 +26,8 @@ export default async function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-stone-900">Impostazioni account</h1>
-        <p className="text-stone-500 text-sm mt-1">Gestisci la sicurezza e i tuoi dati personali</p>
+        <h1 className="text-2xl font-bold text-white">Impostazioni account</h1>
+        <p className="text-[var(--wine-muted)] text-sm mt-1">Gestisci la sicurezza e i tuoi dati personali</p>
       </div>
       <ProfileSettings user={{ username: user?.username ?? null, avatarUrl: user?.avatarUrl ?? null }} />
       <SecuritySettings user={user!} />

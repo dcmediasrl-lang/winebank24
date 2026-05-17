@@ -49,23 +49,23 @@ export default function RegisterPage({ params }: { params: Promise<{ lang: strin
 
   if (done) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-stone-950 px-4 py-8">
+      <div className="min-h-screen flex items-center justify-center bg-[var(--wine-bg)] px-4 py-8">
         <div className="w-full max-w-sm text-center">
           <div className="flex items-center justify-center gap-2 mb-8">
-            <Wine className="w-8 h-8 text-amber-400" />
+            <Wine className="w-8 h-8 text-[#df071b]" />
             <span className="text-2xl font-bold text-white">Wine Bank 24</span>
           </div>
           <Card>
             <CardContent className="pt-8 pb-8">
               <Mail className="w-12 h-12 text-amber-500 mx-auto mb-4" />
-              <h2 className="text-xl font-bold text-stone-900 mb-2">
+              <h2 className="text-xl font-bold text-white mb-2">
                 {en ? "Check your email" : "Controlla la tua email"}
               </h2>
-              <p className="text-stone-500 text-sm mb-4">
+              <p className="text-[var(--wine-muted)] text-sm mb-4">
                 {en ? "We sent a verification link to" : "Abbiamo inviato un link di verifica a"}{" "}
                 <strong>{registeredEmail}</strong>.
               </p>
-              <p className="text-stone-400 text-xs mb-6">
+              <p className="text-white/40 text-xs mb-6">
                 {en ? "The link expires within 24 hours." : "Il link scade entro 24 ore."}
               </p>
               <Button variant="outline" className="w-full" onClick={() => router.push(`/${lang}/login`)}>
@@ -79,16 +79,16 @@ export default function RegisterPage({ params }: { params: Promise<{ lang: strin
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-stone-950 px-4 py-8">
+    <div className="min-h-screen flex items-center justify-center bg-[var(--wine-bg)] px-4 py-8">
       <div className="w-full max-w-md">
         <div className="flex items-center justify-center gap-2 mb-8">
-          <Wine className="w-8 h-8 text-amber-400" />
+          <Wine className="w-8 h-8 text-[#df071b]" />
           <span className="text-2xl font-bold text-white">Wine Bank 24</span>
         </div>
         <Card>
           <CardHeader>
             <CardTitle className="text-center">{en ? "Create account" : "Crea account"}</CardTitle>
-            <p className="text-center text-sm text-stone-500 mt-1">
+            <p className="text-center text-sm text-[var(--wine-muted)] mt-1">
               {en
                 ? "Sign up to buy and collect fine wine digital certificates"
                 : "Registrati per acquistare e collezionare certificati digitali di vino"}
@@ -109,7 +109,7 @@ export default function RegisterPage({ params }: { params: Promise<{ lang: strin
               <div className="space-y-1">
                 <Label>
                   Password *{" "}
-                  <span className="text-stone-400 font-normal">
+                  <span className="text-white/40 font-normal">
                     {en ? "(min. 8 chars)" : "(min. 8 caratteri)"}
                   </span>
                 </Label>
@@ -135,7 +135,7 @@ export default function RegisterPage({ params }: { params: Promise<{ lang: strin
               {/* Age confirmation */}
               <div className="flex items-start gap-2 pt-1">
                 <input required type="checkbox" id="age" className="mt-1 accent-amber-500" />
-                <label htmlFor="age" className="text-xs text-stone-500 leading-relaxed">
+                <label htmlFor="age" className="text-xs text-[var(--wine-muted)] leading-relaxed">
                   {en
                     ? "I confirm that I am at least 18 years of age. Wine Bank 24 is reserved for adults only."
                     : "Confermo di avere almeno 18 anni di età. Wine Bank 24 è riservato ai soli maggiorenni."}
@@ -145,13 +145,13 @@ export default function RegisterPage({ params }: { params: Promise<{ lang: strin
               {/* T&C */}
               <div className="flex items-start gap-2">
                 <input required type="checkbox" id="terms" className="mt-1 accent-amber-500" />
-                <label htmlFor="terms" className="text-xs text-stone-500 leading-relaxed">
+                <label htmlFor="terms" className="text-xs text-[var(--wine-muted)] leading-relaxed">
                   {en ? "I have read and agree to the" : "Ho letto e accetto i"}{" "}
-                  <Link href={`/${lang}/termini`} target="_blank" className="text-amber-600 hover:underline">
+                  <Link href={`/${lang}/termini`} target="_blank" className="text-[#df071b] hover:underline">
                     {en ? "Terms & Conditions" : "Termini e Condizioni"}
                   </Link>
                   {" "}{en ? "and the" : "e la"}{" "}
-                  <Link href={`/${lang}/privacy`} target="_blank" className="text-amber-600 hover:underline">
+                  <Link href={`/${lang}/privacy`} target="_blank" className="text-[#df071b] hover:underline">
                     Privacy Policy
                   </Link>.{" "}
                   {en
@@ -163,16 +163,16 @@ export default function RegisterPage({ params }: { params: Promise<{ lang: strin
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold mt-2"
+                className="w-full text-white font-semibold mt-2" style={{ background: "var(--wine-gradient)" }}
               >
                 {loading
                   ? (en ? "Creating account..." : "Registrazione...")
                   : (en ? "Create account" : "Crea account")}
               </Button>
             </form>
-            <p className="text-center text-sm text-stone-500 mt-4">
+            <p className="text-center text-sm text-[var(--wine-muted)] mt-4">
               {en ? "Already have an account?" : "Hai già un account?"}{" "}
-              <Link href={`/${lang}/login`} className="text-amber-600 hover:underline font-medium">
+              <Link href={`/${lang}/login`} className="text-[#df071b] hover:underline font-medium">
                 {en ? "Sign in" : "Accedi"}
               </Link>
             </p>
@@ -181,7 +181,7 @@ export default function RegisterPage({ params }: { params: Promise<{ lang: strin
         <div className="text-center mt-4">
           <Link
             href={lang === "en" ? "/it/register" : "/en/register"}
-            className="text-stone-500 text-xs hover:text-amber-400 transition-colors"
+            className="text-[var(--wine-muted)] text-xs hover:text-[#df071b] transition-colors"
           >
             {lang === "en" ? "🇮🇹 Italiano" : "🇬🇧 English"}
           </Link>

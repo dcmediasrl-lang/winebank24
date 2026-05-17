@@ -12,18 +12,18 @@ export default async function CantinaWishlistPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
-        <BookmarkPlus className="w-7 h-7 text-amber-500" />
+        <BookmarkPlus className="w-7 h-7 text-[#df071b]" />
         <div>
-          <h1 className="text-2xl font-bold text-stone-900">Wishlist clienti</h1>
-          <p className="text-stone-500 text-sm mt-1">
+          <h1 className="text-2xl font-bold text-white">Wishlist clienti</h1>
+          <p className="text-[var(--wine-muted)] text-sm mt-1">
             Vini cercati dai collezionisti ({items.length} richieste)
           </p>
         </div>
       </div>
 
       {items.length === 0 ? (
-        <div className="text-center py-20 text-stone-400">
-          <BookmarkPlus className="w-12 h-12 mx-auto mb-4 text-stone-300" />
+        <div className="text-center py-20 text-[var(--wine-muted)]">
+          <BookmarkPlus className="w-12 h-12 mx-auto mb-4 text-white/30" />
           <p className="text-lg">Nessuna richiesta disponibile al momento</p>
         </div>
       ) : (
@@ -32,11 +32,11 @@ export default async function CantinaWishlistPage() {
             <Card key={item.id} className="hover:shadow-md transition-shadow">
               <CardHeader className="pb-2 pt-4">
                 <CardTitle className="text-base font-semibold leading-tight flex items-center gap-2">
-                  <Wine className="w-4 h-4 text-amber-500 shrink-0" />
+                  <Wine className="w-4 h-4 text-[#df071b] shrink-0" />
                   {item.wineName}
                 </CardTitle>
                 {item.cantina && (
-                  <p className="text-xs text-stone-500">{item.cantina}</p>
+                  <p className="text-xs text-[var(--wine-muted)]">{item.cantina}</p>
                 )}
               </CardHeader>
               <CardContent className="space-y-2">
@@ -48,15 +48,15 @@ export default async function CantinaWishlistPage() {
                     <Badge variant="secondary" className="text-xs">{item.grape}</Badge>
                   )}
                   {item.maxPrice && (
-                    <Badge className="text-xs bg-green-100 text-green-800 hover:bg-green-100">
+                    <Badge className="text-xs bg-green-900/40 text-green-400 hover:bg-green-900/40">
                       max € {Number(item.maxPrice).toFixed(2)}
                     </Badge>
                   )}
                 </div>
                 {item.notes && (
-                  <p className="text-xs text-stone-500 line-clamp-2">{item.notes}</p>
+                  <p className="text-xs text-[var(--wine-muted)] line-clamp-2">{item.notes}</p>
                 )}
-                <p className="text-xs text-stone-400">
+                <p className="text-xs text-white/70">
                   {new Date(item.createdAt).toLocaleDateString("it-IT")}
                 </p>
               </CardContent>

@@ -11,7 +11,7 @@ export default async function AdminSettingsPage() {
 
   return (
     <div className="max-w-lg">
-      <h1 className="text-2xl font-bold text-stone-900 mb-6">Configurazione Piattaforma</h1>
+      <h1 className="text-2xl font-bold text-white mb-6">Configurazione Piattaforma</h1>
       <FeeSettingsForm
         configId={config.id}
         platformFeePct={config.platformFeePct}

@@ -45,7 +45,7 @@ export default async function CantinaPublicPage({
   if (!cantina) notFound();
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
+    <div className="max-w-6xl mx-auto px-4 py-10" style={{ color: "white" }}>
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start gap-6 mb-10">
         {cantina.logoUrl ? (
@@ -54,24 +54,24 @@ export default async function CantinaPublicPage({
             alt={cantina.name}
             width={96}
             height={96}
-            className="w-24 h-24 rounded-xl object-contain bg-white border border-stone-200 shrink-0"
+            className="w-24 h-24 rounded-xl object-contain bg-[var(--wine-card)] border border-[var(--wine-border)] shrink-0"
           />
         ) : (
-          <div className="w-24 h-24 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
+          <div className="w-24 h-24 rounded-xl bg-[#231515] flex items-center justify-center shrink-0">
             <Wine className="w-10 h-10 text-amber-500" />
           </div>
         )}
         <div className="flex-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="text-3xl font-bold text-stone-900">{cantina.name}</h1>
+            <h1 className="text-3xl font-bold text-white">{cantina.name}</h1>
             {cantina.isVerified && (
               <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Verificata</Badge>
             )}
           </div>
           {cantina.description && (
-            <p className="text-stone-600 mt-2 max-w-2xl">{cantina.description}</p>
+            <p className="text-white/70 mt-2 max-w-2xl">{cantina.description}</p>
           )}
-          <div className="flex flex-wrap gap-4 mt-3 text-sm text-stone-500">
+          <div className="flex flex-wrap gap-4 mt-3 text-sm text-[var(--wine-muted)]">
             {cantina.location && (
               <span className="flex items-center gap-1">
                 <MapPin className="w-4 h-4" />
@@ -94,14 +94,14 @@ export default async function CantinaPublicPage({
       </div>
 
       {/* NFT gallery */}
-      <h2 className="text-xl font-bold text-stone-900 mb-5 flex items-center gap-2">
+      <h2 className="text-xl font-bold text-white mb-5 flex items-center gap-2">
         <Wine className="w-5 h-5 text-amber-600" />
         NFT disponibili ({cantina.nfts.length})
       </h2>
 
       {cantina.nfts.length === 0 ? (
-        <div className="text-center py-16 text-stone-400">
-          <Wine className="w-12 h-12 mx-auto mb-4 text-stone-300" />
+        <div className="text-center py-16 text-white/40">
+          <Wine className="w-12 h-12 mx-auto mb-4 text-white/20" />
           <p>Nessun NFT disponibile al momento</p>
         </div>
       ) : (
@@ -131,9 +131,9 @@ export default async function CantinaPublicPage({
                   </div>
                   <div className="flex items-center justify-between">
                     {nft.price && (
-                      <span className="text-base font-bold text-stone-900">€ {nft.price.toFixed(2)}</span>
+                      <span className="text-base font-bold text-white">€ {nft.price.toFixed(2)}</span>
                     )}
-                    <span className="text-xs text-stone-400">#{nft.bottleNumber}</span>
+                    <span className="text-xs text-white/40">#{nft.bottleNumber}</span>
                   </div>
                 </CardContent>
               </Card>

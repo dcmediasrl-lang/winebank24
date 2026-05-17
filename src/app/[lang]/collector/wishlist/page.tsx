@@ -23,8 +23,8 @@ export default async function WishlistPage({
       <div className="flex items-center gap-3">
         <BookmarkPlus className="w-7 h-7 text-amber-500" />
         <div>
-          <h1 className="text-2xl font-bold text-stone-900">La mia Wishlist</h1>
-          <p className="text-stone-500 text-sm mt-1">Vini che stai cercando</p>
+          <h1 className="text-2xl font-bold text-white">La mia Wishlist</h1>
+          <p className="text-[var(--wine-muted)] text-sm mt-1">Vini che stai cercando</p>
         </div>
       </div>
       <WishlistManager initialItems={items} />

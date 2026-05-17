@@ -34,14 +34,14 @@ export default async function PreferitePage({
       <div className="flex items-center gap-3">
         <Heart className="w-7 h-7 text-red-500 fill-red-500" />
         <div>
-          <h1 className="text-2xl font-bold text-stone-900">Preferiti</h1>
-          <p className="text-stone-500 text-sm mt-1">I tuoi NFT preferiti</p>
+          <h1 className="text-2xl font-bold text-white">Preferiti</h1>
+          <p className="text-[var(--wine-muted)] text-sm mt-1">I tuoi NFT preferiti</p>
         </div>
       </div>
 
       {favorites.length === 0 ? (
-        <div className="text-center py-20 text-stone-400">
-          <Heart className="w-12 h-12 mx-auto mb-4 text-stone-300" />
+        <div className="text-center py-20 text-white/40">
+          <Heart className="w-12 h-12 mx-auto mb-4 text-white/30" />
           <p className="text-lg">Non hai ancora aggiunto NFT ai preferiti</p>
           <p className="text-sm mt-2">Esplora il marketplace e clicca il cuore per salvare i tuoi preferiti</p>
         </div>
@@ -62,7 +62,7 @@ export default async function PreferitePage({
               </div>
               <CardHeader className="pb-2 pt-4">
                 <CardTitle className="text-sm font-semibold leading-tight">{nft.name}</CardTitle>
-                <p className="text-xs text-stone-500">{nft.cantina.name}</p>
+                <p className="text-xs text-[var(--wine-muted)]">{nft.cantina.name}</p>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex flex-wrap gap-1">
@@ -75,14 +75,14 @@ export default async function PreferitePage({
                   <Badge
                     variant="outline"
                     className={`text-xs ${
-                      nft.isListed ? "border-green-500 text-green-700" : "border-stone-300 text-stone-500"
+                      nft.isListed ? "border-green-500 text-green-700" : "border-[var(--wine-border)] text-[var(--wine-muted)]"
                     }`}
                   >
                     {nft.isListed ? "In vendita" : nft.status}
                   </Badge>
                 </div>
                 {nft.price && (
-                  <span className="text-lg font-bold text-stone-900">€ {nft.price.toFixed(2)}</span>
+                  <span className="text-lg font-bold text-white">€ {nft.price.toFixed(2)}</span>
                 )}
               </CardContent>
             </Card>

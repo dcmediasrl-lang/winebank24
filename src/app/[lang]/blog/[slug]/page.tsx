@@ -19,19 +19,19 @@ export default async function BlogPostPage({ params }: { params: Promise<{ lang:
   const content = lang === "en" ? post.contentEn : post.contentIt;
 
   return (
-    <div className="min-h-screen bg-stone-50">
-      <header className="bg-stone-950 text-white px-8 py-5 flex items-center justify-between">
+    <div className="min-h-screen bg-[var(--wine-bg)]">
+      <header className="bg-[var(--wine-card)] text-white px-8 py-5 flex items-center justify-between">
         <Link href={`/${lang}`} className="flex items-center gap-2">
           <Wine className="w-6 h-6 text-amber-400" />
           <span className="font-bold text-lg">Wine Bank 24</span>
         </Link>
-        <Link href={lang === "en" ? `/it/blog/${slug}` : `/en/blog/${slug}`} className="text-stone-500 text-sm hover:text-amber-400">
+        <Link href={lang === "en" ? `/it/blog/${slug}` : `/en/blog/${slug}`} className="text-[var(--wine-muted)] text-sm hover:text-[#df071b]">
           {lang === "en" ? "🇮🇹 IT" : "🇬🇧 EN"}
         </Link>
       </header>
 
       <div className="max-w-3xl mx-auto px-6 py-12">
-        <Link href={`/${lang}/blog`} className="flex items-center gap-2 text-stone-500 hover:text-amber-600 text-sm mb-8">
+        <Link href={`/${lang}/blog`} className="flex items-center gap-2 text-[var(--wine-muted)] hover:text-[#df071b] text-sm mb-8">
           <ArrowLeft className="w-4 h-4" />
           {dict.blog.back}
         </Link>
@@ -46,9 +46,9 @@ export default async function BlogPostPage({ params }: { params: Promise<{ lang:
           {post.category && (
             <span className="text-xs text-amber-600 font-semibold uppercase tracking-wide">{post.category}</span>
           )}
-          <h1 className="text-3xl sm:text-4xl font-bold text-stone-900 mt-2 mb-3">{title}</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold text-white mt-2 mb-3">{title}</h1>
           {post.publishedAt && (
-            <div className="flex items-center gap-1 text-sm text-stone-400">
+            <div className="flex items-center gap-1 text-sm text-white/40">
               <Calendar className="w-4 h-4" />
               {dict.blog.published} {new Date(post.publishedAt).toLocaleDateString(lang === "en" ? "en-GB" : "it-IT")}
             </div>
@@ -56,7 +56,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ lang:
         </div>
 
         <div
-          className="prose prose-stone max-w-none text-stone-700 leading-relaxed"
+          className="prose prose-invert max-w-none text-white/80 leading-relaxed"
           dangerouslySetInnerHTML={{ __html: content.replace(/\n/g, "<br/>") }}
         />
       </div>

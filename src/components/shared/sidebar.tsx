@@ -86,8 +86,8 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
         <div className="mb-3">
           <Image src="/logo.png" alt="Wine Bank 24" width={120} height={60} className="h-12 w-auto object-contain bg-white rounded-xl px-2 py-1" priority />
         </div>
-        <div className="text-xs text-stone-400">{roleLabel}</div>
-        <div className="text-sm text-stone-300 font-medium truncate mt-1">{userName}</div>
+        <div className="text-xs text-[var(--wine-muted)]">{roleLabel}</div>
+        <div className="text-sm text-white/80 font-medium truncate mt-1">{userName}</div>
       </div>
 
       <nav className="flex-1 space-y-1">
@@ -99,8 +99,8 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
             className={cn(
               "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
               pathname === href
-                ? "bg-amber-500 text-stone-950 font-semibold"
-                : "text-stone-300 hover:bg-stone-800 hover:text-stone-100"
+                ? "font-semibold text-white bg-[#993300]"
+                : "text-white/70 hover:bg-[#231515] hover:text-white"
             )}
           >
             <Icon className="w-4 h-4 shrink-0" />
@@ -111,7 +111,7 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
 
       <button
         onClick={() => signOut({ callbackUrl: `/${lang}/login` })}
-        className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-stone-400 hover:bg-stone-800 hover:text-red-400 transition-colors mt-4"
+        className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-[var(--wine-muted)] hover:bg-[var(--wine-card-hover)] hover:text-[#df071b] transition-colors mt-4"
       >
         <LogOut className="w-4 h-4" />
         {dict.logout}
@@ -122,11 +122,11 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
   return (
     <>
       {/* Mobile top bar */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-stone-950 border-b border-stone-800 flex items-center justify-between px-4 py-3">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-[var(--wine-card)] border-b border-[var(--wine-border)] flex items-center justify-between px-4 py-3">
         <Image src="/logo.png" alt="Wine Bank 24" width={90} height={36} className="h-8 w-auto object-contain bg-white rounded-lg px-2 py-0.5" priority />
         <button
           onClick={() => setMobileOpen(true)}
-          className="text-stone-300 hover:text-white p-1"
+          className="text-white/70 hover:text-white p-1"
         >
           <Menu className="w-6 h-6" />
         </button>
@@ -142,12 +142,12 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
 
       {/* Mobile drawer */}
       <aside className={cn(
-        "lg:hidden fixed top-0 left-0 z-50 h-full w-72 bg-stone-950 text-stone-100 px-4 py-6 flex flex-col transition-transform duration-300",
+        "lg:hidden fixed top-0 left-0 z-50 h-full w-72 bg-[var(--wine-card)] text-white px-4 py-6 flex flex-col transition-transform duration-300",
         mobileOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         <button
           onClick={() => setMobileOpen(false)}
-          className="absolute top-4 right-4 text-stone-400 hover:text-white"
+          className="absolute top-4 right-4 text-white/40 hover:text-white"
         >
           <X className="w-5 h-5" />
         </button>
@@ -155,7 +155,7 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
       </aside>
 
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex flex-col w-64 min-h-screen bg-stone-950 text-stone-100 px-4 py-6 shrink-0">
+      <aside className="hidden lg:flex flex-col w-64 min-h-screen bg-[var(--wine-card)] text-white px-4 py-6 shrink-0">
         {navContent}
       </aside>
     </>

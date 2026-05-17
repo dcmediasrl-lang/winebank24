@@ -17,7 +17,7 @@ export default async function AdminCantinePage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-stone-900">Gestione Cantine</h1>
+        <h1 className="text-2xl font-bold text-white">Gestione Cantine</h1>
         <CreateCantinaDialog />
       </div>
 
@@ -27,14 +27,14 @@ export default async function AdminCantinePage() {
         </CardHeader>
         <CardContent>
           {cantine.length === 0 ? (
-            <p className="text-stone-400 text-sm text-center py-8">
+            <p className="text-[var(--wine-muted)] text-sm text-center py-8">
               Nessuna cantina ancora. Creane una con il pulsante in alto a destra.
             </p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b text-stone-500 text-left">
+                  <tr className="border-b border-[var(--wine-border)] text-[var(--wine-muted)] text-left">
                     <th className="pb-3 pr-4">Cantina</th>
                     <th className="pb-3 pr-4">Email accesso</th>
                     <th className="pb-3 pr-4">Località</th>
@@ -44,13 +44,13 @@ export default async function AdminCantinePage() {
                     <th className="pb-3">Stato</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y">
+                <tbody className="divide-y divide-[var(--wine-border)]">
                   {cantine.map((c: CantinaItem) => (
                     <tr key={c.id}>
                       <td className="py-3 pr-4 font-semibold">{c.name}</td>
-                      <td className="py-3 pr-4 text-stone-500">{c.user.email}</td>
-                      <td className="py-3 pr-4 text-stone-500">{c.location ?? "—"}</td>
-                      <td className="py-3 pr-4 text-stone-500">{c.vatNumber ?? "—"}</td>
+                      <td className="py-3 pr-4 text-[var(--wine-muted)]">{c.user.email}</td>
+                      <td className="py-3 pr-4 text-[var(--wine-muted)]">{c.location ?? "—"}</td>
+                      <td className="py-3 pr-4 text-[var(--wine-muted)]">{c.vatNumber ?? "—"}</td>
                       <td className="py-3 pr-4 text-center">{c._count.collections}</td>
                       <td className="py-3 pr-4 text-center">{c._count.nfts}</td>
                       <td className="py-3">

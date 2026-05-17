@@ -40,9 +40,9 @@ export function CookieBanner({ lang }: { lang: string }) {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 p-4 md:p-6">
-      <div className="max-w-4xl mx-auto bg-stone-900 border border-stone-700 rounded-xl shadow-2xl p-5 flex flex-col md:flex-row items-start md:items-center gap-4">
+      <div className="max-w-4xl mx-auto bg-[var(--wine-card)] border border-[var(--wine-border)] rounded-xl shadow-2xl p-5 flex flex-col md:flex-row items-start md:items-center gap-4">
         <Cookie className="w-6 h-6 text-amber-400 shrink-0 mt-0.5" />
-        <div className="flex-1 text-sm text-stone-300 leading-relaxed">
+        <div className="flex-1 text-sm text-white/70 leading-relaxed">
           {en ? (
             <>
               We use cookies to improve your experience and, with your consent, to show relevant advertising.
@@ -66,14 +66,14 @@ export function CookieBanner({ lang }: { lang: string }) {
             variant="outline"
             size="sm"
             onClick={() => respond("declined")}
-            className="border-stone-600 text-stone-300 hover:bg-stone-800"
+            className="border-[var(--wine-border)] text-white/70 hover:bg-[var(--wine-card-hover)]"
           >
             {en ? "Decline" : "Rifiuta"}
           </Button>
           <Button
             size="sm"
             onClick={() => respond("accepted")}
-            className="bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold"
+            className="text-white font-semibold" style={{ background: "var(--wine-gradient)" }}
           >
             {en ? "Accept all" : "Accetta tutti"}
           </Button>

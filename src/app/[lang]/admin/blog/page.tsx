@@ -19,11 +19,11 @@ export default async function AdminBlogPage({ params }: { params: Promise<{ lang
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-stone-900">Blog</h1>
-          <p className="text-stone-500 text-sm mt-1">{posts.length} articoli totali</p>
+          <h1 className="text-2xl font-bold text-white">Blog</h1>
+          <p className="text-[var(--wine-muted)] text-sm mt-1">{posts.length} articoli totali</p>
         </div>
         <Link href={`/${lang}/admin/blog/new`}>
-          <Button className="bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold">
+          <Button className="bg-[#993300] hover:bg-[#df071b] text-white font-semibold">
             <Plus className="w-4 h-4 mr-2" /> Nuovo articolo
           </Button>
         </Link>
@@ -31,7 +31,7 @@ export default async function AdminBlogPage({ params }: { params: Promise<{ lang
 
       <div className="space-y-3">
         {posts.length === 0 && (
-          <p className="text-stone-400 text-sm">Nessun articolo. Crea il primo!</p>
+          <p className="text-[var(--wine-muted)] text-sm">Nessun articolo. Crea il primo!</p>
         )}
         {posts.map(post => (
           <Card key={post.id}>
@@ -41,15 +41,15 @@ export default async function AdminBlogPage({ params }: { params: Promise<{ lang
                   <div className="flex items-center gap-2 mb-1">
                     {post.isPublished
                       ? <Eye className="w-3.5 h-3.5 text-green-500" />
-                      : <EyeOff className="w-3.5 h-3.5 text-stone-400" />}
+                      : <EyeOff className="w-3.5 h-3.5 text-[var(--wine-muted)]" />}
                     {post.category && (
-                      <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">{post.category}</span>
+                      <span className="text-xs bg-[#993300]/20 text-[#df071b] px-2 py-0.5 rounded-full">{post.category}</span>
                     )}
                   </div>
-                  <p className="font-semibold text-stone-900 truncate">{post.titleIt}</p>
-                  <p className="text-sm text-stone-500 truncate">{post.titleEn}</p>
+                  <p className="font-semibold text-white truncate">{post.titleIt}</p>
+                  <p className="text-sm text-[var(--wine-muted)] truncate">{post.titleEn}</p>
                   {post.publishedAt && (
-                    <div className="flex items-center gap-1 text-xs text-stone-400 mt-1">
+                    <div className="flex items-center gap-1 text-xs text-white/70 mt-1">
                       <Calendar className="w-3 h-3" />
                       {new Date(post.publishedAt).toLocaleDateString("it-IT")}
                     </div>

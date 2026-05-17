@@ -48,11 +48,11 @@ export default async function CollectorReportsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-stone-900">Storico & Reportistica</h1>
+      <h1 className="text-2xl font-bold text-white">Storico & Reportistica</h1>
 
       {/* KPI */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <KpiCard label="NFT in mio possesso" value={totaleNft} icon={Gem} color="text-amber-600" />
+        <KpiCard label="NFT in mio possesso" value={totaleNft} icon={Gem} color="text-[#df071b]" />
         <KpiCard label="Acquisti effettuati" value={totals.acquisti} icon={ShoppingCart} color="text-blue-600" />
         <KpiCard label="Vendite effettuate" value={totals.vendite} icon={TrendingUp} color="text-green-600" />
         <KpiCard label="Totale speso" value={`€ ${totals.speso.toFixed(2)}`} icon={Package} color="text-red-500" />
@@ -65,9 +65,9 @@ export default async function CollectorReportsPage() {
           <CardContent>
             <div className="flex flex-wrap gap-3">
               {[
-                { key: "MINTED", label: "In collezione", color: "bg-stone-100 text-stone-700" },
-                { key: "LISTED", label: "In vendita", color: "bg-green-100 text-green-700" },
-                { key: "BURN_REQUESTED", label: "Bottiglia richiesta", color: "bg-orange-100 text-orange-700" },
+                { key: "MINTED", label: "In collezione", color: "bg-white/10 text-white/70" },
+                { key: "LISTED", label: "In vendita", color: "bg-green-900/40 text-green-400" },
+                { key: "BURN_REQUESTED", label: "Bottiglia richiesta", color: "bg-orange-900/40 text-orange-400" },
               ].map(({ key, label, color }) =>
                 statusMap[key] ? (
                   <div key={key} className={`flex items-center gap-2 px-3 py-2 rounded-lg ${color}`}>
@@ -86,14 +86,14 @@ export default async function CollectorReportsPage() {
         <CardHeader><CardTitle className="text-base">Storico acquisti e vendite</CardTitle></CardHeader>
         <CardContent>
           {transactions.length === 0 ? (
-            <p className="text-stone-400 text-sm text-center py-8">
-              Nessuna transazione ancora. Visita il <a href="/marketplace" className="text-amber-600 hover:underline">Marketplace</a> per acquistare il tuo primo NFT.
+            <p className="text-[var(--wine-muted)] text-sm text-center py-8">
+              Nessuna transazione ancora. Visita il <a href="/marketplace" className="text-[#df071b] hover:underline">Marketplace</a> per acquistare il tuo primo NFT.
             </p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b text-stone-500 text-left">
+                  <tr className="border-b border-[var(--wine-border)] text-[var(--wine-muted)] text-left">
                     <th className="pb-3 pr-4">NFT</th>
                     <th className="pb-3 pr-4">Cantina</th>
                     <th className="pb-3 pr-4">Operazione</th>
@@ -101,19 +101,19 @@ export default async function CollectorReportsPage() {
                     <th className="pb-3">Data</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y">
+                <tbody className="divide-y divide-[var(--wine-border)]">
                   {transactions.map((tx) => {
                     const isAcquisto = tx.buyerId === session!.user.id;
                     return (
-                      <tr key={tx.id} className="hover:bg-stone-50">
+                      <tr key={tx.id} className="hover:bg-[var(--wine-card-hover)]">
                         <td className="py-3 pr-4 font-medium">
                           {tx.nft.name}
-                          <span className="block text-xs text-stone-400">Bottiglia #{tx.nft.bottleNumber}</span>
+                          <span className="block text-xs text-white/70">Bottiglia #{tx.nft.bottleNumber}</span>
                         </td>
-                        <td className="py-3 pr-4 text-stone-500 text-xs">{tx.nft.cantina.name}</td>
+                        <td className="py-3 pr-4 text-[var(--wine-muted)] text-xs">{tx.nft.cantina.name}</td>
                         <td className="py-3 pr-4">
                           <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                            isAcquisto ? "bg-blue-100 text-blue-700" : "bg-green-100 text-green-700"
+                            isAcquisto ? "bg-blue-900/40 text-blue-400" : "bg-green-900/40 text-green-400"
                           }`}>
                             {isAcquisto ? "Acquisto" : "Vendita"}
                           </span>
@@ -121,7 +121,7 @@ export default async function CollectorReportsPage() {
                         <td className={`py-3 pr-4 font-semibold ${isAcquisto ? "text-red-600" : "text-green-600"}`}>
                           {isAcquisto ? "−" : "+"}€ {tx.amount.toFixed(2)}
                         </td>
-                        <td className="py-3 text-stone-400 text-xs">
+                        <td className="py-3 text-white/70 text-xs">
                           {new Date(tx.createdAt).toLocaleDateString("it-IT")}
                         </td>
                       </tr>
@@ -144,10 +144,10 @@ function KpiCard({ label, value, icon: Icon, color }: {
     <Card>
       <CardContent className="pt-5">
         <div className="flex items-center justify-between mb-1">
-          <span className="text-xs text-stone-500">{label}</span>
+          <span className="text-xs text-[var(--wine-muted)]">{label}</span>
           <Icon className={`w-4 h-4 ${color}`} />
         </div>
-        <div className="text-2xl font-bold text-stone-900">{value}</div>
+        <div className="text-2xl font-bold text-white">{value}</div>
       </CardContent>
     </Card>
   );

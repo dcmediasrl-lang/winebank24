@@ -37,21 +37,21 @@ export default function CantinaContrattoPage({ params }: { params: Promise<{ lan
 
       {/* Header */}
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
-          <Shield className="w-5 h-5 text-amber-600" />
+        <div className="w-10 h-10 bg-[#993300]/20 rounded-full flex items-center justify-center">
+          <Shield className="w-5 h-5 text-[#df071b]" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-stone-900">Contratto Creator — Wine Bank 24</h1>
-          <p className="text-stone-500 text-sm">
+          <h1 className="text-2xl font-bold text-white">Contratto Creator — Wine Bank 24</h1>
+          <p className="text-[var(--wine-muted)] text-sm">
             Versione {CONTRACT_CANTINA_VERSION} · Leggi con attenzione prima di procedere
           </p>
         </div>
       </div>
 
       {/* Alert box */}
-      <div className="flex gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4">
-        <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-        <p className="text-sm text-amber-800 leading-relaxed">
+      <div className="flex gap-3 bg-[#993300]/10 border border-[#993300]/40 rounded-xl p-4">
+        <AlertTriangle className="w-5 h-5 text-[#df071b] shrink-0 mt-0.5" />
+        <p className="text-sm text-white/80 leading-relaxed">
           Il presente contratto regola il rapporto tra la tua cantina ("<strong>Creator</strong>") e
           la piattaforma Wine Bank 24 ("<strong>Piattaforma</strong>"). L'accettazione è obbligatoria
           per operare sulla piattaforma. Conserva una copia di questo documento.
@@ -59,27 +59,27 @@ export default function CantinaContrattoPage({ params }: { params: Promise<{ lan
       </div>
 
       {/* Contract body */}
-      <div className="space-y-8 text-stone-700 leading-relaxed text-sm">
+      <div className="space-y-8 text-white/80 leading-relaxed text-sm">
 
         {/* Natura giuridica */}
-        <section className="border border-stone-200 rounded-xl overflow-hidden">
-          <div className="bg-stone-900 text-white px-5 py-3">
+        <section className="border border-[var(--wine-border)] rounded-xl overflow-hidden">
+          <div className="bg-[var(--wine-card)] text-white px-5 py-3 border-b border-[var(--wine-border)]">
             <h2 className="font-semibold">Natura giuridica del rapporto</h2>
           </div>
           <div className="px-5 py-4 space-y-3">
             <p>Il presente contratto ha natura di:</p>
             <ul className="space-y-2 pl-4">
-              <li className="flex gap-2"><span className="text-amber-600 font-bold shrink-0">①</span><span><strong>Custodia qualificata</strong> — il Creator si obbliga a custodire il bene fisico (bottiglia) in conformità agli standard stabiliti dalla Piattaforma, assumendo le responsabilità di un depositario professionale ai sensi degli artt. 1766 ss. c.c.</span></li>
-              <li className="flex gap-2"><span className="text-amber-600 font-bold shrink-0">②</span><span><strong>Mandato con rappresentanza limitata</strong> — la Piattaforma agisce come intermediario tecnico per conto del Creator nella gestione dei certificati digitali, nei limiti espressamente previsti dal presente contratto.</span></li>
-              <li className="flex gap-2"><span className="text-amber-600 font-bold shrink-0">③</span><span><strong>Vincolo di indisponibilità del bene</strong> — dal momento dell'iscrizione del certificato digitale nella piattaforma, il bene fisico sottostante è gravato da un vincolo contrattuale di indisponibilità fino al completamento della procedura di liquidazione.</span></li>
+              <li className="flex gap-2"><span className="text-[#df071b] font-bold shrink-0">①</span><span><strong>Custodia qualificata</strong> — il Creator si obbliga a custodire il bene fisico (bottiglia) in conformità agli standard stabiliti dalla Piattaforma, assumendo le responsabilità di un depositario professionale ai sensi degli artt. 1766 ss. c.c.</span></li>
+              <li className="flex gap-2"><span className="text-[#df071b] font-bold shrink-0">②</span><span><strong>Mandato con rappresentanza limitata</strong> — la Piattaforma agisce come intermediario tecnico per conto del Creator nella gestione dei certificati digitali, nei limiti espressamente previsti dal presente contratto.</span></li>
+              <li className="flex gap-2"><span className="text-[#df071b] font-bold shrink-0">③</span><span><strong>Vincolo di indisponibilità del bene</strong> — dal momento dell'iscrizione del certificato digitale nella piattaforma, il bene fisico sottostante è gravato da un vincolo contrattuale di indisponibilità fino al completamento della procedura di liquidazione.</span></li>
             </ul>
           </div>
         </section>
 
         {/* A1 - Identificazione bene */}
-        <section className="border border-stone-200 rounded-xl overflow-hidden">
-          <div className="bg-stone-50 border-b border-stone-200 px-5 py-3">
-            <h2 className="font-semibold text-stone-900">A.1 — Identificazione del Bene</h2>
+        <section className="border border-[var(--wine-border)] rounded-xl overflow-hidden">
+          <div className="bg-[var(--wine-card)] border-b border-[var(--wine-border)] px-5 py-3">
+            <h2 className="font-semibold text-white">A.1 — Identificazione del Bene</h2>
           </div>
           <div className="px-5 py-4 space-y-2">
             <p>Ogni bene fisico (bottiglia) oggetto di certificazione digitale deve essere identificato in modo univoco e non ambiguo attraverso il form di inserimento prodotto, con indicazione obbligatoria di:</p>
@@ -90,19 +90,19 @@ export default function CantinaContrattoPage({ params }: { params: Promise<{ lan
               <li><strong>Fotografia della bottiglia fisica</strong> — elemento obbligatorio, non derogabile</li>
               <li>Descrizione delle condizioni di conservazione</li>
             </ul>
-            <div className="bg-stone-100 rounded-lg p-3 text-xs text-stone-600 font-mono mt-2">
+            <div className="bg-white/5 rounded-lg p-3 text-xs text-white/70 font-mono mt-2">
               Esempio: "Sassicaia 2015 — Tenuta San Guido — Lotto 0042/500 — conservata in cantina a temperatura controllata 14°C, umidità 70%, cantina certificata Wine Bank 24"
             </div>
           </div>
         </section>
 
         {/* A2 - Vincolo di indisponibilità */}
-        <section className="border border-red-200 rounded-xl overflow-hidden">
-          <div className="bg-red-600 text-white px-5 py-3">
+        <section className="border border-red-900/40 rounded-xl overflow-hidden">
+          <div className="bg-red-900/60 text-white px-5 py-3">
             <h2 className="font-semibold">A.2 — Vincolo di Indisponibilità del Bene ⚠️</h2>
           </div>
           <div className="px-5 py-4 space-y-3">
-            <p className="font-medium text-stone-900">
+            <p className="font-medium text-white">
               Dal momento dell'emissione del certificato digitale e fino al completamento della procedura di liquidazione, il Creator <strong className="text-red-700">non può</strong>:
             </p>
             <div className="grid grid-cols-2 gap-2">
@@ -114,8 +114,8 @@ export default function CantinaContrattoPage({ params }: { params: Promise<{ lan
                 "Modificare le condizioni di custodia senza autorizzazione",
                 "Aprire o consumare la bottiglia",
               ].map(item => (
-                <div key={item} className="flex gap-2 bg-red-50 rounded-lg px-3 py-2 text-xs">
-                  <span className="text-red-600 font-bold shrink-0">✗</span>
+                <div key={item} className="flex gap-2 bg-red-900/20 rounded-lg px-3 py-2 text-xs">
+                  <span className="text-red-400 font-bold shrink-0">✗</span>
                   <span>{item}</span>
                 </div>
               ))}
@@ -127,9 +127,9 @@ export default function CantinaContrattoPage({ params }: { params: Promise<{ lan
         </section>
 
         {/* A3 - Obbligo di custodia */}
-        <section className="border border-stone-200 rounded-xl overflow-hidden">
-          <div className="bg-stone-50 border-b border-stone-200 px-5 py-3">
-            <h2 className="font-semibold text-stone-900">A.3 — Obblighi di Custodia</h2>
+        <section className="border border-[var(--wine-border)] rounded-xl overflow-hidden">
+          <div className="bg-[var(--wine-card)] border-b border-[var(--wine-border)] px-5 py-3">
+            <h2 className="font-semibold text-white">A.3 — Obblighi di Custodia</h2>
           </div>
           <div className="px-5 py-4 space-y-3">
             <p>Il Creator si obbliga a:</p>
@@ -144,9 +144,9 @@ export default function CantinaContrattoPage({ params }: { params: Promise<{ lan
         </section>
 
         {/* A4 - Liquidazione */}
-        <section className="border border-stone-200 rounded-xl overflow-hidden">
-          <div className="bg-stone-50 border-b border-stone-200 px-5 py-3">
-            <h2 className="font-semibold text-stone-900">A.4 — Clausola di Liquidazione</h2>
+        <section className="border border-[var(--wine-border)] rounded-xl overflow-hidden">
+          <div className="bg-[var(--wine-card)] border-b border-[var(--wine-border)] px-5 py-3">
+            <h2 className="font-semibold text-white">A.4 — Clausola di Liquidazione</h2>
           </div>
           <div className="px-5 py-4 space-y-2">
             <p>La liquidazione del certificato digitale (ritiro fisico della bottiglia da parte del titolare) è regolata dalla seguente procedura:</p>
@@ -157,54 +157,54 @@ export default function CantinaContrattoPage({ params }: { params: Promise<{ lan
               <li>La consegna avviene entro 15 giorni lavorativi dalla conferma, a spese del richiedente.</li>
               <li>Al momento della consegna verificata, il certificato digitale viene invalidato e il vincolo di indisponibilità viene rimosso.</li>
             </ol>
-            <p className="text-xs text-stone-500 mt-2">
+            <p className="text-xs text-[var(--wine-muted)] mt-2">
               In caso di co-proprietà frazionata, la liquidazione è possibile solo previo accordo unanime di tutti i co-proprietari o riacquisto integrale da parte di uno di essi.
             </p>
           </div>
         </section>
 
         {/* A5 - Clausola penale */}
-        <section className="border border-red-200 rounded-xl overflow-hidden">
-          <div className="bg-red-700 text-white px-5 py-3">
+        <section className="border border-red-900/40 rounded-xl overflow-hidden">
+          <div className="bg-red-900/60 text-white px-5 py-3">
             <h2 className="font-semibold">A.5 — Clausola Penale</h2>
           </div>
           <div className="px-5 py-4 space-y-3">
-            <p className="font-medium text-stone-900">
+            <p className="font-medium text-white">
               In caso di violazione del vincolo di indisponibilità (vendita, cessione, pegno o qualsiasi atto dispositivo sul bene fisico al di fuori della procedura di liquidazione), il Creator è soggetto a:
             </p>
             <div className="space-y-2">
-              <div className="flex gap-3 bg-red-50 border border-red-200 rounded-lg p-3">
-                <span className="text-red-700 font-bold text-lg shrink-0">1.</span>
+              <div className="flex gap-3 bg-red-900/20 border border-red-900/40 rounded-lg p-3">
+                <span className="text-red-400 font-bold text-lg shrink-0">1.</span>
                 <div>
-                  <p className="font-semibold text-red-800">Penale del 200% del valore stimato del bene</p>
-                  <p className="text-xs text-red-700">Calcolato al valore di mercato al momento dell'accertamento della violazione. Dovuta immediatamente, senza necessità di messa in mora.</p>
+                  <p className="font-semibold text-red-400">Penale del 200% del valore stimato del bene</p>
+                  <p className="text-xs text-red-400/80">Calcolato al valore di mercato al momento dell'accertamento della violazione. Dovuta immediatamente, senza necessità di messa in mora.</p>
                 </div>
               </div>
-              <div className="flex gap-3 bg-red-50 border border-red-200 rounded-lg p-3">
-                <span className="text-red-700 font-bold text-lg shrink-0">2.</span>
+              <div className="flex gap-3 bg-red-900/20 border border-red-900/40 rounded-lg p-3">
+                <span className="text-red-400 font-bold text-lg shrink-0">2.</span>
                 <div>
-                  <p className="font-semibold text-red-800">Escussione immediata della polizza assicurativa</p>
-                  <p className="text-xs text-red-700">La Piattaforma è autorizzata ad agire direttamente nei confronti dell'assicuratore per conto dei titolari di certificati.</p>
+                  <p className="font-semibold text-red-400">Escussione immediata della polizza assicurativa</p>
+                  <p className="text-xs text-red-400/80">La Piattaforma è autorizzata ad agire direttamente nei confronti dell'assicuratore per conto dei titolari di certificati.</p>
                 </div>
               </div>
-              <div className="flex gap-3 bg-red-50 border border-red-200 rounded-lg p-3">
-                <span className="text-red-700 font-bold text-lg shrink-0">3.</span>
+              <div className="flex gap-3 bg-red-900/20 border border-red-900/40 rounded-lg p-3">
+                <span className="text-red-400 font-bold text-lg shrink-0">3.</span>
                 <div>
-                  <p className="font-semibold text-red-800">Risoluzione immediata del contratto</p>
-                  <p className="text-xs text-red-700">Sospensione immediata dell'account, rimozione di tutti i certificati attivi, esclusione permanente dalla piattaforma. Salvo il diritto al risarcimento del maggior danno.</p>
+                  <p className="font-semibold text-red-400">Risoluzione immediata del contratto</p>
+                  <p className="text-xs text-red-400/80">Sospensione immediata dell'account, rimozione di tutti i certificati attivi, esclusione permanente dalla piattaforma. Salvo il diritto al risarcimento del maggior danno.</p>
                 </div>
               </div>
             </div>
-            <p className="text-xs text-stone-500">
+            <p className="text-xs text-[var(--wine-muted)]">
               Le parti concordano che la penale è determinata in funzione preventiva e non costituisce liquidazione forfettaria del danno, fermo restando il diritto della Piattaforma e dei titolari di certificati al risarcimento del danno ulteriore.
             </p>
           </div>
         </section>
 
         {/* A6 - Legge applicabile */}
-        <section className="border border-stone-200 rounded-xl overflow-hidden">
-          <div className="bg-stone-50 border-b border-stone-200 px-5 py-3">
-            <h2 className="font-semibold text-stone-900">A.6 — Legge Applicabile e Foro</h2>
+        <section className="border border-[var(--wine-border)] rounded-xl overflow-hidden">
+          <div className="bg-[var(--wine-card)] border-b border-[var(--wine-border)] px-5 py-3">
+            <h2 className="font-semibold text-white">A.6 — Legge Applicabile e Foro</h2>
           </div>
           <div className="px-5 py-4">
             <p>Il presente contratto è regolato dalla <strong>legge italiana</strong>. Per qualsiasi controversia è competente in via esclusiva il <strong>Tribunale di Milano</strong>, salvo diversa disposizione di legge inderogabile.</p>
@@ -214,9 +214,9 @@ export default function CantinaContrattoPage({ params }: { params: Promise<{ lan
       </div>
 
       {/* Acceptance checkboxes */}
-      <div className="bg-stone-50 border border-stone-200 rounded-xl p-6 space-y-4">
-        <h3 className="font-bold text-stone-900">Dichiarazioni di accettazione</h3>
-        <p className="text-sm text-stone-500">Devi selezionare tutte le dichiarazioni per procedere:</p>
+      <div className="bg-[var(--wine-card)] border border-[var(--wine-border)] rounded-xl p-6 space-y-4">
+        <h3 className="font-bold text-white">Dichiarazioni di accettazione</h3>
+        <p className="text-sm text-[var(--wine-muted)]">Devi selezionare tutte le dichiarazioni per procedere:</p>
 
         {([
           { key: "c1", text: "Ho letto integralmente il contratto e ne comprendo il contenuto." },
@@ -227,23 +227,23 @@ export default function CantinaContrattoPage({ params }: { params: Promise<{ lan
         ] as { key: keyof typeof checks; text: string }[]).map(({ key, text }) => (
           <label key={key} className="flex items-start gap-3 cursor-pointer group">
             <div className={`w-5 h-5 mt-0.5 rounded border-2 shrink-0 flex items-center justify-center transition-colors ${
-              checks[key] ? "bg-amber-500 border-amber-500" : "border-stone-300 group-hover:border-amber-400"
+              checks[key] ? "bg-[#993300] border-[#993300]" : "border-[var(--wine-border)] group-hover:border-[#993300]"
             }`} onClick={() => toggle(key)}>
               {checks[key] && <CheckCircle className="w-3 h-3 text-white" />}
             </div>
-            <span className="text-sm text-stone-700 leading-relaxed">{text}</span>
+            <span className="text-sm text-white/80 leading-relaxed">{text}</span>
           </label>
         ))}
 
         <Button
           onClick={accept}
           disabled={!allChecked || loading}
-          className="w-full mt-4 bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold py-3 text-base disabled:opacity-40"
+          className="w-full mt-4 bg-[#993300] hover:bg-[#df071b] text-white font-bold py-3 text-base disabled:opacity-40"
         >
           {loading ? "Registrazione accettazione in corso..." : "Accetto il contratto e attivo il mio account Creator"}
         </Button>
 
-        <p className="text-xs text-stone-400 text-center">
+        <p className="text-xs text-[var(--wine-muted)] text-center">
           L'accettazione viene registrata con timestamp e IP. Versione contratto: {CONTRACT_CANTINA_VERSION}
         </p>
       </div>

@@ -74,12 +74,12 @@ export default async function MarketplacePage({
   const availableFractions = listedFractions.filter((f) => f.ownerId !== session?.user.id);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-10">
+    <div className="max-w-7xl mx-auto px-4 py-10" style={{ color: "white" }}>
         <div className="flex items-center gap-3 mb-8">
-          <Wine className="w-8 h-8 text-amber-600" />
+          <Wine className="w-8 h-8 text-[#df071b]" />
           <div>
-            <h1 className="text-3xl font-bold text-stone-900">Marketplace</h1>
-            <p className="text-stone-500">Acquista NFT di bottiglie di vino pregiate</p>
+            <h1 className="text-3xl font-bold text-white">Marketplace</h1>
+            <p className="text-[var(--wine-muted)]">Acquista NFT di bottiglie di vino pregiate</p>
           </div>
         </div>
 
@@ -87,10 +87,10 @@ export default async function MarketplacePage({
         {fractionableNfts.length > 0 && (
           <section className="mb-12">
             <div className="flex items-center gap-2 mb-4">
-              <TrendingUp className="w-5 h-5 text-amber-600" />
-              <h2 className="text-xl font-bold text-stone-900">Diventa co-proprietario</h2>
+              <TrendingUp className="w-5 h-5 text-[#df071b]" />
+              <h2 className="text-xl font-bold text-white">Diventa co-proprietario</h2>
             </div>
-            <p className="text-stone-500 text-sm mb-5">Acquista una quota di un'esclusiva bottiglia di vino. La bottiglia originale è custodita e certificata dalla cantina.</p>
+            <p className="text-[var(--wine-muted)] text-sm mb-5">Acquista una quota di un'esclusiva bottiglia di vino. La bottiglia originale è custodita e certificata dalla cantina.</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {fractionableNfts.map((nft) => {
                 const totalValue = Number(nft.totalValue ?? 0);
@@ -105,7 +105,7 @@ export default async function MarketplacePage({
                         alt={nft.name}
                         className="h-48"
                       />
-                      <Badge className="absolute top-2 right-2 bg-amber-500 text-stone-950 text-xs z-10">Co-proprietà</Badge>
+                      <Badge className="absolute top-2 right-2 bg-[#993300] text-white text-xs z-10">Co-proprietà</Badge>
                       {session && (
                         <div className="absolute top-2 left-2 z-10">
                           <FavoriteButton nftId={nft.id} initialFavorited={userFavoriteIds.has(nft.id)} />
@@ -114,7 +114,7 @@ export default async function MarketplacePage({
                     </div>
                     <CardHeader className="pb-2 pt-4">
                       <CardTitle className="text-sm font-semibold leading-tight">{nft.name}</CardTitle>
-                      <p className="text-xs text-stone-500">
+                      <p className="text-xs text-[var(--wine-muted)]">
                         {nft.cantina.name}{" "}
                         <Link href={`/${lang}/cantine/${nft.cantina.id}`} className="text-amber-600 hover:underline">
                           Vedi cantina
@@ -127,11 +127,11 @@ export default async function MarketplacePage({
                         {nft.collection.grape && <Badge variant="secondary" className="text-xs">{nft.collection.grape}</Badge>}
                       </div>
                       <div className="space-y-1">
-                        <div className="flex justify-between text-xs text-stone-500">
-                          <span>Valore totale: <span className="font-semibold text-stone-800">€ {totalValue.toFixed(2)}</span></span>
+                        <div className="flex justify-between text-xs text-[var(--wine-muted)]">
+                          <span>Valore totale: <span className="font-semibold text-white">€ {totalValue.toFixed(2)}</span></span>
                           <span>{soldPct.toFixed(1)}% venduto</span>
                         </div>
-                        <div className="w-full bg-stone-200 rounded-full h-1.5">
+                        <div className="w-full bg-white/10 rounded-full h-1.5">
                           <div
                             className="bg-amber-500 h-1.5 rounded-full"
                             style={{ width: `${Math.min(soldPct, 100)}%` }}
@@ -170,10 +170,10 @@ export default async function MarketplacePage({
         {availableFractions.length > 0 && (
           <section className="mb-12">
             <div className="flex items-center gap-2 mb-4">
-              <Users className="w-5 h-5 text-blue-600" />
-              <h2 className="text-xl font-bold text-stone-900">Certificati di co-proprietà disponibili</h2>
+              <Users className="w-5 h-5 text-blue-400" />
+              <h2 className="text-xl font-bold text-white">Certificati di co-proprietà disponibili</h2>
             </div>
-            <p className="text-stone-500 text-sm mb-5">Certificati di co-proprietà di bottiglie ceduti da altri collezionisti.</p>
+            <p className="text-[var(--wine-muted)] text-sm mb-5">Certificati di co-proprietà di bottiglie ceduti da altri collezionisti.</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {availableFractions.map((fraction) => (
                 <Card key={fraction.id} className="overflow-hidden hover:shadow-lg transition-shadow border-blue-100">
@@ -188,7 +188,7 @@ export default async function MarketplacePage({
                   </div>
                   <CardHeader className="pb-2 pt-4">
                     <CardTitle className="text-sm font-semibold leading-tight">{fraction.nft.name}</CardTitle>
-                    <p className="text-xs text-stone-500">{fraction.nft.cantina.name}</p>
+                    <p className="text-xs text-[var(--wine-muted)]">{fraction.nft.cantina.name}</p>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="flex flex-wrap gap-1">
@@ -198,7 +198,7 @@ export default async function MarketplacePage({
                     </div>
                     <div className="space-y-1 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-stone-500">
+                        <span className="text-[var(--wine-muted)]">
                           {fraction.listedPercentage !== null ? "Quota in vendita:" : "Quota:"}
                         </span>
                         <span className="font-bold text-amber-600">
@@ -212,8 +212,8 @@ export default async function MarketplacePage({
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-stone-500">Venditore:</span>
-                        <span className="text-stone-700">{fraction.owner.name || fraction.owner.email}</span>
+                        <span className="text-[var(--wine-muted)]">Venditore:</span>
+                        <span className="text-white/80">{fraction.owner.name || fraction.owner.email}</span>
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -251,15 +251,15 @@ export default async function MarketplacePage({
 
         {/* Regular NFTs */}
         {nfts.length === 0 && fractionableNfts.length === 0 ? (
-          <div className="text-center py-20 text-stone-400">
+          <div className="text-center py-20 text-white/40">
             <p className="text-lg">Nessun NFT disponibile al momento</p>
           </div>
         ) : nfts.length > 0 ? (
           <>
             {fractionableNfts.length > 0 && (
               <div className="flex items-center gap-2 mb-4">
-                <Wine className="w-5 h-5 text-amber-600" />
-                <h2 className="text-xl font-bold text-stone-900">Acquista una bottiglia</h2>
+                <Wine className="w-5 h-5 text-[#df071b]" />
+                <h2 className="text-xl font-bold text-white">Acquista una bottiglia</h2>
               </div>
             )}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
@@ -280,7 +280,7 @@ export default async function MarketplacePage({
                   </div>
                   <CardHeader className="pb-2 pt-4">
                     <CardTitle className="text-sm font-semibold leading-tight">{nft.name}</CardTitle>
-                    <p className="text-xs text-stone-500">
+                    <p className="text-xs text-[var(--wine-muted)]">
                       {nft.cantina.name}{" "}
                       <Link href={`/${lang}/cantine/${nft.cantina.id}`} className="text-amber-600 hover:underline">
                         Vedi cantina
@@ -293,8 +293,8 @@ export default async function MarketplacePage({
                       {nft.collection.grape && <Badge variant="secondary" className="text-xs">{nft.collection.grape}</Badge>}
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-lg font-bold text-stone-900">€ {nft.price?.toFixed(2)}</span>
-                      <span className="text-xs text-stone-400">Bottiglia #{nft.bottleNumber}</span>
+                      <span className="text-lg font-bold text-white">€ {nft.price?.toFixed(2)}</span>
+                      <span className="text-xs text-white/40">Bottiglia #{nft.bottleNumber}</span>
                     </div>
                     {session?.user.id !== nft.owner.id ? (
                       <div className="space-y-2">

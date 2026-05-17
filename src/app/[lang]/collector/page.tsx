@@ -22,47 +22,47 @@ export default async function CollectorDashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-stone-900">
+        <h1 className="text-2xl font-bold text-white">
           Benvenuto, {session!.user.name || session!.user.email}
         </h1>
-        <p className="text-stone-500 text-sm mt-1">Il tuo portafoglio Wine Bank 24</p>
+        <p className="text-[var(--wine-muted)] text-sm mt-1">Il tuo portafoglio Wine Bank 24</p>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardContent className="pt-5">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-xs text-stone-500">NFT posseduti</span>
+              <span className="text-xs text-[var(--wine-muted)]">NFT posseduti</span>
               <Gem className="w-4 h-4 text-amber-600" />
             </div>
-            <div className="text-2xl font-bold text-stone-900">{nfts.length}</div>
+            <div className="text-2xl font-bold text-white">{nfts.length}</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-5">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-xs text-stone-500">Quote possedute</span>
+              <span className="text-xs text-[var(--wine-muted)]">Quote possedute</span>
               <TrendingUp className="w-4 h-4 text-blue-600" />
             </div>
-            <div className="text-2xl font-bold text-stone-900">{fractions.length}</div>
+            <div className="text-2xl font-bold text-white">{fractions.length}</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-5">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-xs text-stone-500">Totale quote acquistate</span>
+              <span className="text-xs text-[var(--wine-muted)]">Totale quote acquistate</span>
               <BarChart3 className="w-4 h-4 text-green-600" />
             </div>
-            <div className="text-2xl font-bold text-stone-900">€ {totaleInvestito.toFixed(2)}</div>
+            <div className="text-2xl font-bold text-white">€ {totaleInvestito.toFixed(2)}</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-5">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-xs text-stone-500">Totale acquisti</span>
+              <span className="text-xs text-[var(--wine-muted)]">Totale acquisti</span>
               <ShoppingCart className="w-4 h-4 text-red-500" />
             </div>
-            <div className="text-2xl font-bold text-stone-900">€ {totaleSpeso.toFixed(2)}</div>
+            <div className="text-2xl font-bold text-white">€ {totaleSpeso.toFixed(2)}</div>
           </CardContent>
         </Card>
       </div>
@@ -74,8 +74,8 @@ export default async function CollectorDashboardPage() {
               <div className="flex items-center gap-3">
                 <Gem className="w-8 h-8 text-amber-500" />
                 <div>
-                  <p className="font-semibold text-stone-900">La mia Collezione</p>
-                  <p className="text-xs text-stone-500">Gestisci i tuoi NFT e quote</p>
+                  <p className="font-semibold text-white">La mia Collezione</p>
+                  <p className="text-xs text-[var(--wine-muted)]">Gestisci i tuoi NFT e quote</p>
                 </div>
               </div>
             </CardContent>
@@ -87,8 +87,8 @@ export default async function CollectorDashboardPage() {
               <div className="flex items-center gap-3">
                 <ShoppingCart className="w-8 h-8 text-blue-500" />
                 <div>
-                  <p className="font-semibold text-stone-900">Marketplace</p>
-                  <p className="text-xs text-stone-500">Acquista NFT e quote di bottiglie</p>
+                  <p className="font-semibold text-white">Marketplace</p>
+                  <p className="text-xs text-[var(--wine-muted)]">Acquista NFT e quote di bottiglie</p>
                 </div>
               </div>
             </CardContent>

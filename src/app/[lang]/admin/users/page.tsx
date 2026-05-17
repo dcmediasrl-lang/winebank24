@@ -20,7 +20,7 @@ export default async function AdminUsersPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-stone-900 mb-6">Gestione Utenti & Cantine</h1>
+      <h1 className="text-2xl font-bold text-white mb-6">Gestione Utenti & Cantine</h1>
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Tutti gli utenti ({users.length})</CardTitle>
@@ -29,7 +29,7 @@ export default async function AdminUsersPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b text-stone-500 text-left">
+                <tr className="border-b text-[var(--wine-muted)] text-left">
                   <th className="pb-3 pr-4">Nome</th>
                   <th className="pb-3 pr-4">Email</th>
                   <th className="pb-3 pr-4">Ruolo</th>
@@ -44,10 +44,10 @@ export default async function AdminUsersPage() {
                     <td className="py-3 pr-4 font-medium">
                       {u.name || "—"}
                       {u.cantina && (
-                        <span className="block text-xs text-stone-400">{u.cantina.name}</span>
+                        <span className="block text-xs text-white/40">{u.cantina.name}</span>
                       )}
                     </td>
-                    <td className="py-3 pr-4 text-stone-600">{u.email}</td>
+                    <td className="py-3 pr-4 text-white/70">{u.email}</td>
                     <td className="py-3 pr-4">
                       <Badge variant={u.role === "ADMIN" ? "destructive" : u.role === "CANTINA" ? "default" : "secondary"}>
                         {u.role}
@@ -63,7 +63,7 @@ export default async function AdminUsersPage() {
                         )}
                       </div>
                     </td>
-                    <td className="py-3 pr-4 text-stone-400">
+                    <td className="py-3 pr-4 text-white/40">
                       {new Date(u.createdAt).toLocaleDateString("it-IT")}
                     </td>
                     <td className="py-3">

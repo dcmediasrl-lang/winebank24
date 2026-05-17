@@ -17,7 +17,7 @@ export default async function AdminDashboard() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-stone-900 mb-6">Pannello di Controllo</h1>
+      <h1 className="text-2xl font-bold text-white mb-6">Pannello di Controllo</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard title="Utenti totali" value={stats.users} icon={Users} color="text-blue-600" />
@@ -40,11 +40,11 @@ function StatCard({ title, value, icon: Icon, color }: {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-sm font-medium text-stone-500">{title}</CardTitle>
+        <CardTitle className="text-sm font-medium text-[var(--wine-muted)]">{title}</CardTitle>
         <Icon className={`w-5 h-5 ${color}`} />
       </CardHeader>
       <CardContent>
-        <div className="text-3xl font-bold text-stone-900">{value}</div>
+        <div className="text-3xl font-bold text-white">{value}</div>
       </CardContent>
     </Card>
   );
@@ -61,12 +61,12 @@ async function RecentUsers() {
             <div key={u.id} className="flex items-center justify-between text-sm">
               <div>
                 <p className="font-medium">{u.name || "—"}</p>
-                <p className="text-stone-400 text-xs">{u.email}</p>
+                <p className="text-white/40 text-xs">{u.email}</p>
               </div>
               <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                u.role === "ADMIN" ? "bg-red-100 text-red-700" :
-                u.role === "CANTINA" ? "bg-amber-100 text-amber-700" :
-                "bg-blue-100 text-blue-700"
+                u.role === "ADMIN" ? "bg-red-900/40 text-red-400" :
+                u.role === "CANTINA" ? "bg-[#231515] text-[#df071b]" :
+                "bg-blue-900/40 text-blue-400"
               }`}>{u.role}</span>
             </div>
           ))}
@@ -91,12 +91,12 @@ async function RecentTransactions() {
             <div key={tx.id} className="flex items-center justify-between text-sm">
               <div>
                 <p className="font-medium">{tx.nft.name}</p>
-                <p className="text-stone-400 text-xs">{tx.type} · {new Date(tx.createdAt).toLocaleDateString("it-IT")}</p>
+                <p className="text-white/40 text-xs">{tx.type} · {new Date(tx.createdAt).toLocaleDateString("it-IT")}</p>
               </div>
               <span className="font-semibold text-green-700">€ {tx.amount.toFixed(2)}</span>
             </div>
           ))}
-          {txs.length === 0 && <p className="text-stone-400 text-sm">Nessuna transazione ancora.</p>}
+          {txs.length === 0 && <p className="text-white/40 text-sm">Nessuna transazione ancora.</p>}
         </div>
       </CardContent>
     </Card>

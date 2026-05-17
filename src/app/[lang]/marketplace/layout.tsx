@@ -15,7 +15,7 @@ export default async function MarketplaceLayout({
   const session = await auth();
 
   if (!session) {
-    return <div className="min-h-screen bg-stone-50">{children}</div>;
+    return <div className="min-h-screen bg-background">{children}</div>;
   }
 
   const dict = await getDictionary(lang);
@@ -24,7 +24,7 @@ export default async function MarketplaceLayout({
   return (
     <div className="flex min-h-screen">
       <Sidebar role={role} userName={session.user.name || session.user.email || ""} lang={lang} dict={dict.sidebar} />
-      <main className="flex-1 bg-stone-50 overflow-auto pt-14 lg:pt-0">{children}</main>
+      <main className="flex-1 bg-background overflow-auto pt-14 lg:pt-0">{children}</main>
     </div>
   );
 }

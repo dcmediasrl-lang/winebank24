@@ -29,27 +29,27 @@ export default async function AdminNftsPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-bold text-stone-900">NFT & Minting</h1>
+      <h1 className="text-2xl font-bold text-white">NFT & Minting</h1>
 
       {/* Richieste burn in attesa */}
       {burnRequests.length > 0 && (
-        <Card className="border-red-200 bg-red-50">
+        <Card className="border-red-900/40 bg-red-900/10">
           <CardHeader>
-            <CardTitle className="text-base text-red-700">
+            <CardTitle className="text-base text-red-400">
               Richieste bottiglia fisica in attesa ({burnRequests.length})
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {burnRequests.map((req) => (
-                <div key={req.id} className="bg-white rounded-lg p-4 border border-red-100 flex items-start justify-between gap-4">
+                <div key={req.id} className="bg-[var(--wine-card)] rounded-lg p-4 border border-red-900/40 flex items-start justify-between gap-4">
                   <div className="space-y-1">
                     <p className="font-semibold text-sm">{req.nft.name}</p>
-                    <p className="text-xs text-stone-500">Cantina: {req.nft.cantina.name}</p>
-                    <p className="text-xs text-stone-500">Richiedente: {req.nft.owner.name} ({req.nft.owner.email})</p>
-                    <p className="text-xs text-stone-700 font-medium">Spedizione: {req.address}</p>
-                    {req.notes && <p className="text-xs text-stone-400">Note: {req.notes}</p>}
-                    <p className="text-xs text-stone-400">{new Date(req.createdAt).toLocaleDateString("it-IT")}</p>
+                    <p className="text-xs text-[var(--wine-muted)]">Cantina: {req.nft.cantina.name}</p>
+                    <p className="text-xs text-[var(--wine-muted)]">Richiedente: {req.nft.owner.name} ({req.nft.owner.email})</p>
+                    <p className="text-xs text-white font-medium">Spedizione: {req.address}</p>
+                    {req.notes && <p className="text-xs text-white/70">Note: {req.notes}</p>}
+                    <p className="text-xs text-white/70">{new Date(req.createdAt).toLocaleDateString("it-IT")}</p>
                   </div>
                   <BurnApproveButton burnRequestId={req.id} nftId={req.nft.id} />
                 </div>
@@ -68,7 +68,7 @@ export default async function AdminNftsPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b text-stone-500 text-left">
+                <tr className="border-b border-[var(--wine-border)] text-[var(--wine-muted)] text-left">
                   <th className="pb-3 pr-4">Nome NFT</th>
                   <th className="pb-3 pr-4">Cantina</th>
                   <th className="pb-3 pr-4">Proprietario</th>
@@ -78,19 +78,19 @@ export default async function AdminNftsPage() {
                   <th className="pb-3">Data</th>
                 </tr>
               </thead>
-              <tbody className="divide-y">
+              <tbody className="divide-y divide-[var(--wine-border)]">
                 {nfts.map((nft) => (
                   <tr key={nft.id}>
                     <td className="py-3 pr-4 font-medium">
                       {nft.name}
-                      <span className="block text-xs text-stone-400">{nft.collection.name}</span>
+                      <span className="block text-xs text-white/70">{nft.collection.name}</span>
                     </td>
-                    <td className="py-3 pr-4 text-stone-600">{nft.cantina.name}</td>
-                    <td className="py-3 pr-4 text-stone-600">
+                    <td className="py-3 pr-4 text-[var(--wine-muted)]">{nft.cantina.name}</td>
+                    <td className="py-3 pr-4 text-[var(--wine-muted)]">
                       {nft.owner.name}
-                      <span className="block text-xs text-stone-400">{nft.owner.email}</span>
+                      <span className="block text-xs text-white/70">{nft.owner.email}</span>
                     </td>
-                    <td className="py-3 pr-4 text-stone-400 font-mono text-xs">
+                    <td className="py-3 pr-4 text-white/70 font-mono text-xs">
                       {nft.tokenId ?? "—"}
                     </td>
                     <td className="py-3 pr-4">
@@ -107,13 +107,13 @@ export default async function AdminNftsPage() {
                         {nft.status}
                       </Badge>
                     </td>
-                    <td className="py-3 text-stone-400 text-xs">
+                    <td className="py-3 text-white/70 text-xs">
                       {new Date(nft.createdAt).toLocaleDateString("it-IT")}
                     </td>
                   </tr>
                 ))}
                 {nfts.length === 0 && (
-                  <tr><td colSpan={7} className="py-8 text-center text-stone-400">Nessun NFT ancora mintato</td></tr>
+                  <tr><td colSpan={7} className="py-8 text-center text-[var(--wine-muted)]">Nessun NFT ancora mintato</td></tr>
                 )}
               </tbody>
             </table>

@@ -1,5 +1,5 @@
 const BREVO_API_KEY = process.env.BREVO_API_KEY!;
-const FROM_EMAIL = "noreply@winebank24.eu";
+const FROM_EMAIL = "dcmediasrl@gmail.com";
 const FROM_NAME = "Wine Bank 24";
 const APP_URL = process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "https://app.winebank24.eu";
 

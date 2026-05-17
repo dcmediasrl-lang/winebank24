@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Wine, Mail } from "lucide-react";
+import Image from "next/image";
+import { Mail } from "lucide-react";
 
 type Dict = {
   footer: {
@@ -23,9 +24,8 @@ export function Footer({ dict, lang }: { dict: Dict; lang: string }) {
 
           {/* Brand */}
           <div className="md:col-span-2 space-y-4">
-            <div className="flex items-center gap-2">
-              <Wine className="w-6 h-6 text-amber-400" />
-              <span className="text-stone-100 font-bold text-lg">Wine Bank 24</span>
+            <div>
+              <Image src="/logo.png" alt="Wine Bank 24" width={130} height={65} className="h-14 w-auto object-contain bg-white rounded-xl px-3 py-1.5" />
             </div>
             <p className="text-sm leading-relaxed text-stone-400 max-w-sm">
               {dict.footer.tagline}

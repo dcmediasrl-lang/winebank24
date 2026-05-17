@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
@@ -79,9 +80,8 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
   const navContent = (
     <>
       <div className="mb-8 px-2">
-        <div className="flex items-center gap-2 mb-1">
-          <Wine className="w-6 h-6 text-amber-400" />
-          <span className="font-bold text-lg tracking-tight">Wine Bank 24</span>
+        <div className="mb-3">
+          <Image src="/logo.png" alt="Wine Bank 24" width={120} height={60} className="h-12 w-auto object-contain bg-white rounded-xl px-2 py-1" priority />
         </div>
         <div className="text-xs text-stone-400">{roleLabel}</div>
         <div className="text-sm text-stone-300 font-medium truncate mt-1">{userName}</div>
@@ -120,10 +120,7 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
     <>
       {/* Mobile top bar */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-stone-950 border-b border-stone-800 flex items-center justify-between px-4 py-3">
-        <div className="flex items-center gap-2">
-          <Wine className="w-5 h-5 text-amber-400" />
-          <span className="font-bold text-stone-100">Wine Bank 24</span>
-        </div>
+        <Image src="/logo.png" alt="Wine Bank 24" width={90} height={36} className="h-8 w-auto object-contain bg-white rounded-lg px-2 py-0.5" priority />
         <button
           onClick={() => setMobileOpen(true)}
           className="text-stone-300 hover:text-white p-1"

@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { buttonVariants } from "@/components/ui/button";
-import { Wine, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface HomeNavProps {
@@ -22,10 +23,9 @@ export function HomeNav({ lang, nav }: HomeNavProps) {
   return (
     <header className="flex items-center justify-between px-4 sm:px-8 py-4 border-b border-stone-800 sticky top-0 z-40 bg-stone-950">
       {/* Logo */}
-      <div className="flex items-center gap-2">
-        <Wine className="w-6 h-6 text-amber-400" />
-        <span className="font-bold text-lg text-white">Wine Bank 24</span>
-      </div>
+      <Link href={`/${lang}`}>
+        <Image src="/logo.png" alt="Wine Bank 24" width={100} height={50} className="h-10 w-auto object-contain bg-white rounded-lg px-2 py-1" priority />
+      </Link>
 
       {/* Desktop links */}
       <div className="hidden md:flex items-center gap-3">
@@ -70,10 +70,7 @@ export function HomeNav({ lang, nav }: HomeNavProps) {
         open ? "translate-x-0" : "translate-x-full"
       )}>
         <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-2">
-            <Wine className="w-5 h-5 text-amber-400" />
-            <span className="font-bold text-stone-100">Wine Bank 24</span>
-          </div>
+          <Image src="/logo.png" alt="Wine Bank 24" width={90} height={45} className="h-9 w-auto object-contain bg-white rounded-lg px-2 py-1" />
           <button onClick={() => setOpen(false)} className="text-stone-400 hover:text-white">
             <X className="w-5 h-5" />
           </button>

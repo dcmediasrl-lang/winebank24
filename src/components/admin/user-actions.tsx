@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export function UserActions({
   userId,
@@ -14,10 +15,12 @@ export function UserActions({
   isBlocked: boolean;
   emailVerified: boolean;
 }) {
+  const router = useRouter();
   const [blocked, setBlocked] = useState(isBlocked);
   const [verified, setVerified] = useState(emailVerified);
   const [loading, setLoading] = useState(false);
   const [verifying, setVerifying] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   async function toggleBlock() {
     setLoading(true);
@@ -53,6 +56,21 @@ export function UserActions({
     }
   }
 
+  async function deleteUser() {
+    if (!confirm("Eliminare definitivamente questo utente?")) return;
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/admin/users/${userId}`, { method: "DELETE" });
+      if (!res.ok) throw new Error((await res.json()).error);
+      toast.success("Utente eliminato");
+      router.refresh();
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Errore durante l'eliminazione");
+    } finally {
+      setDeleting(false);
+    }
+  }
+
   return (
     <div className="flex items-center gap-2">
       {!verified && (
@@ -74,6 +92,15 @@ export function UserActions({
         disabled={loading}
       >
         {blocked ? "Sblocca" : "Blocca"}
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={deleteUser}
+        disabled={deleting}
+        className="text-red-600 hover:bg-red-50 hover:text-red-700"
+      >
+        <Trash2 className="w-4 h-4" />
       </Button>
     </div>
   );

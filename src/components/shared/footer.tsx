@@ -16,7 +16,7 @@ type Dict = {
 export function Footer({ dict, lang }: { dict: Dict; lang: string }) {
   const en = lang === "en";
   return (
-    <footer className="bg-stone-950 text-stone-400 mt-auto">
+    <footer className="mt-auto text-white/70" style={{ background: "var(--ev-dark)" }}>
 
       {/* Main footer */}
       <div className="max-w-7xl mx-auto px-6 py-12">
@@ -27,17 +27,17 @@ export function Footer({ dict, lang }: { dict: Dict; lang: string }) {
             <div>
               <Image src="/logo.png" alt="Wine Bank 24" width={130} height={65} className="h-14 w-auto object-contain bg-white rounded-xl px-3 py-1.5" />
             </div>
-            <p className="text-sm leading-relaxed text-stone-400 max-w-sm">
+            <p className="text-sm leading-relaxed text-white/70 max-w-sm">
               {dict.footer.tagline}
             </p>
             {/* Social */}
             <div className="flex items-center gap-4 pt-1">
               <a href="https://instagram.com/winebank24" target="_blank" rel="noopener noreferrer"
-                className="hover:text-amber-400 transition-colors text-sm">
+                className="transition-colors text-sm hover:text-white" style={{ color: "var(--ev-coral)" }}>
                 Instagram
               </a>
               <a href="https://facebook.com/winebank24" target="_blank" rel="noopener noreferrer"
-                className="hover:text-amber-400 transition-colors text-sm">
+                className="transition-colors text-sm hover:text-white" style={{ color: "var(--ev-coral)" }}>
                 Facebook
               </a>
             </div>
@@ -45,22 +45,22 @@ export function Footer({ dict, lang }: { dict: Dict; lang: string }) {
 
           {/* Links */}
           <div className="space-y-3">
-            <h4 className="text-stone-200 font-semibold text-sm uppercase tracking-wide">
+            <h4 className="text-white font-semibold text-sm uppercase tracking-wide">
               {en ? "Legal" : "Legale"}
             </h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href={`/${lang}/termini`} className="hover:text-amber-400 transition-colors">
+                <Link href={`/${lang}/termini`} className="text-white/70 hover:text-white transition-colors">
                   {dict.footer.terms}
                 </Link>
               </li>
               <li>
-                <Link href={`/${lang}/privacy`} className="hover:text-amber-400 transition-colors">
+                <Link href={`/${lang}/privacy`} className="text-white/70 hover:text-white transition-colors">
                   {dict.footer.privacy}
                 </Link>
               </li>
               <li>
-                <Link href={`/${lang}/cookie`} className="hover:text-amber-400 transition-colors">
+                <Link href={`/${lang}/cookie`} className="text-white/70 hover:text-white transition-colors">
                   Cookie Policy
                 </Link>
               </li>
@@ -69,19 +69,19 @@ export function Footer({ dict, lang }: { dict: Dict; lang: string }) {
 
           {/* Contacts */}
           <div className="space-y-3">
-            <h4 className="text-stone-200 font-semibold text-sm uppercase tracking-wide">
+            <h4 className="text-white font-semibold text-sm uppercase tracking-wide">
               {en ? "Contacts" : "Contatti"}
             </h4>
             <ul className="space-y-2 text-sm">
               <li className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-amber-400 shrink-0" />
-                <a href="mailto:info@winebank24.eu" className="hover:text-amber-400 transition-colors">
+                <Mail className="w-4 h-4 shrink-0" style={{ color: "var(--ev-coral)" }} />
+                <a href="mailto:info@winebank24.eu" className="text-white/70 hover:text-white transition-colors">
                   info@winebank24.eu
                 </a>
               </li>
-              <li className="text-stone-500 text-xs mt-2">
+              <li className="text-white/40 text-xs mt-2">
                 {en ? "VAT:" : "P.IVA:"}{" "}
-                <span className="text-stone-400">{en ? "pending registration" : "in fase di registrazione"}</span>
+                <span className="text-white/60">{en ? "pending registration" : "in fase di registrazione"}</span>
               </li>
             </ul>
           </div>
@@ -89,15 +89,15 @@ export function Footer({ dict, lang }: { dict: Dict; lang: string }) {
       </div>
 
       {/* Disclaimer + copyright */}
-      <div className="border-t border-stone-800">
+      <div className="border-t border-white/10">
         <div className="max-w-7xl mx-auto px-6 py-5 space-y-2">
-          <p className="text-xs text-stone-500 leading-relaxed">
+          <p className="text-xs text-white/40 leading-relaxed">
             ⚠️ {dict.footer.disclaimer}{" "}
             {en
               ? "Collecting digital certificates does not constitute an investment activity. The value of collectibles may vary."
               : "L'acquisizione di certificati digitali non costituisce attività di investimento. Il valore dei beni da collezione può variare."}
           </p>
-          <p className="text-xs text-stone-600">
+          <p className="text-xs text-white/30">
             © {new Date().getFullYear()} Wine Bank 24. {dict.footer.rights}
           </p>
         </div>

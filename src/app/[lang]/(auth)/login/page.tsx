@@ -41,10 +41,10 @@ function LoginForm({ lang }: { lang: string }) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-stone-950 px-4">
+    <div className="min-h-screen flex items-center justify-center px-4" style={{ background: "var(--ev-dark)" }}>
       <div className="w-full max-w-sm">
         <div className="flex items-center justify-center gap-2 mb-8">
-          <Wine className="w-8 h-8 text-amber-400" />
+          <Wine className="w-8 h-8 text-[#e97770]" />
           <span className="text-2xl font-bold text-white">Wine Bank 24</span>
         </div>
 
@@ -68,7 +68,7 @@ function LoginForm({ lang }: { lang: string }) {
           </div>
         )}
 
-        <Card>
+        <Card className="border-t-4 border-[#e97770]">
           <CardHeader>
             <CardTitle className="text-center">{lang === "en" ? "Sign in" : "Accedi"}</CardTitle>
           </CardHeader>
@@ -112,7 +112,7 @@ function LoginForm({ lang }: { lang: string }) {
                 <Label>Password</Label>
                 <Input type="password" required value={password} onChange={e => setPassword(e.target.value)} />
               </div>
-              <Button type="submit" disabled={loading} className="w-full bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold">
+              <Button type="submit" disabled={loading} className="w-full bg-[#e97770] hover:bg-[#f98780] text-white font-semibold">
                 {loading
                   ? (lang === "en" ? "Signing in..." : "Accesso in corso...")
                   : (lang === "en" ? "Sign in" : "Accedi")}
@@ -129,7 +129,7 @@ function LoginForm({ lang }: { lang: string }) {
 
         {/* Language switcher */}
         <div className="text-center mt-4">
-          <Link href={lang === "en" ? "/it/login" : "/en/login"} className="text-stone-500 text-xs hover:text-amber-400 transition-colors">
+          <Link href={lang === "en" ? "/it/login" : "/en/login"} className="text-white/40 text-xs hover:text-white transition-colors">
             {lang === "en" ? "🇮🇹 Italiano" : "🇬🇧 English"}
           </Link>
         </div>

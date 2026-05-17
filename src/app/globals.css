@@ -49,6 +49,15 @@
 }
 
 :root {
+  --ev-coral: #e97770;
+  --ev-coral-hover: #f98780;
+  --ev-dark: #2f333b;
+  --ev-heading: #484d55;
+  --ev-body: #919499;
+  --ev-gray: #f3f3f3;
+}
+
+:root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);

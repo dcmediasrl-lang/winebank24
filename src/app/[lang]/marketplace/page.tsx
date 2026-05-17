@@ -6,6 +6,7 @@ import { InvestFractionDialog } from "@/components/collector/invest-fraction-dia
 import { BuyFractionButton } from "@/components/collector/buy-fraction-button";
 import { MakeOfferButton } from "@/components/collector/make-offer-button";
 import { NftImageGallery } from "@/components/shared/nft-image-gallery";
+import { AdSenseBanner } from "@/components/shared/adsense-banner";
 import { auth } from "@/lib/auth";
 import { Wine, TrendingUp, Users } from "lucide-react";
 
@@ -215,6 +216,13 @@ export default async function MarketplacePage() {
               ))}
             </div>
           </section>
+        )}
+
+        {/* AdSense — between sections */}
+        {(fractionableNfts.length > 0 || availableFractions.length > 0) && (
+          <div className="mb-10">
+            <AdSenseBanner slot="marketplace-mid" format="horizontal" className="w-full" />
+          </div>
         )}
 
         {/* Regular NFTs */}

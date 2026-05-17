@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
-import { Wine, Gem, Shield, ArrowRight } from "lucide-react";
+import { Gem, Shield, ArrowRight, Wine } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getDictionary, hasLocale } from "./dictionaries";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
+import { HomeNav } from "@/components/shared/home-nav";
+import { AdSenseBanner } from "@/components/shared/adsense-banner";
 
 export default async function HomePage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
@@ -32,31 +34,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
 
   return (
     <div className="min-h-screen bg-stone-950 text-white">
-      {/* Header */}
-      <header className="flex items-center justify-between px-8 py-5 border-b border-stone-800">
-        <div className="flex items-center gap-2">
-          <Wine className="w-6 h-6 text-amber-400" />
-          <span className="font-bold text-lg">Wine Bank 24</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link href={`/${lang}/marketplace`} className={cn(buttonVariants({ variant: "ghost" }), "text-stone-300 hover:text-white")}>
-            {dict.nav.marketplace}
-          </Link>
-          <Link href={`/${lang}/blog`} className={cn(buttonVariants({ variant: "ghost" }), "text-stone-300 hover:text-white")}>
-            {dict.nav.blog}
-          </Link>
-          <Link href={`/${lang}/login`} className={cn(buttonVariants({ variant: "outline" }), "border-stone-600 text-stone-200 hover:bg-stone-800")}>
-            {dict.nav.login}
-          </Link>
-          <Link href={`/${lang}/register`} className={cn(buttonVariants(), "bg-amber-500 hover:bg-amber-400 text-stone-950 font-semibold")}>
-            {dict.nav.register}
-          </Link>
-          {/* Language switcher */}
-          <Link href={lang === "en" ? "/it" : "/en"} className="text-stone-500 text-xs hover:text-amber-400 transition-colors ml-2">
-            {lang === "en" ? "🇮🇹 IT" : "🇬🇧 EN"}
-          </Link>
-        </div>
-      </header>
+      <HomeNav lang={lang} nav={dict.nav} />
 
       {/* Hero */}
       <section className="text-center px-4 py-28">
@@ -81,6 +59,11 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
           </Link>
         </div>
       </section>
+
+      {/* AdSense — after hero */}
+      <div className="max-w-5xl mx-auto px-4 pb-10">
+        <AdSenseBanner slot="homepage-hero" format="horizontal" className="w-full" />
+      </div>
 
       {/* How it works */}
       <section className="max-w-5xl mx-auto px-4 pb-20">
@@ -136,9 +119,6 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
         </section>
       )}
 
-      <footer className="border-t border-stone-800 text-center py-6 text-stone-500 text-sm">
-        © {new Date().getFullYear()} Wine Bank 24 — {dict.footer.rights}
-      </footer>
     </div>
   );
 }

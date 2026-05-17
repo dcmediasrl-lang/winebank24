@@ -24,7 +24,7 @@ export default async function MarketplaceLayout({
   return (
     <div className="flex min-h-screen">
       <Sidebar role={role} userName={session.user.name || session.user.email || ""} lang={lang} dict={dict.sidebar} />
-      <main className="flex-1 bg-stone-50 overflow-auto">{children}</main>
+      <main className="flex-1 bg-stone-50 overflow-auto pt-14 lg:pt-0">{children}</main>
     </div>
   );
 }

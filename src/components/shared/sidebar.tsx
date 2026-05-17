@@ -1,12 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard, Users, Gem, ShoppingCart, BarChart3,
-  Settings, LogOut, Wine, Package, FileText, Shield, Tag
+  Settings, LogOut, Wine, Package, FileText, Shield, Tag,
+  Menu, X,
 } from "lucide-react";
 
 type Role = "ADMIN" | "CANTINA" | "COLLECTOR";
@@ -43,6 +45,7 @@ interface SidebarProps {
 export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
   const pathname = usePathname();
   const p = (path: string) => `/${lang}${path}`;
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const adminLinks = [
     { href: p("/admin"), label: dict.dashboard, icon: LayoutDashboard },
@@ -73,8 +76,8 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
   const links = role === "ADMIN" ? adminLinks : role === "CANTINA" ? cantinaLinks : collectorLinks;
   const roleLabel = role === "ADMIN" ? dict.admin : role === "CANTINA" ? dict.winery : dict.collector;
 
-  return (
-    <aside className="flex flex-col w-64 min-h-screen bg-stone-950 text-stone-100 px-4 py-6">
+  const navContent = (
+    <>
       <div className="mb-8 px-2">
         <div className="flex items-center gap-2 mb-1">
           <Wine className="w-6 h-6 text-amber-400" />
@@ -89,6 +92,7 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
           <Link
             key={href}
             href={href}
+            onClick={() => setMobileOpen(false)}
             className={cn(
               "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
               pathname === href
@@ -109,6 +113,51 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
         <LogOut className="w-4 h-4" />
         {dict.logout}
       </button>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile top bar */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-stone-950 border-b border-stone-800 flex items-center justify-between px-4 py-3">
+        <div className="flex items-center gap-2">
+          <Wine className="w-5 h-5 text-amber-400" />
+          <span className="font-bold text-stone-100">Wine Bank 24</span>
+        </div>
+        <button
+          onClick={() => setMobileOpen(true)}
+          className="text-stone-300 hover:text-white p-1"
+        >
+          <Menu className="w-6 h-6" />
+        </button>
+      </div>
+
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div
+          className="lg:hidden fixed inset-0 z-40 bg-black/60"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      {/* Mobile drawer */}
+      <aside className={cn(
+        "lg:hidden fixed top-0 left-0 z-50 h-full w-72 bg-stone-950 text-stone-100 px-4 py-6 flex flex-col transition-transform duration-300",
+        mobileOpen ? "translate-x-0" : "-translate-x-full"
+      )}>
+        <button
+          onClick={() => setMobileOpen(false)}
+          className="absolute top-4 right-4 text-stone-400 hover:text-white"
+        >
+          <X className="w-5 h-5" />
+        </button>
+        {navContent}
+      </aside>
+
+      {/* Desktop sidebar */}
+      <aside className="hidden lg:flex flex-col w-64 min-h-screen bg-stone-950 text-stone-100 px-4 py-6 shrink-0">
+        {navContent}
+      </aside>
+    </>
   );
 }

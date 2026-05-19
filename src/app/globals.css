@@ -85,8 +85,8 @@
   --accent-foreground: #ffffff;
   --destructive: #c0392b;
   --destructive-foreground: #ffffff;
-  --border: rgba(255, 255, 255, 0.08);
-  --input: rgba(255, 255, 255, 0.08);
+  --border: rgba(255, 255, 255, 0.18);
+  --input: rgba(255, 255, 255, 0.18);
   --ring: #993300;
   --radius: 0.75rem;
   --chart-1: #993300;

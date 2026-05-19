@@ -88,7 +88,7 @@
     "error_login": "Incorrect email or password, or account temporarily locked."
   },
   "collector": {
-    "dashboard_title": "Your Wine Bank 24 portfolio",
+    "dashboard_title": "Your Wine Bank 24 collection",
     "welcome": "Welcome",
     "nfts_owned": "Certificates owned",
     "fractions_owned": "Shares owned",

@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { TrendingUp, CheckCircle, AlertTriangle } from "lucide-react";
+import { Users, CheckCircle, AlertTriangle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { CONTRACT_BUYER_VERSION } from "@/lib/contracts";
 import { KycGateDialog } from "@/components/collector/kyc-gate-dialog";
@@ -113,7 +113,7 @@ export function InvestFractionDialog({
           onClick={handleDialogOpen}
           type="button"
         >
-          <TrendingUp className="w-4 h-4 mr-2" />
+          <Users className="w-4 h-4 mr-2" />
           Acquista quota
         </DialogTrigger>
         <DialogContent className="max-w-sm max-h-[90vh] overflow-y-auto">
@@ -194,7 +194,7 @@ export function InvestFractionDialog({
                   },
                   {
                     key: "c4",
-                    text: "Wine Bank 24 non garantisce alcun rendimento. Il valore dei beni da collezione può variare.",
+                    text: "Wine Bank 24 non garantisce alcun apprezzamento di valore. Il prezzo di mercato dei beni da collezione può aumentare o diminuire.",
                   },
                 ] as { key: keyof typeof checks; text: string }[]).map(({ key, text }) => (
                   <label key={key} className="flex items-start gap-3 cursor-pointer group">

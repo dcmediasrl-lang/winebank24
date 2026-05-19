@@ -51,9 +51,9 @@ export default function TerminiPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-3">4. Assenza di Prospettive di Rendimento</h2>
+            <h2 className="text-xl font-bold text-white mb-3">4. Finalità Esclusivamente Collezionistica</h2>
             <p>
-              Wine Bank 24 <strong>non garantisce, non promette e non suggerisce</strong> alcun rendimento economico
+              Wine Bank 24 <strong>non garantisce, non promette e non suggerisce</strong> alcun apprezzamento di valore
               derivante dall'acquisizione di certificati digitali. Qualsiasi variazione del prezzo di cessione tra
               collezionisti è determinata liberamente dalle parti, in modo analogo alla compravendita di qualsiasi
               altro bene da collezione (opere d'arte, orologi, vini in asta).
@@ -97,7 +97,7 @@ export default function TerminiPage() {
             <p>Registrandosi alla piattaforma, l'utente dichiara di:</p>
             <ul className="mt-2 space-y-1 text-sm list-disc list-inside">
               <li>Acquisire i certificati digitali esclusivamente come beni da collezione</li>
-              <li>Non avere aspettative di rendimento finanziario garantito</li>
+              <li>Non avere aspettative di apprezzamento garantito del valore del bene</li>
               <li>Essere consapevole che il valore dei beni da collezione può variare</li>
               <li>Avere piena capacità giuridica di agire (maggiore età)</li>
               <li>Aver letto e accettato integralmente i presenti Termini e Condizioni</li>

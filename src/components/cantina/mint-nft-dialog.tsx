@@ -82,7 +82,7 @@ export function MintNftDialog({ collectionId, cantinaId, collectionName }: {
               checked={form.isFractionable}
               onCheckedChange={(checked) => setForm(f => ({ ...f, isFractionable: !!checked }))}
             />
-            <Label htmlFor="isFractionable" className="cursor-pointer">Frazionabile (investimento collettivo)</Label>
+            <Label htmlFor="isFractionable" className="cursor-pointer">Frazionabile (co-proprietà collezionistica)</Label>
           </div>
           {form.isFractionable && (
             <div className="space-y-1">

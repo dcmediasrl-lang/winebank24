@@ -10,7 +10,7 @@ import { NftImageGallery } from "@/components/shared/nft-image-gallery";
 import { AdSenseBanner } from "@/components/shared/adsense-banner";
 import { auth } from "@/lib/auth";
 import Link from "next/link";
-import { Wine, TrendingUp, Users, Filter } from "lucide-react";
+import { Wine, Users, Filter } from "lucide-react";
 
 export default async function MarketplacePage({
   params,
@@ -152,11 +152,11 @@ export default async function MarketplacePage({
           </div>
         )}
 
-        {/* Fractionable NFTs — investment section */}
+        {/* Fractionable NFTs — co-ownership section */}
         {fractionableNfts.length > 0 && (
           <section className="mb-12">
             <div className="flex items-center gap-2 mb-4">
-              <TrendingUp className="w-5 h-5 text-[#df071b]" />
+              <Users className="w-5 h-5 text-[#df071b]" />
               <h2 className="text-xl font-bold text-white">Diventa co-proprietario</h2>
             </div>
             <p className="text-[var(--wine-muted)] text-sm mb-5">Acquista una quota di un'esclusiva bottiglia di vino. La bottiglia originale è custodita e certificata dalla cantina.</p>

@@ -130,7 +130,7 @@ export function BuyButton({
                 },
                 {
                   key: "c4",
-                  text: "Wine Bank 24 non garantisce, non promette e non suggerisce alcun rendimento economico. Il valore di mercato dei beni da collezione può aumentare o diminuire. Non ho aspettative di guadagno garantito.",
+                  text: "Wine Bank 24 non garantisce, non promette e non suggerisce alcun apprezzamento di valore. Il prezzo di mercato dei beni da collezione può aumentare o diminuire. Acquisto esclusivamente per finalità collezionistiche.",
                 },
               ] as { key: keyof typeof checks; text: string }[]).map(({ key, text }) => (
                 <label key={key} className="flex items-start gap-3 cursor-pointer group">

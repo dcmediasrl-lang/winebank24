@@ -25,7 +25,7 @@ export default async function CollectorDashboardPage() {
         <h1 className="text-2xl font-bold text-white">
           Benvenuto, {session!.user.name || session!.user.email}
         </h1>
-        <p className="text-[var(--wine-muted)] text-sm mt-1">Il tuo portafoglio Wine Bank 24</p>
+        <p className="text-[var(--wine-muted)] text-sm mt-1">La tua collezione Wine Bank 24</p>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

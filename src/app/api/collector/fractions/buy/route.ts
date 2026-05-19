@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     const nft = await db.nft.findUnique({ where: { id: body.nftId } });
     if (!nft) return NextResponse.json({ error: "NFT non trovato" }, { status: 404 });
     if (!nft.isFractionable) return NextResponse.json({ error: "Questo NFT non è frazionabile" }, { status: 400 });
-    if (nft.status !== "LISTED") return NextResponse.json({ error: "NFT non disponibile per l'investimento" }, { status: 400 });
+    if (nft.status !== "LISTED") return NextResponse.json({ error: "NFT non disponibile per l'acquisto" }, { status: 400 });
 
     const available = Number(nft.availableValue);
     if (available < body.amount) {

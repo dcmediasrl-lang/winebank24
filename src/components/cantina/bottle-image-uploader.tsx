@@ -114,8 +114,8 @@ export function BottleImageUploader({ images, onChange, disabled }: Props) {
             <div
               key={img.previewUrl}
               className={cn(
-                "relative rounded-lg overflow-hidden border-2 aspect-square bg-stone-100 group",
-                i === 0 ? "border-amber-400" : "border-stone-200"
+                "relative rounded-lg overflow-hidden border-2 aspect-square bg-[#231515] group",
+                i === 0 ? "border-amber-400" : "border-white/10"
               )}
             >
               {/* Image or skeleton */}
@@ -131,21 +131,21 @@ export function BottleImageUploader({ images, onChange, disabled }: Props) {
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <ImageIcon className="w-6 h-6 text-stone-300" />
+                  <ImageIcon className="w-6 h-6 text-white/20" />
                 </div>
               )}
 
               {/* Uploading spinner */}
               {img.uploading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-white/50">
+                <div className="absolute inset-0 flex items-center justify-center bg-black/50">
                   <div className="w-5 h-5 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
                 </div>
               )}
 
               {/* Error overlay */}
               {img.error && !img.uploading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-red-50/80">
-                  <span className="text-red-600 text-xs text-center px-1">Errore</span>
+                <div className="absolute inset-0 flex items-center justify-center bg-red-950/80">
+                  <span className="text-red-400 text-xs text-center px-1">Errore</span>
                 </div>
               )}
 
@@ -186,9 +186,9 @@ export function BottleImageUploader({ images, onChange, disabled }: Props) {
           {Array.from({ length: MAX_FILES - images.length }).map((_, i) => (
             <div
               key={`placeholder-${i}`}
-              className="aspect-square rounded-lg border-2 border-dashed border-stone-200 bg-stone-50 flex items-center justify-center"
+              className="aspect-square rounded-lg border-2 border-dashed border-white/10 bg-[#231515] flex items-center justify-center"
             >
-              <ImageIcon className="w-5 h-5 text-stone-300" />
+              <ImageIcon className="w-5 h-5 text-white/20" />
             </div>
           ))}
         </div>
@@ -204,19 +204,19 @@ export function BottleImageUploader({ images, onChange, disabled }: Props) {
           className={cn(
             "border-2 border-dashed rounded-lg p-5 text-center cursor-pointer transition-colors",
             dragging
-              ? "border-amber-400 bg-amber-50"
-              : "border-stone-300 bg-stone-50 hover:border-amber-400 hover:bg-amber-50/40"
+              ? "border-amber-400 bg-amber-950/20"
+              : "border-white/15 bg-[#231515] hover:border-amber-400 hover:bg-amber-950/10"
           )}
         >
-          <Upload className="w-6 h-6 text-stone-400 mx-auto mb-2" />
-          <p className="text-sm text-stone-600 font-medium">
+          <Upload className="w-6 h-6 text-white/40 mx-auto mb-2" />
+          <p className="text-sm text-white/80 font-medium">
             {images.length === 0 ? "Carica la foto della bottiglia" : "Aggiungi altra foto"}
           </p>
-          <p className="text-xs text-stone-400 mt-1">
+          <p className="text-xs text-white/40 mt-1">
             JPG, PNG, WebP · max 8 MB · {images.length}/{MAX_FILES} foto
-            {images.length === 0 && <span className="text-red-500 font-medium"> · obbligatoria</span>}
+            {images.length === 0 && <span className="text-red-400 font-medium"> · obbligatoria</span>}
           </p>
-          <p className="text-xs text-stone-400">Trascina qui o clicca per selezionare</p>
+          <p className="text-xs text-white/40">Trascina qui o clicca per selezionare</p>
         </div>
       )}
 
@@ -231,15 +231,15 @@ export function BottleImageUploader({ images, onChange, disabled }: Props) {
       />
 
       {/* Helper text */}
-      <p className="text-xs text-stone-400">
+      <p className="text-xs text-white/40">
         {images.length === 0 ? (
-          <span className="text-red-500">⚠ Almeno 1 foto è obbligatoria (contratto A.1)</span>
+          <span className="text-red-400">⚠ Almeno 1 foto è obbligatoria (contratto A.1)</span>
         ) : images[0]?.uploading ? (
-          <span className="text-amber-600">Caricamento in corso...</span>
+          <span className="text-amber-400">Caricamento in corso...</span>
         ) : images.some(i => i.error) ? (
-          <span className="text-red-500">Alcuni file hanno avuto errori. Rimuovili e riprova.</span>
+          <span className="text-red-400">Alcuni file hanno avuto errori. Rimuovili e riprova.</span>
         ) : (
-          <span className="text-green-700">
+          <span className="text-green-400">
             ✓ {images.filter(i => i.url).length} foto caricate
             {images.length > 1 && " · La prima è la copertina — clicca ★ per cambiarla"}
           </span>

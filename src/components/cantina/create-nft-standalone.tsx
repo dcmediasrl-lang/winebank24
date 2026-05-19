@@ -117,61 +117,63 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
       <DialogTrigger className={cn(buttonVariants(), "bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold")}>
         <Plus className="w-4 h-4 mr-2" /> Nuovo certificato
       </DialogTrigger>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Gem className="w-5 h-5 text-amber-500" />
+          <DialogTitle className="flex items-center gap-2 text-white text-lg">
+            <Gem className="w-5 h-5 text-amber-400" />
             Crea certificato digitale
           </DialogTitle>
-          <p className="text-sm text-white/50">Ogni certificato rappresenta una singola bottiglia unica.</p>
+          <p className="text-sm text-white/60">Ogni certificato rappresenta una singola bottiglia unica.</p>
         </DialogHeader>
 
-        <form onSubmit={submit} className="space-y-4 pt-2">
+        <form onSubmit={submit} className="space-y-5 pt-2">
 
           {/* Indisponibilità reminder */}
-          <div className="flex gap-2 bg-red-950/40 border border-red-800/60 rounded-lg p-3">
+          <div className="flex gap-3 bg-red-950/60 border border-red-600/50 rounded-lg p-3">
             <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
-            <p className="text-xs text-red-300 leading-relaxed">
-              <strong>Vincolo di indisponibilità:</strong> dal momento della creazione del certificato,
+            <p className="text-xs text-red-200 leading-relaxed">
+              <strong className="text-red-300">Vincolo di indisponibilità:</strong> dal momento della creazione del certificato,
               la bottiglia fisica non può essere venduta, spostata, data in pegno o consumata
-              fino alla liquidazione. Violazioni comportano una penale del <strong>200%</strong> del valore.
+              fino alla liquidazione. Violazioni comportano una penale del <strong className="text-red-300">200%</strong> del valore.
             </p>
           </div>
 
           {/* Identità della bottiglia */}
-          <div className="space-y-3 p-4 bg-[#231515] rounded-lg border border-[var(--wine-border)]">
-            <p className="text-xs font-semibold text-[var(--wine-muted)] uppercase tracking-wide">Identità della bottiglia</p>
+          <div className="space-y-4 p-4 bg-[#2a1010] rounded-xl border border-white/15">
+            <p className="text-xs font-bold text-amber-400/80 uppercase tracking-widest">Identità della bottiglia</p>
 
-            <div className="space-y-1">
-              <Label className="text-white/80">Nome del vino *</Label>
+            <div className="space-y-1.5">
+              <Label className="text-white font-medium">Nome del vino <span className="text-red-400">*</span></Label>
               <Input
                 required
                 value={form.name}
                 onChange={e => set("name", e.target.value)}
                 placeholder="es. Barolo Riserva DOCG"
+                className="border-white/20 bg-black/30 text-white placeholder:text-white/30 focus:border-amber-500"
               />
             </div>
 
-            <div className="space-y-1">
-              <Label className="text-white/80">Denominazione <span className="text-white/40 font-normal">(opzionale — cerca DOC/DOCG)</span></Label>
+            <div className="space-y-1.5">
+              <Label className="text-white font-medium">
+                Denominazione{" "}
+                <span className="text-white/45 font-normal text-xs">(opzionale — cerca DOC/DOCG)</span>
+              </Label>
               <WineDenominationPicker
                 value={denominationName}
                 onSelect={(d) => {
                   setDenominationId(d.id);
                   setDenominationName(d.name);
-                  // Pre-fill region if not set
                   if (!form.region) set("region", d.region);
-                  // Pre-fill grape if not set and exactly one grape
                   if (!form.grape && d.grapes.length === 1) set("grape", d.grapes[0]);
                 }}
               />
               {denominationId && (
                 <p className="text-xs text-amber-400">
-                  Collegato a: {denominationName}
+                  Collegato a: <span className="font-semibold">{denominationName}</span>
                   <button
                     type="button"
                     onClick={() => { setDenominationId(undefined); setDenominationName(""); }}
-                    className="ml-2 text-white/40 hover:text-red-400"
+                    className="ml-2 text-white/30 hover:text-red-400 transition-colors"
                   >
                     ✕ rimuovi
                   </button>
@@ -179,9 +181,9 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
               )}
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <Label className="text-white/80">Annata *</Label>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label className="text-white font-medium">Annata <span className="text-red-400">*</span></Label>
                 <Input
                   required
                   type="number"
@@ -189,10 +191,11 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
                   max={new Date().getFullYear()}
                   value={form.vintage}
                   onChange={e => set("vintage", e.target.value)}
+                  className="border-white/20 bg-black/30 text-white focus:border-amber-500"
                 />
               </div>
-              <div className="space-y-1">
-                <Label className="text-white/80">N° bottiglia *</Label>
+              <div className="space-y-1.5">
+                <Label className="text-white font-medium">N° bottiglia <span className="text-red-400">*</span></Label>
                 <Input
                   required
                   type="number"
@@ -200,51 +203,55 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
                   value={form.bottleNumber}
                   onChange={e => set("bottleNumber", e.target.value)}
                   placeholder="es. 1"
+                  className="border-white/20 bg-black/30 text-white placeholder:text-white/30 focus:border-amber-500"
                 />
                 <p className="text-xs text-white/40">Numero seriale univoco</p>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <Label className="text-white/80">Vitigno</Label>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label className="text-white font-medium">Vitigno</Label>
                 <select
                   value={form.grape}
                   onChange={e => set("grape", e.target.value)}
-                  className="w-full h-9 px-3 rounded-md border border-[var(--wine-border)] bg-[var(--wine-bg)] text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full h-10 px-3 rounded-md border border-white/20 bg-black/30 text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                 >
-                  <option value="">Seleziona...</option>
-                  {GRAPES.map(g => <option key={g} value={g}>{g}</option>)}
+                  <option value="" className="bg-[#1a0f0f]">Seleziona...</option>
+                  {GRAPES.map(g => <option key={g} value={g} className="bg-[#1a0f0f]">{g}</option>)}
                 </select>
               </div>
-              <div className="space-y-1">
-                <Label className="text-white/80">Regione</Label>
+              <div className="space-y-1.5">
+                <Label className="text-white font-medium">Regione</Label>
                 <select
                   value={form.region}
                   onChange={e => set("region", e.target.value)}
-                  className="w-full h-9 px-3 rounded-md border border-[var(--wine-border)] bg-[var(--wine-bg)] text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full h-10 px-3 rounded-md border border-white/20 bg-black/30 text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                 >
-                  <option value="">Seleziona...</option>
-                  {REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
+                  <option value="" className="bg-[#1a0f0f]">Seleziona...</option>
+                  {REGIONS.map(r => <option key={r} value={r} className="bg-[#1a0f0f]">{r}</option>)}
                 </select>
               </div>
             </div>
 
-            <div className="space-y-1">
-              <Label className="text-white/80">Descrizione <span className="text-white/40 font-normal">(opzionale)</span></Label>
+            <div className="space-y-1.5">
+              <Label className="text-white font-medium">
+                Descrizione{" "}
+                <span className="text-white/45 font-normal text-xs">(opzionale)</span>
+              </Label>
               <textarea
                 value={form.description}
                 onChange={e => set("description", e.target.value)}
                 placeholder="Caratteristiche, note di degustazione, storia..."
                 rows={2}
-                className="w-full px-3 py-2 rounded-md border border-[var(--wine-border)] bg-[var(--wine-bg)] text-white placeholder:text-white/30 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-amber-500"
+                className="w-full px-3 py-2 rounded-md border border-white/20 bg-black/30 text-white placeholder:text-white/30 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
               />
             </div>
 
-            <div className="space-y-1">
-              <Label className="text-white/80">
+            <div className="space-y-1.5">
+              <Label className="text-white font-medium">
                 Foto della bottiglia <span className="text-red-400 font-semibold">*</span>{" "}
-                <span className="text-white/40 font-normal">(1–4 immagini)</span>
+                <span className="text-white/45 font-normal text-xs">(1–4 immagini)</span>
               </Label>
               <BottleImageUploader
                 images={images}
@@ -255,41 +262,44 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
           </div>
 
           {/* Tipologia certificato */}
-          <div className="space-y-3 p-4 bg-[#231515] rounded-lg border border-[var(--wine-border)]">
-            <p className="text-xs font-semibold text-[var(--wine-muted)] uppercase tracking-wide">Tipologia certificato</p>
+          <div className="space-y-4 p-4 bg-[#2a1010] rounded-xl border border-white/15">
+            <p className="text-xs font-bold text-amber-400/80 uppercase tracking-widest">Tipologia certificato</p>
 
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
                 onClick={() => setIsFractionable(false)}
                 className={cn(
-                  "flex flex-col items-start p-3 rounded-lg border-2 text-left transition-colors",
+                  "flex flex-col items-start p-4 rounded-xl border-2 text-left transition-all",
                   !isFractionable
-                    ? "border-amber-500 bg-amber-950/30"
-                    : "border-[var(--wine-border)] hover:border-white/20"
+                    ? "border-amber-500 bg-amber-950/40 shadow-[0_0_12px_rgba(245,158,11,0.15)]"
+                    : "border-white/15 hover:border-white/30 bg-black/20"
                 )}
               >
-                <span className="font-semibold text-sm text-white">Proprietà intera</span>
-                <span className="text-xs text-white/50 mt-0.5">Un solo collezionista acquista la bottiglia completa</span>
+                <span className="font-bold text-sm text-white">Proprietà intera</span>
+                <span className="text-xs text-white/55 mt-1 leading-relaxed">Un solo collezionista acquista la bottiglia completa</span>
               </button>
               <button
                 type="button"
                 onClick={() => setIsFractionable(true)}
                 className={cn(
-                  "flex flex-col items-start p-3 rounded-lg border-2 text-left transition-colors",
+                  "flex flex-col items-start p-4 rounded-xl border-2 text-left transition-all",
                   isFractionable
-                    ? "border-amber-500 bg-amber-950/30"
-                    : "border-[var(--wine-border)] hover:border-white/20"
+                    ? "border-amber-500 bg-amber-950/40 shadow-[0_0_12px_rgba(245,158,11,0.15)]"
+                    : "border-white/15 hover:border-white/30 bg-black/20"
                 )}
               >
-                <span className="font-semibold text-sm text-white">Co-proprietà</span>
-                <span className="text-xs text-white/50 mt-0.5">Più collezionisti possono acquisire quote della stessa bottiglia</span>
+                <span className="font-bold text-sm text-white">Co-proprietà</span>
+                <span className="text-xs text-white/55 mt-1 leading-relaxed">Più collezionisti possono acquisire quote della stessa bottiglia</span>
               </button>
             </div>
 
             {!isFractionable ? (
-              <div className="space-y-1">
-                <Label className="text-white/80">Prezzo di vendita (€) <span className="text-white/40 font-normal">(lascia vuoto per non mettere in vendita)</span></Label>
+              <div className="space-y-1.5">
+                <Label className="text-white font-medium">
+                  Prezzo di vendita (€){" "}
+                  <span className="text-white/45 font-normal text-xs">(lascia vuoto per non mettere in vendita)</span>
+                </Label>
                 <Input
                   type="number"
                   step="0.01"
@@ -297,11 +307,12 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
                   value={form.price}
                   onChange={e => set("price", e.target.value)}
                   placeholder="es. 250.00"
+                  className="border-white/20 bg-black/30 text-white placeholder:text-white/30 focus:border-amber-500"
                 />
               </div>
             ) : (
-              <div className="space-y-1">
-                <Label className="text-white/80">Valore totale della bottiglia (€) *</Label>
+              <div className="space-y-1.5">
+                <Label className="text-white font-medium">Valore totale della bottiglia (€) <span className="text-red-400">*</span></Label>
                 <Input
                   type="number"
                   step="0.01"
@@ -310,6 +321,7 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
                   value={form.totalValue}
                   onChange={e => set("totalValue", e.target.value)}
                   placeholder="es. 1000.00"
+                  className="border-white/20 bg-black/30 text-white placeholder:text-white/30 focus:border-amber-500"
                 />
                 <p className="text-xs text-white/50">I collezionisti potranno acquisire qualsiasi quota fino al valore totale.</p>
               </div>
@@ -319,7 +331,7 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
           <Button
             type="submit"
             disabled={loading}
-            className="w-full bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold"
+            className="w-full bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-base py-5"
           >
             {loading ? "Creazione in corso..." : "Crea certificato digitale"}
           </Button>

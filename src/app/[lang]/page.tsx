@@ -7,11 +7,21 @@ import { db } from "@/lib/db";
 import { HomeNav } from "@/components/shared/home-nav";
 import { AdSenseBanner } from "@/components/shared/adsense-banner";
 import { HeroSlider } from "@/components/shared/hero-slider";
+import { auth } from "@/lib/auth";
 
 export default async function HomePage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const dict = await getDictionary(lang);
+  const session = await auth();
+
+  const dashboardUrl = session
+    ? session.user.role === "ADMIN"
+      ? `/${lang}/admin`
+      : session.user.role === "CANTINA"
+      ? `/${lang}/cantina`
+      : `/${lang}/collector`
+    : null;
 
   const recentPosts = await db.blogPost.findMany({
     where: { isPublished: true },
@@ -36,7 +46,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
     <div style={{ fontFamily: "var(--font-dm-sans, 'DM Sans', sans-serif)", background: "var(--wine-bg)", color: "var(--wine-text)", minHeight: "100vh" }}>
 
       {/* NAV */}
-      <HomeNav lang={lang} nav={dict.nav} />
+      <HomeNav lang={lang} nav={dict.nav} dashboardUrl={dashboardUrl} userName={session?.user?.name || session?.user?.email || null} />
 
       {/* HERO SLIDER */}
       <HeroSlider

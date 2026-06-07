@@ -67,7 +67,7 @@ export default async function AdminUsersPage() {
                       {new Date(u.createdAt).toLocaleDateString("it-IT")}
                     </td>
                     <td className="py-3">
-                      <UserActions userId={u.id} isBlocked={u.isBlocked} emailVerified={!!u.emailVerified} />
+                      <UserActions userId={u.id} isBlocked={u.isBlocked} emailVerified={!!u.emailVerified} currentRole={u.role as "ADMIN" | "CANTINA" | "COLLECTOR"} />
                     </td>
                   </tr>
                 ))}

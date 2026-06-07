@@ -81,6 +81,52 @@ export async function sendSaleEmail(to: string, nftName: string, amount: number)
   }
 }
 
+export async function sendWelcomeCantinaEmail(to: string, contactName: string, cantinaName: string, password: string) {
+  try {
+    await sendEmail(
+      to,
+      `Benvenuto su Wine Bank 24 — Account Cantina attivato`,
+      `
+      <div style="font-family:sans-serif;max-width:540px;margin:0 auto;background:#0d0705;padding:32px;border-radius:12px">
+        <div style="text-align:center;margin-bottom:24px">
+          <img src="${APP_URL}/logo.png" alt="Wine Bank 24" style="height:48px;width:auto;background:#fff;padding:6px 12px;border-radius:8px" />
+        </div>
+        <h2 style="color:#ffffff;font-size:22px;margin-bottom:8px">Benvenuto su Wine Bank 24, ${contactName}!</h2>
+        <p style="color:#cccccc;font-size:15px;line-height:1.6">Il tuo account cantina <strong style="color:#ffffff">${cantinaName}</strong> è stato attivato dall'amministratore della piattaforma.</p>
+
+        <div style="background:#1a0f0f;border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:20px;margin:24px 0">
+          <p style="color:#999;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin:0 0 12px">Le tue credenziali di accesso</p>
+          <p style="color:#ffffff;margin:6px 0"><strong>Email:</strong> <span style="color:#f59e0b">${to}</span></p>
+          <p style="color:#ffffff;margin:6px 0"><strong>Password temporanea:</strong> <span style="color:#f59e0b;font-family:monospace;font-size:16px">${password}</span></p>
+        </div>
+
+        <p style="color:#cccccc;font-size:14px;line-height:1.6">Ti consigliamo di cambiare la password al primo accesso dalle impostazioni del tuo profilo.</p>
+
+        <div style="text-align:center;margin:28px 0">
+          <a href="${APP_URL}/it/login" style="display:inline-block;background:linear-gradient(135deg,#993300,#df071b);color:#ffffff;font-weight:700;padding:14px 32px;border-radius:8px;text-decoration:none;font-size:15px">
+            Accedi alla piattaforma →
+          </a>
+        </div>
+
+        <p style="color:#cccccc;font-size:13px;line-height:1.6">Dalla tua area personale potrai:<br/>
+          • Creare le tue collezioni di vini<br/>
+          • Emettere certificati digitali NFT per le tue bottiglie<br/>
+          • Ricevere offerte dai collezionisti<br/>
+          • Consultare i report delle cessioni
+        </p>
+
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.1);margin:28px 0"/>
+        <p style="color:#666;font-size:12px;text-align:center">Wine Bank 24 — Piattaforma di collezionismo digitale per vini pregiati italiani<br/>
+          <a href="${APP_URL}" style="color:#993300">${APP_URL}</a>
+        </p>
+      </div>
+      `
+    );
+  } catch (err) {
+    console.error("[email] Failed to send welcome cantina email to", to, err);
+  }
+}
+
 export async function sendBurnRequestEmail(adminEmail: string, nftName: string, address: string) {
   try {
     await sendEmail(

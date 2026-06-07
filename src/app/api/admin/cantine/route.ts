@@ -4,15 +4,20 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
+import { sendWelcomeCantinaEmail } from "@/lib/email";
 
 const schema = z.object({
   cantinaName: z.string().min(2),
+  description: z.string().optional(),
   location: z.string().optional(),
   vatNumber: z.string().optional(),
   website: z.string().url().optional().or(z.literal("")),
+  logoUrl: z.string().url().optional().or(z.literal("")),
+  royaltyPct: z.number().min(0).max(50).optional(),
   contactName: z.string().min(2),
   email: z.string().email(),
   password: z.string().min(6),
+  sendWelcomeEmail: z.boolean().optional(),
 });
 
 export async function POST(req: Request) {
@@ -37,17 +42,26 @@ export async function POST(req: Request) {
         email: body.email,
         password: hashed,
         role: "CANTINA",
+        emailVerified: new Date(), // auto-verified since created by admin
         cantina: {
           create: {
             name: body.cantinaName,
+            description: body.description || null,
             location: body.location || null,
             vatNumber: body.vatNumber || null,
             website: body.website || null,
+            logoUrl: body.logoUrl || null,
+            royaltyPct: body.royaltyPct ?? 5.0,
             isVerified: true,
           },
         },
       },
     });
+
+    // Send welcome email if requested
+    if (body.sendWelcomeEmail !== false) {
+      await sendWelcomeCantinaEmail(body.email, body.contactName, body.cantinaName, body.password);
+    }
 
     return NextResponse.json({ success: true });
   } catch (err) {

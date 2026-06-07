@@ -1,9 +1,15 @@
 import { db } from "@/lib/db";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CreateCantinaDialog } from "@/components/admin/create-cantina-dialog";
+import Link from "next/link";
+import { Plus } from "lucide-react";
 
-export default async function AdminCantinePage() {
+export default async function AdminCantinePage({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}) {
+  const { lang } = await params;
   const cantine = await db.cantina.findMany({
     orderBy: { createdAt: "desc" },
     include: {
@@ -17,8 +23,17 @@ export default async function AdminCantinePage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Gestione Cantine</h1>
-        <CreateCantinaDialog />
+        <div>
+          <h1 className="text-2xl font-bold text-white">Gestione Cantine</h1>
+          <p className="text-white/50 text-sm mt-1">{cantine.length} cantine registrate</p>
+        </div>
+        <Link
+          href={`/${lang}/admin/cantine/new`}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-white text-sm transition-opacity hover:opacity-90"
+          style={{ background: "var(--wine-gradient)" }}
+        >
+          <Plus className="w-4 h-4" /> Nuova Cantina
+        </Link>
       </div>
 
       <Card>

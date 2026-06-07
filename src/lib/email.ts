@@ -1,5 +1,5 @@
 const BREVO_API_KEY = process.env.BREVO_API_KEY!;
-const FROM_EMAIL = "dcmediasrl@gmail.com";
+const FROM_EMAIL = process.env.EMAIL_FROM || "noreply@winebank24.eu";
 const FROM_NAME = "Wine Bank 24";
 const APP_URL = process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "https://app.winebank24.eu";
 
@@ -20,6 +20,7 @@ async function sendEmail(to: string, subject: string, html: string) {
 
   if (!res.ok) {
     const err = await res.text();
+    console.error(`[Brevo] ${res.status} sending to ${to}:`, err);
     throw new Error(`Brevo error ${res.status}: ${err}`);
   }
 }

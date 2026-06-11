@@ -33,9 +33,9 @@ function LoginForm() {
     const res = await fetch("/api/auth/session");
     const session = await res.json();
     const role = session?.user?.role;
-    if (role === "ADMIN") router.push("/admin");
-    else if (role === "CANTINA") router.push("/cantina");
-    else router.push("/collector/portfolio");
+    if (role === "ADMIN") router.push("/it/admin");
+    else if (role === "CANTINA") router.push("/it/cantina");
+    else router.push("/it/collector/portfolio");
   }
 
   return (

@@ -3,7 +3,8 @@ import { db } from "@/lib/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreateNftStandalone } from "@/components/cantina/create-nft-standalone";
 import { ListCantinaNftButton } from "@/components/cantina/list-cantina-nft-button";
-import { Wine, Gem } from "lucide-react";
+import { Wine, ExternalLink } from "lucide-react";
+import Link from "next/link";
 
 const STATUS_COLOR: Record<string, string> = {
   MINTED:              "bg-white/10 text-white/60",
@@ -25,7 +26,8 @@ const STATUS_LABEL: Record<string, string> = {
   LIQUIDATED:          "Liquidato",
 };
 
-export default async function CantinaNftsPage() {
+export default async function CantinaNftsPage({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang } = await params;
   const session = await auth();
 
   const cantina = await db.cantina.findUnique({
@@ -106,9 +108,11 @@ export default async function CantinaNftsPage() {
                             </div>
                           )}
                           <div>
-                            <p className="font-medium text-white">{nft.name}</p>
+                            <Link href={`/${lang}/nft/${nft.id}`} className="font-medium text-white hover:text-amber-400 transition-colors">
+                              {nft.name}
+                            </Link>
                             {nft.isFractionable && (
-                              <span className="text-xs text-blue-600 font-medium">
+                              <span className="block text-xs text-blue-400 font-medium">
                                 Co-proprietà · {nft.fractions.length} quote
                               </span>
                             )}
@@ -141,13 +145,22 @@ export default async function CantinaNftsPage() {
                         {new Date(nft.createdAt).toLocaleDateString("it-IT")}
                       </td>
                       <td className="py-3">
-                        {(nft.status === "MINTED" || nft.status === "LISTED") && !nft.isFractionable && (
-                          <ListCantinaNftButton
-                            nftId={nft.id}
-                            isListed={nft.isListed}
-                            price={nft.price}
-                          />
-                        )}
+                        <div className="flex items-center gap-2">
+                          {(nft.status === "MINTED" || nft.status === "LISTED") && !nft.isFractionable && (
+                            <ListCantinaNftButton
+                              nftId={nft.id}
+                              isListed={nft.isListed}
+                              price={nft.price}
+                            />
+                          )}
+                          <Link
+                            href={`/${lang}/nft/${nft.id}`}
+                            className="text-white/30 hover:text-amber-400 transition-colors"
+                            title="Vedi dettaglio"
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                          </Link>
+                        </div>
                       </td>
                     </tr>
                   ))}

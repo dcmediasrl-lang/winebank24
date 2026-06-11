@@ -6,9 +6,11 @@ import { ListNftButton } from "@/components/collector/list-nft-button";
 import { BurnRequestButton } from "@/components/collector/burn-request-button";
 import { ListFractionButton } from "@/components/collector/list-fraction-button";
 import { NftImageGallery } from "@/components/shared/nft-image-gallery";
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, ExternalLink } from "lucide-react";
+import Link from "next/link";
 
-export default async function CollectorPortfolioPage() {
+export default async function CollectorPortfolioPage({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang } = await params;
   const session = await auth();
   const [nfts, fractions] = await Promise.all([
     db.nft.findMany({
@@ -43,15 +45,26 @@ export default async function CollectorPortfolioPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {nfts.map((nft) => (
               <Card key={nft.id} className="overflow-hidden hover:shadow-md transition-shadow">
-                <NftImageGallery
-                  images={(nft as any).imageGallery ?? []}
-                  fallbackUrl={nft.imageUrl ?? undefined}
-                  alt={nft.name}
-                  className="h-44"
-                />
+                <Link href={`/${lang}/nft/${nft.id}`}>
+                  <NftImageGallery
+                    images={(nft as any).imageGallery ?? []}
+                    fallbackUrl={nft.imageUrl ?? undefined}
+                    alt={nft.name}
+                    className="h-44"
+                  />
+                </Link>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-base">{nft.name}</CardTitle>
-                  <div className="text-xs text-white/40">{nft.cantina.name} · {nft.collection.name}</div>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <Link href={`/${lang}/nft/${nft.id}`} className="hover:text-amber-400 transition-colors">
+                        <CardTitle className="text-base truncate">{nft.name}</CardTitle>
+                      </Link>
+                      <div className="text-xs text-white/40">{nft.cantina.name} · {nft.collection.name}</div>
+                    </div>
+                    <Link href={`/${lang}/nft/${nft.id}`} className="text-white/30 hover:text-amber-400 transition-colors shrink-0 mt-0.5">
+                      <ExternalLink className="w-4 h-4" />
+                    </Link>
+                  </div>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -88,11 +101,18 @@ export default async function CollectorPortfolioPage() {
               <Card key={fraction.id} className="overflow-hidden hover:shadow-md transition-shadow border-amber-100">
                 <CardHeader className="pb-2">
                   <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle className="text-base">{fraction.nft.name}</CardTitle>
+                    <div className="min-w-0">
+                      <Link href={`/${lang}/nft/${fraction.nft.id}`} className="hover:text-amber-400 transition-colors">
+                        <CardTitle className="text-base truncate">{fraction.nft.name}</CardTitle>
+                      </Link>
                       <div className="text-xs text-white/40">{fraction.nft.cantina.name} · {fraction.nft.collection.name}</div>
                     </div>
-                    <Badge className="bg-amber-100 text-amber-800 text-xs shrink-0 ml-2">Quota</Badge>
+                    <div className="flex items-center gap-1 shrink-0 ml-2">
+                      <Badge className="bg-amber-100 text-amber-800 text-xs">Quota</Badge>
+                      <Link href={`/${lang}/nft/${fraction.nft.id}`} className="text-white/30 hover:text-amber-400 transition-colors">
+                        <ExternalLink className="w-4 h-4" />
+                      </Link>
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-3">

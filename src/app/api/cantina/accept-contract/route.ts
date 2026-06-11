@@ -31,10 +31,13 @@ export async function POST() {
 
   await logActivity(session.user.id, "KYC_SUBMITTED", `Contratto Cantina accettato — ${CONTRACT_CANTINA_VERSION}`);
 
-  // Generate PDF and send email — non-blocking, doesn't delay the response
-  generateContractPdf(cantina.name, cantina.user.email, acceptedAt)
-    .then((pdfBytes) => sendContractEmail(cantina.user.email, cantina.name, pdfBytes))
-    .catch((err) => console.error("[accept-contract] PDF/email error:", err));
+  // Generate PDF and send email before responding (Vercel terminates after response)
+  try {
+    const pdfBytes = await generateContractPdf(cantina.name, cantina.user.email, acceptedAt);
+    await sendContractEmail(cantina.user.email, cantina.name, pdfBytes);
+  } catch (err) {
+    console.error("[accept-contract] PDF/email error:", err);
+  }
 
   return NextResponse.json({ success: true });
 }

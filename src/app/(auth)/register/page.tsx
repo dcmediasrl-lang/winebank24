@@ -154,7 +154,7 @@ export default function RegisterPage() {
                     required
                     value={form.country}
                     onChange={e => set("country", e.target.value)}
-                    className="w-full h-9 px-3 rounded-md border border-stone-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    className="w-full h-9 px-3 rounded-md border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                   >
                     {EU_COUNTRIES.map(c => (
                       <option key={c.code} value={c.code}>{c.name}</option>

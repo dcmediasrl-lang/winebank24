@@ -75,7 +75,7 @@ export async function POST(req: Request) {
       cantinaRoyaltyPct: cantinaRoyaltyPct.toString(),
       isPrimarySale: isPrimarySale ? "true" : "false",
     },
-    success_url: `${appUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+    success_url: `${appUrl}/it/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${appUrl}/it/marketplace`,
   };
 

@@ -80,7 +80,7 @@ export async function POST(req: Request) {
         percentage: percentage.toString(),
         platformFeePct: platformFeePct.toString(),
       },
-      success_url: `${appUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${appUrl}/it/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${appUrl}/it/marketplace`,
     };
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+// ref on <ins> is kept for future use (e.g. checking ad visibility)
 import { useCookieConsent } from "./cookie-banner";
 
 interface AdSenseBannerProps {

@@ -45,7 +45,3 @@ export async function burnNft(tokenId: number, reason: string) {
   return { txHash: receipt.hash };
 }
 
-export async function getBottleOnChain(tokenId: number) {
-  const contract = getContract();
-  return contract.getBottle(tokenId);
-}

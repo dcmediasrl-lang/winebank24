@@ -73,20 +73,18 @@ export function InvestFractionDialog({
 
   async function doInvest() {
     try {
-      const res = await fetch("/api/collector/fractions/buy", {
+      // Route through Stripe checkout for real payment processing
+      const res = await fetch("/api/checkout/fraction", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nftId, amount: parsedAmount }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      toast.success(`Quota di proprietà acquisita: ${data.percentage.toFixed(4)}%`);
-      setOpen(false);
-      setAmount("");
-      router.refresh();
+      // Redirect to Stripe checkout
+      window.location.href = data.url;
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Errore nell'acquisto della quota");
-    } finally {
       setLoading(false);
     }
   }

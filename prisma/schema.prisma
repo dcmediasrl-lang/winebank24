@@ -138,7 +138,8 @@ model Cantina {
   logoUrl     String?
   isVerified  Boolean  @default(false)
   isBlocked   Boolean  @default(false)
-  royaltyPct  Float    @default(5.0)
+  royaltyPct       Float    @default(5.0)
+  stripeAccountId  String?  // Stripe Connect account ID (for automatic split payments)
   // Contractual
   contractAcceptedAt      DateTime?
   contractVersion         String?

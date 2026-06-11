@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import {
   LayoutDashboard, Users, Gem, ShoppingCart, BarChart3,
   Settings, LogOut, Wine, Package, FileText, Shield, Tag,
-  Menu, X, Heart, BookmarkPlus, Database, Home, UserCircle,
+  Menu, X, Heart, BookmarkPlus, Database, Home, UserCircle, Banknote,
 } from "lucide-react";
 
 type Role = "ADMIN" | "CANTINA" | "COLLECTOR";
@@ -59,6 +59,7 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
     { href: p("/admin/nfts"), label: dict.nft_minting, icon: Gem },
     { href: p("/admin/transactions"), label: dict.transactions, icon: ShoppingCart },
     { href: p("/admin/blog"), label: dict.blog, icon: FileText },
+    { href: p("/admin/payouts"), label: "Pagamenti", icon: Banknote },
     { href: p("/admin/wine-db"), label: "Database Vini", icon: Database },
     { href: p("/admin/settings"), label: dict.settings, icon: Settings },
   ];

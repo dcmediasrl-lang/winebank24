@@ -3,19 +3,24 @@ const FROM_EMAIL = process.env.EMAIL_FROM || "noreply@winebank24.eu";
 const FROM_NAME = "Wine Bank 24";
 const APP_URL = process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "https://app.winebank24.eu";
 
-async function sendEmail(to: string, subject: string, html: string) {
+type Attachment = { name: string; content: string }; // base64 content
+
+async function sendEmail(to: string, subject: string, html: string, attachments?: Attachment[]) {
+  const body: Record<string, unknown> = {
+    sender: { name: FROM_NAME, email: FROM_EMAIL },
+    to: [{ email: to }],
+    subject,
+    htmlContent: html,
+  };
+  if (attachments?.length) body.attachment = attachments;
+
   const res = await fetch("https://api.brevo.com/v3/smtp/email", {
     method: "POST",
     headers: {
       "api-key": BREVO_API_KEY,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      sender: { name: FROM_NAME, email: FROM_EMAIL },
-      to: [{ email: to }],
-      subject,
-      htmlContent: html,
-    }),
+    body: JSON.stringify(body),
   });
 
   if (!res.ok) {
@@ -124,6 +129,41 @@ export async function sendWelcomeCantinaEmail(to: string, contactName: string, c
     );
   } catch (err) {
     console.error("[email] Failed to send welcome cantina email to", to, err);
+  }
+}
+
+export async function sendContractEmail(to: string, cantinaName: string, pdfBytes: Uint8Array) {
+  try {
+    const base64 = Buffer.from(pdfBytes).toString("base64");
+    await sendEmail(
+      to,
+      "Contratto Creator accettato — Wine Bank 24",
+      `
+      <div style="font-family:sans-serif;max-width:540px;margin:0 auto;background:#0d0705;padding:32px;border-radius:12px">
+        <div style="text-align:center;margin-bottom:24px">
+          <img src="${APP_URL}/logo.png" alt="Wine Bank 24" style="height:48px;background:#fff;padding:6px 12px;border-radius:8px"/>
+        </div>
+        <h2 style="color:#ffffff;font-size:20px;margin-bottom:8px">Contratto Creator accettato</h2>
+        <p style="color:#cccccc;font-size:15px;line-height:1.6">
+          Grazie <strong style="color:#ffffff">${cantinaName}</strong>!<br/>
+          Il tuo contratto Creator con Wine Bank 24 è stato registrato con successo.
+        </p>
+        <p style="color:#cccccc;font-size:14px;line-height:1.6">
+          In allegato trovi il PDF del contratto firmato digitalmente. Conservalo per i tuoi archivi.
+        </p>
+        <div style="text-align:center;margin:28px 0">
+          <a href="${APP_URL}/it/cantina" style="display:inline-block;background:linear-gradient(135deg,#993300,#df071b);color:#ffffff;font-weight:700;padding:14px 32px;border-radius:8px;text-decoration:none;font-size:15px">
+            Vai alla tua area cantina →
+          </a>
+        </div>
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.1);margin:24px 0"/>
+        <p style="color:#666;font-size:12px;text-align:center">Wine Bank 24 — Piattaforma di collezionismo digitale per vini pregiati italiani</p>
+      </div>
+      `,
+      [{ name: "contratto-creator-winebank24.pdf", content: base64 }]
+    );
+  } catch (err) {
+    console.error("[email] Failed to send contract email to", to, err);
   }
 }
 

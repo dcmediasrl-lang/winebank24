@@ -118,7 +118,8 @@
     "winery": "Winery",
     "collector": "Collector",
     "blog": "Blog",
-    "offerte": "Offers"
+    "offerte": "Offers",
+    "profilo": "My Profile"
   },
   "blog": {
     "title": "Blog",

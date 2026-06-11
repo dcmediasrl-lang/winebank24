@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { NftImageGallery } from "@/components/shared/nft-image-gallery";
 import Image from "next/image";
 import Link from "next/link";
-import { MapPin, Globe, Wine } from "lucide-react";
+import { MapPin, Globe, Wine, FileText, Calendar } from "lucide-react";
 
 export default async function CantinaPublicPage({
   params,
@@ -38,6 +38,16 @@ export default async function CantinaPublicPage({
           },
         },
         orderBy: { updatedAt: "desc" },
+      },
+      blogPosts: {
+        where: { isPublished: true },
+        select: {
+          id: true, slug: true, titleIt: true, titleEn: true,
+          excerptIt: true, excerptEn: true, category: true,
+          coverImage: true, publishedAt: true, createdAt: true,
+        },
+        orderBy: { publishedAt: "desc" },
+        take: 6,
       },
     },
   });
@@ -107,7 +117,7 @@ export default async function CantinaPublicPage({
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           {cantina.nfts.map((nft) => (
-            <Link key={nft.id} href={`/${lang}/marketplace`} className="block group">
+            <Link key={nft.id} href={`/${lang}/nft/${nft.id}`} className="block group">
               <Card className="overflow-hidden hover:shadow-lg transition-shadow h-full">
                 <NftImageGallery
                   images={nft.imageGallery ?? []}
@@ -140,6 +150,57 @@ export default async function CantinaPublicPage({
             </Link>
           ))}
         </div>
+      )}
+
+      {/* Blog posts from this cantina */}
+      {cantina.blogPosts.length > 0 && (
+        <section className="mt-14">
+          <h2 className="text-xl font-bold text-white mb-5 flex items-center gap-2">
+            <FileText className="w-5 h-5 text-amber-600" />
+            Dal blog di {cantina.name}
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {cantina.blogPosts.map(post => {
+              const title = lang === "en" ? (post.titleEn || post.titleIt) : post.titleIt;
+              const excerpt = lang === "en" ? (post.excerptEn || post.excerptIt) : post.excerptIt;
+              return (
+                <Link key={post.id} href={`/${lang}/blog/${post.slug}`} className="block group">
+                  <div className="bg-[#1a0f0f] rounded-xl border border-[var(--wine-border)] overflow-hidden hover:border-amber-600/30 transition-colors h-full flex flex-col">
+                    {post.coverImage && (
+                      <div className="h-40 overflow-hidden">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={post.coverImage}
+                          alt={title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                    )}
+                    <div className="p-4 flex flex-col flex-1">
+                      {post.category && (
+                        <Badge className="mb-2 text-xs w-fit bg-amber-900/30 text-amber-400 border-amber-700/30">
+                          {post.category}
+                        </Badge>
+                      )}
+                      <p className="font-semibold text-white text-sm leading-snug group-hover:text-amber-400 transition-colors">
+                        {title}
+                      </p>
+                      {excerpt && (
+                        <p className="text-xs text-white/50 mt-1.5 line-clamp-2">{excerpt}</p>
+                      )}
+                      <p className="text-xs text-white/25 mt-auto pt-3 flex items-center gap-1">
+                        <Calendar className="w-3 h-3" />
+                        {new Date(post.publishedAt || post.createdAt).toLocaleDateString("it-IT", {
+                          day: "2-digit", month: "long", year: "numeric",
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
       )}
     </div>
   );

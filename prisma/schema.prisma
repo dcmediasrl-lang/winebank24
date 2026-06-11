@@ -148,6 +148,7 @@ model Cantina {
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   collections Collection[]
   nfts        Nft[]
+  blogPosts   BlogPost[]
 }
 
 model Collection {
@@ -186,6 +187,9 @@ model Nft {
   isListed        Boolean   @default(false)
   bottleNumber    Int
   vintage         Int?
+  bottleFormat    String?   // e.g. "75cl", "Magnum 1.5L"
+  bottleStory     String?   // brief history of the bottle
+  currentLocation String?   // where it's stored / cellar info
   isFractionable  Boolean   @default(false)
   totalValue      Decimal?  @db.Decimal(10,2)
   availableValue  Decimal?  @db.Decimal(10,2)
@@ -365,9 +369,13 @@ model BlogPost {
   isPublished Boolean   @default(false)
   publishedAt DateTime?
   authorId    String
+  cantinaId   String?   // if set, this post belongs to a cantina's blog
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
+  cantina     Cantina?  @relation(fields: [cantinaId], references: [id], onDelete: SetNull)
+
   @@index([slug])
   @@index([isPublished, publishedAt])
+  @@index([cantinaId])
 }

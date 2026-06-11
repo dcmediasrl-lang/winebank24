@@ -19,6 +19,9 @@ const schema = z.object({
   isFractionable: z.boolean().optional(),
   totalValue: z.number().positive().optional(),
   denominationId: z.string().optional(),
+  bottleFormat: z.string().max(60).optional(),
+  bottleStory: z.string().max(2000).optional(),
+  currentLocation: z.string().max(300).optional(),
 });
 
 const blockchainReady =
@@ -113,6 +116,9 @@ export async function POST(req: Request) {
         price: isFractionable ? null : (body.price ?? null),
         bottleNumber: body.bottleNumber,
         vintage: body.vintage,
+        bottleFormat: body.bottleFormat ?? null,
+        bottleStory: body.bottleStory ?? null,
+        currentLocation: body.currentLocation ?? null,
         isFractionable,
         totalValue: isFractionable && body.totalValue ? body.totalValue : null,
         availableValue: isFractionable && body.totalValue ? body.totalValue : null,

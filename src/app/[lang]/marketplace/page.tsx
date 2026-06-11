@@ -166,7 +166,7 @@ export default async function MarketplacePage({
                 const availableValue = Number(nft.availableValue ?? 0);
                 const soldPct = totalValue > 0 ? ((totalValue - availableValue) / totalValue) * 100 : 0;
                 return (
-                  <Card key={nft.id} className="overflow-hidden hover:shadow-lg transition-shadow group border-amber-200">
+                  <Card key={nft.id} className="overflow-hidden hover:shadow-lg transition-shadow group border-amber-200 relative">
                     <div className="h-48 relative">
                       <NftImageGallery
                         images={nft.imageGallery ?? []}
@@ -182,7 +182,11 @@ export default async function MarketplacePage({
                       )}
                     </div>
                     <CardHeader className="pb-2 pt-4">
-                      <CardTitle className="text-sm font-semibold leading-tight">{nft.name}</CardTitle>
+                      <CardTitle className="text-sm font-semibold leading-tight">
+                        <Link href={`/${lang}/nft/${nft.id}`} className="hover:text-amber-400 transition-colors">
+                          {nft.name}
+                        </Link>
+                      </CardTitle>
                       <p className="text-xs text-[var(--wine-muted)]">
                         {nft.cantina.name}{" "}
                         <Link href={`/${lang}/cantine/${nft.cantina.id}`} className="text-amber-600 hover:underline">
@@ -334,21 +338,27 @@ export default async function MarketplacePage({
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {nfts.map((nft) => (
                 <Card key={nft.id} className="overflow-hidden hover:shadow-lg transition-shadow group">
-                  <div className="relative">
-                    <NftImageGallery
-                      images={nft.imageGallery ?? []}
-                      fallbackUrl={nft.imageUrl ?? undefined}
-                      alt={nft.name}
-                      className="h-48"
-                    />
-                    {session && (
-                      <div className="absolute top-2 left-2 z-10">
-                        <FavoriteButton nftId={nft.id} initialFavorited={userFavoriteIds.has(nft.id)} />
-                      </div>
-                    )}
-                  </div>
+                  <Link href={`/${lang}/nft/${nft.id}`} className="block">
+                    <div className="relative">
+                      <NftImageGallery
+                        images={nft.imageGallery ?? []}
+                        fallbackUrl={nft.imageUrl ?? undefined}
+                        alt={nft.name}
+                        className="h-48"
+                      />
+                      {session && (
+                        <div className="absolute top-2 left-2 z-10">
+                          <FavoriteButton nftId={nft.id} initialFavorited={userFavoriteIds.has(nft.id)} />
+                        </div>
+                      )}
+                    </div>
+                  </Link>
                   <CardHeader className="pb-2 pt-4">
-                    <CardTitle className="text-sm font-semibold leading-tight">{nft.name}</CardTitle>
+                    <CardTitle className="text-sm font-semibold leading-tight">
+                      <Link href={`/${lang}/nft/${nft.id}`} className="hover:text-amber-400 transition-colors">
+                        {nft.name}
+                      </Link>
+                    </CardTitle>
                     <p className="text-xs text-[var(--wine-muted)]">
                       {nft.cantina.name}{" "}
                       <Link href={`/${lang}/cantine/${nft.cantina.id}`} className="text-amber-600 hover:underline">

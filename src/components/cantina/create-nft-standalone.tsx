@@ -43,6 +43,9 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
     bottleNumber: "1",
     price: "",
     totalValue: "",
+    bottleFormat: "",
+    bottleStory: "",
+    currentLocation: "",
   });
 
   function set(field: string, value: string) {
@@ -50,7 +53,7 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
   }
 
   function resetForm() {
-    setForm({ name: "", description: "", vintage: new Date().getFullYear().toString(), grape: "", region: "", bottleNumber: "1", price: "", totalValue: "" });
+    setForm({ name: "", description: "", vintage: new Date().getFullYear().toString(), grape: "", region: "", bottleNumber: "1", price: "", totalValue: "", bottleFormat: "", bottleStory: "", currentLocation: "" });
     setImages([]);
     setIsFractionable(false);
     setDenominationId(undefined);
@@ -95,6 +98,9 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
           isFractionable,
           totalValue: isFractionable && form.totalValue ? parseFloat(form.totalValue) : undefined,
           denominationId: denominationId || undefined,
+          bottleFormat: form.bottleFormat || undefined,
+          bottleStory: form.bottleStory || undefined,
+          currentLocation: form.currentLocation || undefined,
         }),
       });
       const data = await res.json();
@@ -234,15 +240,64 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
               </div>
             </div>
 
+            {/* Formato bottiglia */}
             <div className="space-y-1.5">
               <Label className="text-white font-medium">
-                Descrizione{" "}
+                Formato bottiglia{" "}
+                <span className="text-white/45 font-normal text-xs">(opzionale)</span>
+              </Label>
+              <select
+                value={form.bottleFormat}
+                onChange={e => set("bottleFormat", e.target.value)}
+                className="w-full h-10 px-3 rounded-md border border-white/20 bg-black/30 text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+              >
+                <option value="" className="bg-[#1a0f0f]">Seleziona formato…</option>
+                {["375ml (Mezza bottiglia)", "750ml (Standard)", "1L", "1.5L (Magnum)", "3L (Double Magnum)", "4.5L (Réhoboam)", "6L (Impériale)", "9L (Salmanazar)", "12L (Balthazar)", "Altro"].map(f => (
+                  <option key={f} value={f} className="bg-[#1a0f0f]">{f}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Storia della bottiglia */}
+            <div className="space-y-1.5">
+              <Label className="text-white font-medium">
+                Storia della bottiglia{" "}
+                <span className="text-white/45 font-normal text-xs">(opzionale)</span>
+              </Label>
+              <textarea
+                value={form.bottleStory}
+                onChange={e => set("bottleStory", e.target.value)}
+                placeholder="Breve storia: annata eccezionale, particolarità del vigneto, metodo di produzione…"
+                rows={3}
+                className="w-full px-3 py-2 rounded-md border border-white/20 bg-black/30 text-white placeholder:text-white/30 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+              />
+            </div>
+
+            {/* Collocazione attuale */}
+            <div className="space-y-1.5">
+              <Label className="text-white font-medium">
+                Collocazione attuale{" "}
+                <span className="text-white/45 font-normal text-xs">(opzionale)</span>
+              </Label>
+              <input
+                type="text"
+                value={form.currentLocation}
+                onChange={e => set("currentLocation", e.target.value)}
+                placeholder="es. Cantina di stoccaggio, Barolo (CN) — temperatura controllata"
+                className="w-full h-10 px-3 rounded-md border border-white/20 bg-black/30 text-white placeholder:text-white/30 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+              />
+            </div>
+
+            {/* Note di produzione */}
+            <div className="space-y-1.5">
+              <Label className="text-white font-medium">
+                Note di produzione{" "}
                 <span className="text-white/45 font-normal text-xs">(opzionale)</span>
               </Label>
               <textarea
                 value={form.description}
                 onChange={e => set("description", e.target.value)}
-                placeholder="Caratteristiche, note di degustazione, storia..."
+                placeholder="Caratteristiche organolettiche, abbinamenti, affinamento…"
                 rows={2}
                 className="w-full px-3 py-2 rounded-md border border-white/20 bg-black/30 text-white placeholder:text-white/30 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
               />

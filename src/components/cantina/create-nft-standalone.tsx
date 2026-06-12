@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Plus, Gem, AlertTriangle } from "lucide-react";
+import { Plus, Gem, AlertTriangle, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { BottleImageUploader, type UploadedImage } from "./bottle-image-uploader";
 import { WineDenominationPicker } from "@/components/shared/wine-denomination-picker";
@@ -34,11 +34,11 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
   const [images, setImages] = useState<UploadedImage[]>([]);
   const [denominationId, setDenominationId] = useState<string | undefined>(undefined);
   const [denominationName, setDenominationName] = useState<string>("");
+  const [selectedGrapes, setSelectedGrapes] = useState<string[]>([]);
   const [form, setForm] = useState({
     name: "",
     description: "",
     vintage: new Date().getFullYear().toString(),
-    grape: "",
     region: "",
     bottleNumber: "1",
     price: "",
@@ -52,12 +52,22 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
     setForm(f => ({ ...f, [field]: value }));
   }
 
+  function addGrape(grape: string) {
+    if (!grape || selectedGrapes.includes(grape)) return;
+    setSelectedGrapes(prev => [...prev, grape]);
+  }
+
+  function removeGrape(grape: string) {
+    setSelectedGrapes(prev => prev.filter(g => g !== grape));
+  }
+
   function resetForm() {
-    setForm({ name: "", description: "", vintage: new Date().getFullYear().toString(), grape: "", region: "", bottleNumber: "1", price: "", totalValue: "", bottleFormat: "", bottleStory: "", currentLocation: "" });
+    setForm({ name: "", description: "", vintage: new Date().getFullYear().toString(), region: "", bottleNumber: "1", price: "", totalValue: "", bottleFormat: "", bottleStory: "", currentLocation: "" });
     setImages([]);
     setIsFractionable(false);
     setDenominationId(undefined);
     setDenominationName("");
+    setSelectedGrapes([]);
   }
 
   async function submit(e: React.FormEvent) {
@@ -89,7 +99,7 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
           name: form.name,
           description: form.description || undefined,
           vintage: parseInt(form.vintage) || undefined,
-          grape: form.grape || undefined,
+          grape: selectedGrapes.length > 0 ? selectedGrapes.join(", ") : undefined,
           region: form.region || undefined,
           bottleNumber: parseInt(form.bottleNumber),
           price: !isFractionable && form.price ? parseFloat(form.price) : undefined,
@@ -170,7 +180,9 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
                   setDenominationId(d.id);
                   setDenominationName(d.name);
                   if (!form.region) set("region", d.region);
-                  if (!form.grape && d.grapes.length === 1) set("grape", d.grapes[0]);
+                  if (selectedGrapes.length === 0 && d.grapes.length > 0) {
+                    setSelectedGrapes(d.grapes.slice(0, 4));
+                  }
                 }}
               />
               {denominationId && (
@@ -217,14 +229,31 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label className="text-white font-medium">Vitigno</Label>
+                <Label className="text-white font-medium">Vitigni</Label>
+                {/* Selected chips */}
+                {selectedGrapes.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mb-1.5">
+                    {selectedGrapes.map(g => (
+                      <span key={g} className="inline-flex items-center gap-1 bg-amber-900/40 border border-amber-700/40 text-amber-300 text-xs px-2 py-0.5 rounded-full">
+                        {g}
+                        <button type="button" onClick={() => removeGrape(g)} className="hover:text-red-400 transition-colors">
+                          <X className="w-2.5 h-2.5" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
                 <select
-                  value={form.grape}
-                  onChange={e => set("grape", e.target.value)}
+                  value=""
+                  onChange={e => { addGrape(e.target.value); e.currentTarget.value = ""; }}
                   className="w-full h-10 px-3 rounded-md border border-white/20 bg-black/30 text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                 >
-                  <option value="" className="bg-[#1a0f0f]">Seleziona...</option>
-                  {GRAPES.map(g => <option key={g} value={g} className="bg-[#1a0f0f]">{g}</option>)}
+                  <option value="" className="bg-[#1a0f0f]">
+                    {selectedGrapes.length === 0 ? "Seleziona..." : "+ Aggiungi vitigno"}
+                  </option>
+                  {GRAPES.filter(g => !selectedGrapes.includes(g)).map(g => (
+                    <option key={g} value={g} className="bg-[#1a0f0f]">{g}</option>
+                  ))}
                 </select>
               </div>
               <div className="space-y-1.5">

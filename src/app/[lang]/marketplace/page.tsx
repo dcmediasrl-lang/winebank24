@@ -46,7 +46,7 @@ export default async function MarketplacePage({
         .catch(() => new Set<string>())
     : new Set<string>();
 
-  const [allListedNfts, listedFractions] = await Promise.all([
+  const [allListedNfts, listedFractions, mintedNfts] = await Promise.all([
     db.nft.findMany({
       where: {
         isListed: true,
@@ -80,6 +80,16 @@ export default async function MarketplacePage({
         owner: { select: { id: true, name: true, email: true } },
       },
       orderBy: { updatedAt: "desc" },
+    }).catch(() => [] as any[]),
+    db.nft.findMany({
+      where: { status: "MINTED" },
+      include: {
+        cantina: { select: { id: true, name: true } },
+        collection: { select: { name: true, vintage: true, grape: true } },
+        denomination: { select: { name: true, type: true, region: true } },
+      },
+      orderBy: { createdAt: "desc" },
+      take: 12,
     }).catch(() => [] as any[]),
   ]);
 
@@ -323,7 +333,7 @@ export default async function MarketplacePage({
         )}
 
         {/* Regular NFTs */}
-        {nfts.length === 0 && fractionableNfts.length === 0 ? (
+        {nfts.length === 0 && fractionableNfts.length === 0 && mintedNfts.length === 0 ? (
           <div className="text-center py-20 text-white/40">
             <p className="text-lg">Nessun NFT disponibile al momento</p>
           </div>
@@ -411,6 +421,55 @@ export default async function MarketplacePage({
             </div>
           </>
         ) : null}
+
+        {/* Prossimamente — MINTED NFTs preview */}
+        {mintedNfts.length > 0 && (
+          <section className="mt-12">
+            <div className="flex items-center gap-2 mb-4">
+              <Wine className="w-5 h-5 text-white/40" />
+              <h2 className="text-xl font-bold text-white">Prossimamente</h2>
+            </div>
+            <p className="text-[var(--wine-muted)] text-sm mb-5">Nuove bottiglie certificate in arrivo sul marketplace.</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              {mintedNfts.map((nft) => (
+                <Link key={nft.id} href={`/${lang}/nft/${nft.id}`} className="block group">
+                  <Card className="overflow-hidden hover:shadow-lg transition-shadow border-white/10 opacity-80 hover:opacity-100">
+                    <div className="relative">
+                      <NftImageGallery
+                        images={nft.imageGallery ?? []}
+                        fallbackUrl={nft.imageUrl ?? undefined}
+                        alt={nft.name}
+                        className="h-48"
+                      />
+                      <div className="absolute inset-0 bg-black/30 flex items-end p-2">
+                        <Badge className="bg-white/10 border border-white/20 text-white/80 text-xs backdrop-blur-sm">
+                          In anteprima
+                        </Badge>
+                      </div>
+                    </div>
+                    <CardHeader className="pb-2 pt-4">
+                      <CardTitle className="text-sm font-semibold leading-tight group-hover:text-amber-400 transition-colors">
+                        {nft.name}
+                      </CardTitle>
+                      <p className="text-xs text-[var(--wine-muted)]">{nft.cantina.name}</p>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex flex-wrap gap-1">
+                        {nft.collection.vintage && <Badge variant="outline" className="text-xs">{nft.collection.vintage}</Badge>}
+                        {nft.collection.grape && <Badge variant="secondary" className="text-xs">{nft.collection.grape}</Badge>}
+                        {nft.denomination && (
+                          <Badge className={`text-xs ${nft.denomination.type === "DOCG" ? "bg-red-700" : nft.denomination.type === "DOC" ? "bg-orange-600" : "bg-gray-600"} text-white`}>
+                            {nft.denomination.type}
+                          </Badge>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
     </div>
   );
 }

@@ -155,10 +155,11 @@ export default async function CantinaNftsPage({ params }: { params: Promise<{ la
                           )}
                           <Link
                             href={`/${lang}/nft/${nft.id}`}
-                            className="text-white/30 hover:text-amber-400 transition-colors"
-                            title="Vedi dettaglio"
+                            className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded border border-white/20 text-white/60 hover:border-amber-500 hover:text-amber-400 transition-colors"
+                            title="Vedi scheda prodotto"
                           >
-                            <ExternalLink className="w-4 h-4" />
+                            <ExternalLink className="w-3 h-3" />
+                            Scheda
                           </Link>
                         </div>
                       </td>

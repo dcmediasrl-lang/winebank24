@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import {
   Save, ShieldCheck, ExternalLink, Upload, FileText,
   Trash2, UserCircle, CreditCard, Building2, CheckCircle2,
-  AlertCircle, Link2, Unlink, RefreshCw,
+  AlertCircle, Link2, Unlink, RefreshCw, Download,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -231,11 +231,23 @@ function DocumentiTab({ cantina }: { cantina: Cantina }) {
             <div className="flex items-center gap-2 text-sm text-white/70">
               <FileText className="w-4 h-4" /> Contratto Creator
             </div>
-            <Badge className={hasContract
-              ? "bg-green-900/40 text-green-400 border-green-700/40"
-              : "bg-red-900/40 text-red-400 border-red-700/40"}>
-              {hasContract ? "Accettato" : "Non accettato"}
-            </Badge>
+            <div className="flex items-center gap-2">
+              <Badge className={hasContract
+                ? "bg-green-900/40 text-green-400 border-green-700/40"
+                : "bg-red-900/40 text-red-400 border-red-700/40"}>
+                {hasContract ? "Accettato" : "Non accettato"}
+              </Badge>
+              {hasContract && (
+                <a
+                  href="/api/cantina/contract-pdf"
+                  download
+                  className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-lg border border-amber-700/40 text-amber-400 hover:bg-amber-900/20 transition-colors"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  Scarica PDF
+                </a>
+              )}
+            </div>
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm text-white/70">

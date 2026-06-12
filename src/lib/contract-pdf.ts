@@ -167,11 +167,11 @@ export async function generateContractPdf(cantinaName: string, contactEmail: str
   y -= 16;
 
   const declarations = [
-    "✓ Ho letto integralmente il contratto e ne comprendo il contenuto.",
-    "✓ Accetto il vincolo di indisponibilità del bene fisico per tutta la durata della certificazione digitale.",
-    "✓ Mi impegno a rispettare gli obblighi di custodia (conservazione, assicurazione, audit, accesso ispettivo).",
-    "✓ Prendo atto della clausola penale del 200% e della risoluzione immediata per inadempimento.",
-    "✓ Autorizzo Wine Bank 24 ad agire come mandatario con rappresentanza limitata.",
+    "* Ho letto integralmente il contratto e ne comprendo il contenuto.",
+    "* Accetto il vincolo di indisponibilita' del bene fisico per tutta la durata della certificazione digitale.",
+    "* Mi impegno a rispettare gli obblighi di custodia (conservazione, assicurazione, audit, accesso ispettivo).",
+    "* Prendo atto della clausola penale del 200% e della risoluzione immediata per inadempimento.",
+    "* Autorizzo Wine Bank 24 ad agire come mandatario con rappresentanza limitata.",
   ];
 
   for (const decl of declarations) {

@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Plus, Settings2 } from "lucide-react";
 
 export default async function AdminCantinePage({
   params,
@@ -56,7 +56,8 @@ export default async function AdminCantinePage({
                     <th className="pb-3 pr-4">P.IVA</th>
                     <th className="pb-3 pr-4">Collezioni</th>
                     <th className="pb-3 pr-4">NFT</th>
-                    <th className="pb-3">Stato</th>
+                    <th className="pb-3 pr-4">Stato</th>
+                    <th className="pb-3"></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[var(--wine-border)]">
@@ -68,10 +69,19 @@ export default async function AdminCantinePage({
                       <td className="py-3 pr-4 text-[var(--wine-muted)]">{c.vatNumber ?? "—"}</td>
                       <td className="py-3 pr-4 text-center">{c._count.collections}</td>
                       <td className="py-3 pr-4 text-center">{c._count.nfts}</td>
-                      <td className="py-3">
+                      <td className="py-3 pr-4">
                         <Badge variant={c.user.isBlocked ? "destructive" : "outline"}>
                           {c.user.isBlocked ? "Bloccata" : "Attiva"}
                         </Badge>
+                      </td>
+                      <td className="py-3">
+                        <Link
+                          href={`/${lang}/admin/cantine/${c.id}`}
+                          className="flex items-center gap-1.5 text-xs text-white/50 hover:text-white transition-colors whitespace-nowrap"
+                        >
+                          <Settings2 className="w-3.5 h-3.5" />
+                          Gestisci
+                        </Link>
                       </td>
                     </tr>
                   ))}

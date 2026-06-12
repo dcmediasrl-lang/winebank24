@@ -140,6 +140,10 @@ model Cantina {
   isBlocked   Boolean  @default(false)
   royaltyPct       Float    @default(5.0)
   stripeAccountId  String?  // Stripe Connect account ID (for automatic split payments)
+  // Bank transfer alternative
+  iban         String?
+  bic          String?
+  bankName     String?
   // Contractual
   contractAcceptedAt      DateTime?
   contractVersion         String?

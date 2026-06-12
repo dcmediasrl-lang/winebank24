@@ -5,11 +5,15 @@ import { db } from "@/lib/db";
 import { z } from "zod";
 
 const schema = z.object({
-  name: z.string().min(1, "Nome obbligatorio").max(120),
+  name: z.string().min(1, "Nome obbligatorio").max(120).optional(),
   description: z.string().max(2000).optional(),
   location: z.string().max(200).optional(),
   website: z.string().url("URL non valido").or(z.literal("")).optional(),
   logoUrl: z.string().url("URL logo non valido").or(z.literal("")).optional(),
+  // Payment fields
+  iban: z.string().max(34).optional(),
+  bic: z.string().max(11).optional(),
+  bankName: z.string().max(100).optional(),
 });
 
 export async function PATCH(req: Request) {
@@ -26,11 +30,14 @@ export async function PATCH(req: Request) {
     const updated = await db.cantina.update({
       where: { id: cantina.id },
       data: {
-        name: body.name,
-        description: body.description || null,
-        location: body.location || null,
-        website: body.website || null,
-        logoUrl: body.logoUrl || null,
+        ...(body.name !== undefined && { name: body.name }),
+        ...(body.description !== undefined && { description: body.description || null }),
+        ...(body.location !== undefined && { location: body.location || null }),
+        ...(body.website !== undefined && { website: body.website || null }),
+        ...(body.logoUrl !== undefined && { logoUrl: body.logoUrl || null }),
+        ...(body.iban !== undefined && { iban: body.iban || null }),
+        ...(body.bic !== undefined && { bic: body.bic || null }),
+        ...(body.bankName !== undefined && { bankName: body.bankName || null }),
       },
     });
     return NextResponse.json(updated);
@@ -49,7 +56,11 @@ export async function GET() {
   }
   const cantina = await db.cantina.findUnique({
     where: { userId: session.user.id },
-    select: { id: true, name: true, description: true, location: true, website: true, logoUrl: true, vatNumber: true, isVerified: true },
+    select: {
+      id: true, name: true, description: true, location: true,
+      website: true, logoUrl: true, vatNumber: true, isVerified: true,
+      iban: true, bic: true, bankName: true, stripeAccountId: true,
+    },
   });
   return NextResponse.json(cantina);
 }

@@ -177,20 +177,22 @@ export default async function MarketplacePage({
                 const soldPct = totalValue > 0 ? ((totalValue - availableValue) / totalValue) * 100 : 0;
                 return (
                   <Card key={nft.id} className="overflow-hidden hover:shadow-lg transition-shadow group border-amber-200 relative">
-                    <Link href={`/${lang}/nft/${nft.id}`} className="block relative h-48">
-                      <NftImageGallery
-                        images={nft.imageGallery ?? []}
-                        fallbackUrl={nft.imageUrl ?? undefined}
-                        alt={nft.name}
-                        className="h-48"
-                      />
-                      <Badge className="absolute top-2 right-2 bg-[#993300] text-white text-xs z-10">Co-proprietà</Badge>
+                    <div className="relative h-48">
+                      <Link href={`/${lang}/nft/${nft.id}`} className="block h-48">
+                        <NftImageGallery
+                          images={nft.imageGallery ?? []}
+                          fallbackUrl={nft.imageUrl ?? undefined}
+                          alt={nft.name}
+                          className="h-48"
+                        />
+                        <Badge className="absolute top-2 right-2 bg-[#993300] text-white text-xs z-10">Co-proprietà</Badge>
+                      </Link>
                       {session && (
-                        <div className="absolute top-2 left-2 z-10" onClick={e => e.preventDefault()}>
+                        <div className="absolute top-2 left-2 z-20">
                           <FavoriteButton nftId={nft.id} initialFavorited={userFavoriteIds.has(nft.id)} />
                         </div>
                       )}
-                    </Link>
+                    </div>
                     <CardHeader className="pb-2 pt-4">
                       <CardTitle className="text-sm font-semibold leading-tight">
                         <Link href={`/${lang}/nft/${nft.id}`} className="hover:text-amber-400 transition-colors">

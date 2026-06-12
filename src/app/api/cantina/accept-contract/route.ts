@@ -35,8 +35,10 @@ export async function POST() {
   try {
     const pdfBytes = await generateContractPdf(cantina.name, cantina.user.email, acceptedAt);
     await sendContractEmail(cantina.user.email, cantina.name, pdfBytes);
+    console.log("[accept-contract] Contract email sent to", cantina.user.email);
   } catch (err) {
-    console.error("[accept-contract] PDF/email error:", err);
+    // Non-blocking: contract is saved, only email/PDF failed
+    console.error("[accept-contract] PDF/email error:", err instanceof Error ? err.message : err);
   }
 
   return NextResponse.json({ success: true });

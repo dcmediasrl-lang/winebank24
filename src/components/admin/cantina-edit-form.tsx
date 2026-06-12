@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Save, KeyRound, ShieldCheck, ShieldOff, AlertTriangle, Mail } from "lucide-react";
+import { Save, KeyRound, ShieldCheck, ShieldOff, AlertTriangle, Mail, FileText } from "lucide-react";
 
 interface CantinaData {
   id: string;
@@ -85,6 +85,20 @@ export function CantinaEditForm({ cantina }: { cantina: CantinaData }) {
       setNewPassword("");
       setConfirmPassword("");
       router.refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Errore");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function resendContract() {
+    setSaving(true);
+    try {
+      const res = await fetch(`/api/admin/cantine/${cantina.id}/resend-contract`, { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Errore");
+      toast.success(`Email contratto inviata a ${data.sentTo}`);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Errore");
     } finally {
@@ -305,6 +319,19 @@ export function CantinaEditForm({ cantina }: { cantina: CantinaData }) {
           <Mail className="w-4 h-4 mr-2" />
           Invia email di accesso
         </Button>
+
+        {cantina.contractAcceptedAt && (
+          <Button
+            type="button"
+            variant="outline"
+            disabled={saving}
+            onClick={resendContract}
+            className="border-amber-700 text-amber-400 hover:bg-amber-950/30"
+          >
+            <FileText className="w-4 h-4 mr-2" />
+            Reinvia email contratto
+          </Button>
+        )}
       </div>
 
       {isBlocked && (

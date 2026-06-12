@@ -132,6 +132,8 @@ export function ImageCropper({ file, onCrop, onCancel }: Props) {
                 position: "absolute",
                 width: nat.w * scale,
                 height: nat.h * scale,
+                maxWidth: "none",
+                maxHeight: "none",
                 left: offset.x,
                 top: offset.y,
                 userSelect: "none",

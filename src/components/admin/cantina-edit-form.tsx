@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Save, KeyRound, ShieldCheck, ShieldOff, AlertTriangle } from "lucide-react";
+import { Save, KeyRound, ShieldCheck, ShieldOff, AlertTriangle, Mail } from "lucide-react";
 
 interface CantinaData {
   id: string;
@@ -85,6 +85,20 @@ export function CantinaEditForm({ cantina }: { cantina: CantinaData }) {
       setNewPassword("");
       setConfirmPassword("");
       router.refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Errore");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function resendWelcome() {
+    setSaving(true);
+    try {
+      const res = await fetch(`/api/admin/cantine/${cantina.id}/resend-welcome`, { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Errore");
+      toast.success("Email di accesso inviata a " + email);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Errore");
     } finally {
@@ -279,6 +293,17 @@ export function CantinaEditForm({ cantina }: { cantina: CantinaData }) {
           ) : (
             <><ShieldOff className="w-4 h-4 mr-2" />Blocca account</>
           )}
+        </Button>
+
+        <Button
+          type="button"
+          variant="outline"
+          disabled={saving}
+          onClick={resendWelcome}
+          className="border-blue-700 text-blue-400 hover:bg-blue-950/30"
+        >
+          <Mail className="w-4 h-4 mr-2" />
+          Invia email di accesso
         </Button>
       </div>
 

@@ -40,13 +40,17 @@ export async function GET() {
   }
 
   const safeName = cantina.name.replace(/[^a-z0-9]/gi, "_").toLowerCase();
-  const buf = Buffer.from(pdfBytes.buffer, pdfBytes.byteOffset, pdfBytes.byteLength);
+  // pdf-lib returns Uint8Array<ArrayBufferLike>; slice gives a concrete ArrayBuffer accepted by BodyInit
+  const ab = pdfBytes.buffer.slice(
+    pdfBytes.byteOffset,
+    pdfBytes.byteOffset + pdfBytes.byteLength,
+  ) as ArrayBuffer;
 
-  return new Response(buf, {
+  return new Response(ab, {
     headers: {
       "Content-Type": "application/pdf",
       "Content-Disposition": `attachment; filename="contratto_creator_${safeName}.pdf"`,
-      "Content-Length": buf.length.toString(),
+      "Content-Length": pdfBytes.byteLength.toString(),
     },
   });
 }

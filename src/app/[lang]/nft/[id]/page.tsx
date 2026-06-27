@@ -45,6 +45,8 @@ export default async function NftDetailPage({
           website: true,
           logoUrl: true,
           isVerified: true,
+          royaltyPct: true,
+          userId: true,
         },
       },
       collection: {
@@ -58,6 +60,18 @@ export default async function NftDetailPage({
   });
 
   if (!nft) notFound();
+
+  // Platform config (fees)
+  const platformConfig = await db.platformConfig.findFirst();
+  const platformFeePct = platformConfig?.platformFeePct ?? 2.5;
+
+  // Is secondary sale (owner ≠ cantina's user)?
+  const cantinaOwner = await db.cantina.findUnique({
+    where: { id: nft.cantinaId },
+    select: { userId: true },
+  });
+  const isSecondarySale = nft.ownerId !== cantinaOwner?.userId;
+  const cantinaRoyaltyPct = isSecondarySale ? nft.cantina.royaltyPct ?? 0 : 0;
 
   // User state checks
   let needsTermsAcceptance = false;
@@ -349,6 +363,9 @@ export default async function NftDetailPage({
                     isLoggedIn={!!session}
                     needsTermsAcceptance={!!session && needsTermsAcceptance}
                     kycComplete={!session || kycComplete}
+                    platformFeePct={platformFeePct}
+                    isSecondarySale={isSecondarySale}
+                    cantinaRoyaltyPct={cantinaRoyaltyPct}
                   />
                   <MakeOfferButton
                     nftId={nft.id}

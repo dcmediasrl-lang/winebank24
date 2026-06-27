@@ -16,6 +16,9 @@ export function BuyButton({
   isLoggedIn,
   needsTermsAcceptance = false,
   kycComplete: kycCompleteProp = true,
+  platformFeePct = 0,
+  isSecondarySale = false,
+  cantinaRoyaltyPct = 0,
 }: {
   nftId: string;
   price: number;
@@ -23,10 +26,17 @@ export function BuyButton({
   isLoggedIn: boolean;
   needsTermsAcceptance?: boolean;
   kycComplete?: boolean;
+  platformFeePct?: number;
+  isSecondarySale?: boolean;
+  cantinaRoyaltyPct?: number;
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
+
+  const platformFee = price * platformFeePct / 100;
+  const royalty = isSecondarySale ? price * cantinaRoyaltyPct / 100 : 0;
+  const totalPrice = price + platformFee + royalty;
   const [termsAccepted, setTermsAccepted] = useState(!needsTermsAcceptance);
   const [checks, setChecks] = useState({ c1: false, c2: false, c3: false, c4: false });
   const [showKyc, setShowKyc] = useState(false);
@@ -86,10 +96,34 @@ export function BuyButton({
 
   return (
     <>
-      <Button onClick={buy} disabled={loading} className="w-full bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold">
-        <ShoppingCart className="w-4 h-4 mr-2" />
-        {loading ? "Reindirizzamento..." : `Acquista · € ${price.toFixed(2)}`}
-      </Button>
+      <div className="space-y-2">
+        {platformFeePct > 0 && (
+          <div className="rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-xs space-y-1.5">
+            <div className="flex justify-between text-white/50">
+              <span>Prezzo certificato</span>
+              <span>€ {price.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-amber-400/80">
+              <span>+ Commissione ({platformFeePct}%)</span>
+              <span>€ {platformFee.toFixed(2)}</span>
+            </div>
+            {isSecondarySale && royalty > 0 && (
+              <div className="flex justify-between text-amber-400/80">
+                <span>+ Royalty cantina ({cantinaRoyaltyPct}%)</span>
+                <span>€ {royalty.toFixed(2)}</span>
+              </div>
+            )}
+            <div className="flex justify-between font-bold text-white border-t border-white/10 pt-1.5">
+              <span>Totale</span>
+              <span>€ {totalPrice.toFixed(2)}</span>
+            </div>
+          </div>
+        )}
+        <Button onClick={buy} disabled={loading} className="w-full bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold">
+          <ShoppingCart className="w-4 h-4 mr-2" />
+          {loading ? "Reindirizzamento..." : `Acquista · € ${totalPrice.toFixed(2)}`}
+        </Button>
+      </div>
 
       {/* KYC gate dialog */}
       <KycGateDialog open={showKyc} onOpenChange={setShowKyc} onComplete={handleKycComplete} />

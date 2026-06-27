@@ -79,17 +79,58 @@ export default function TerminiPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-3">6. Marketplace e Cessioni</h2>
+            <h2 className="text-xl font-bold text-white mb-3">6. Marketplace, Cessioni e Commissioni</h2>
             <p>
               La piattaforma offre uno spazio di scambio tra collezionisti per la cessione volontaria di certificati
               e quote di proprietà. Le transazioni avvengono tra collezionisti privati. Wine Bank 24 agisce esclusivamente
               come <strong>intermediario tecnico</strong> e non come controparte finanziaria.
             </p>
-            <p className="mt-3">
-              Wine Bank 24 applica una commissione di servizio sulle transazioni a copertura dei costi operativi
-              della piattaforma. Le cantine certificate ricevono una royalty sulle cessioni secondarie dei propri
-              certificati, a titolo di corrispettivo per la custodia e certificazione del bene.
-            </p>
+
+            <div className="mt-4 p-4 bg-[#1a0f0f] border border-[#993300]/50 rounded-xl space-y-4">
+              <p className="text-sm font-bold text-white">6.1 — Struttura delle commissioni</p>
+              <p className="text-sm">
+                Tutte le commissioni applicate da Wine Bank 24 sono <strong className="text-white">a carico esclusivo
+                dell&apos;acquirente</strong> e vengono <strong className="text-white">aggiunte al prezzo del certificato</strong> al
+                momento del checkout. Il venditore (cantina o collezionista) riceve sempre l&apos;importo esatto del prezzo
+                da lui indicato, senza deduzioni. Le commissioni appaiono come voci separate nel riepilogo d&apos;ordine.
+              </p>
+
+              <div className="space-y-3 text-sm">
+                <div>
+                  <p className="font-semibold text-white/80 mb-1">Vendita primaria (cantina → acquirente)</p>
+                  <ul className="space-y-1 text-white/60 text-xs list-disc list-inside">
+                    <li>Prezzo del certificato: importo indicato dalla cantina</li>
+                    <li>+ Commissione di servizio Wine Bank 24: percentuale indicata nella scheda acquisto</li>
+                    <li>= Totale addebitato all&apos;acquirente</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold text-white/80 mb-1">Vendita secondaria (collezionista → acquirente)</p>
+                  <ul className="space-y-1 text-white/60 text-xs list-disc list-inside">
+                    <li>Prezzo del certificato: importo indicato dal venditore</li>
+                    <li>+ Commissione di servizio Wine Bank 24: percentuale indicata nella scheda acquisto</li>
+                    <li>+ Royalty cantina originale: percentuale indicata nella scheda acquisto</li>
+                    <li>= Totale addebitato all&apos;acquirente</li>
+                  </ul>
+                </div>
+              </div>
+
+              <p className="text-xs text-white/40">
+                Le percentuali applicate sono indicate esplicitamente nella scheda prodotto e nel riepilogo
+                d&apos;ordine prima di ogni acquisto. Wine Bank 24 si riserva il diritto di modificare le commissioni
+                con preavviso di 30 giorni comunicato via email agli utenti registrati.
+              </p>
+            </div>
+
+            <div className="mt-4 p-4 bg-[#1a0f0f] border border-white/10 rounded-xl text-sm">
+              <p className="font-bold text-white mb-2">6.2 — Royalty cantina su cessioni secondarie</p>
+              <p className="text-white/70">
+                Le cantine certificate ricevono una royalty su ogni cessione secondaria del proprio certificato,
+                a titolo di corrispettivo continuativo per la custodia, la conservazione e la certificazione del bene fisico.
+                Tale royalty è determinata al momento dell&apos;emissione del certificato e resta invariata per tutta
+                la vita dello stesso. L&apos;importo è sempre a carico dell&apos;acquirente finale.
+              </p>
+            </div>
           </section>
 
           <section>

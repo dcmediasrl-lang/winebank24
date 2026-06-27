@@ -20,6 +20,7 @@ enum OfferStatus {
 }
 
 enum NftStatus {
+  PENDING_PAYMENT
   MINTED
   LISTED
   SOLD
@@ -200,6 +201,9 @@ model Nft {
   isFractionable  Boolean   @default(false)
   totalValue      Decimal?  @db.Decimal(10,2)
   availableValue  Decimal?  @db.Decimal(10,2)
+  royaltyPct      Float     @default(5.0)   // per-bottle royalty chosen by cantina (1–10%)
+  mintFeePaid     Boolean   @default(false)
+  mintFeeStripeId String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
@@ -269,8 +273,8 @@ model NftFraction {
 
 model PlatformConfig {
   id             String   @id @default(cuid())
-  platformFeePct Float    @default(2.5)
-  cantinaFeePct  Float    @default(5.0)
+  platformFeePct Float    @default(3.0)  // buyer-side fee on every exchange
+  mintFeePct     Float    @default(5.0)  // charged to cantina at mint time
   updatedAt      DateTime @updatedAt
 }
 

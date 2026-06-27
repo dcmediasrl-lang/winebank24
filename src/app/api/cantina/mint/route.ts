@@ -2,9 +2,9 @@ export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { getStripe } from "@/lib/stripe";
 import { z } from "zod";
 
-// Direct single-bottle minting — no collection step required
 const schema = z.object({
   cantinaId: z.string(),
   name: z.string().min(1),
@@ -22,6 +22,7 @@ const schema = z.object({
   bottleFormat: z.string().max(60).optional(),
   bottleStory: z.string().max(2000).optional(),
   currentLocation: z.string().max(300).optional(),
+  royaltyPct: z.number().min(1).max(10).default(5),
 });
 
 const blockchainReady =
@@ -44,8 +45,21 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Non autorizzato" }, { status: 403 });
     }
 
-    // Auto-create a singleton collection to satisfy the DB relationship.
-    // This is a technical detail — the UI never exposes collections.
+    const config = await db.platformConfig.findFirst();
+    const mintFeePct = config?.mintFeePct ?? 5.0;
+
+    // Determine bottle value for mint fee calculation
+    const bottleValue = body.isFractionable ? (body.totalValue ?? 0) : (body.price ?? 0);
+    if (bottleValue <= 0) {
+      return NextResponse.json({ error: "Inserisci il prezzo della bottiglia per calcolare la fee di emissione" }, { status: 400 });
+    }
+
+    const mintFeeCents = Math.round(bottleValue * mintFeePct / 100 * 100);
+    if (mintFeeCents < 50) {
+      return NextResponse.json({ error: "Il valore della bottiglia è troppo basso (fee minima: €0.50)" }, { status: 400 });
+    }
+
+    // Auto-create a singleton collection
     const collection = await db.collection.create({
       data: {
         cantinaId: cantina.id,
@@ -60,7 +74,6 @@ export async function POST(req: Request) {
     });
 
     const isFractionable = !!body.isFractionable;
-
     const gallery = body.imageGallery ?? [body.imageUrl];
     const metadata = {
       name: body.name,
@@ -100,6 +113,7 @@ export async function POST(req: Request) {
       }
     }
 
+    // Create NFT as PENDING_PAYMENT — activated by Stripe webhook after mint fee is paid
     const nft = await db.nft.create({
       data: {
         tokenId,
@@ -111,7 +125,7 @@ export async function POST(req: Request) {
         name: body.name,
         description: body.description,
         imageUrl: body.imageUrl,
-        imageGallery: body.imageGallery ?? [body.imageUrl],
+        imageGallery: gallery,
         metadataUri: tokenUri,
         price: isFractionable ? null : (body.price ?? null),
         bottleNumber: body.bottleNumber,
@@ -123,28 +137,54 @@ export async function POST(req: Request) {
         totalValue: isFractionable && body.totalValue ? body.totalValue : null,
         availableValue: isFractionable && body.totalValue ? body.totalValue : null,
         denominationId: body.denominationId ?? null,
-        isListed: isFractionable ? true : !!body.price,
-        status: isFractionable ? "LISTED" : (body.price ? "LISTED" : "MINTED"),
+        royaltyPct: body.royaltyPct,
+        isListed: false,
+        status: "PENDING_PAYMENT",
+        mintFeePaid: false,
       },
     });
 
-    await db.collection.update({
-      where: { id: collection.id },
-      data: { minted: 1 },
-    });
+    await db.collection.update({ where: { id: collection.id }, data: { minted: 1 } });
 
-    await db.transaction.create({
-      data: {
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+
+    // Create Stripe Checkout for the mint fee (charged to cantina)
+    const stripeSession = await getStripe().checkout.sessions.create({
+      mode: "payment",
+      line_items: [
+        {
+          price_data: {
+            currency: "eur",
+            unit_amount: mintFeeCents,
+            product_data: {
+              name: `Fee di emissione — ${body.name}`,
+              description: `${mintFeePct}% del valore bottiglia (€${bottleValue.toFixed(2)}). Royalty collezionisti: ${body.royaltyPct}%`,
+            },
+          },
+          quantity: 1,
+        },
+      ],
+      metadata: {
+        type: "mint_fee",
         nftId: nft.id,
-        sellerId: session.user.id,
-        type: "MINT",
-        amount: 0,
-        paymentMethod: "FIAT",
-        txHash,
+        cantinaId: cantina.id,
+        mintFeePct: mintFeePct.toString(),
+        mintFeeCents: mintFeeCents.toString(),
+        bottleValue: bottleValue.toString(),
+        hasPrice: (!!body.price).toString(),
+        isFractionable: isFractionable.toString(),
       },
+      success_url: `${appUrl}/it/cantina/nfts?mint=success`,
+      cancel_url: `${appUrl}/it/cantina/nfts?mint=cancelled&nftId=${nft.id}`,
     });
 
-    return NextResponse.json({ success: true, tokenId, txHash, nftId: nft.id, onChain: !!txHash });
+    // Store the Stripe session ID on the NFT
+    await db.nft.update({
+      where: { id: nft.id },
+      data: { mintFeeStripeId: stripeSession.id },
+    });
+
+    return NextResponse.json({ checkoutUrl: stripeSession.url, nftId: nft.id });
   } catch (err) {
     if (err instanceof z.ZodError) return NextResponse.json({ error: err.issues[0].message }, { status: 400 });
     console.error(err);

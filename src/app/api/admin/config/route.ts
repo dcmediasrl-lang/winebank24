@@ -8,10 +8,10 @@ export async function PATCH(req: Request) {
   if (!session || session.user.role !== "ADMIN") {
     return NextResponse.json({ error: "Non autorizzato" }, { status: 403 });
   }
-  const { configId, platformFeePct, cantinaFeePct } = await req.json();
+  const { configId, platformFeePct, mintFeePct } = await req.json();
   await db.platformConfig.update({
     where: { id: configId },
-    data: { platformFeePct, cantinaFeePct },
+    data: { platformFeePct, mintFeePct },
   });
   return NextResponse.json({ success: true });
 }

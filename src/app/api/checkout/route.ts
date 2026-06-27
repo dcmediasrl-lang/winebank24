@@ -21,12 +21,12 @@ export async function POST(req: Request) {
   const nft = await db.nft.findUnique({
     where: { id: nftId },
     include: {
-      cantina: { select: { id: true, name: true, stripeAccountId: true, royaltyPct: true } },
+      cantina: { select: { id: true, name: true, stripeAccountId: true } },
       owner: { select: { id: true, email: true, name: true } },
     },
   });
 
-  if (!nft || !nft.isListed || !nft.price) {
+  if (!nft || !nft.isListed || !nft.price || nft.status === "PENDING_PAYMENT") {
     return NextResponse.json({ error: "Certificato non disponibile" }, { status: 400 });
   }
   if (nft.ownerId === session.user.id) {
@@ -34,8 +34,8 @@ export async function POST(req: Request) {
   }
 
   const config = await db.platformConfig.findFirst();
-  const platformFeePct = config?.platformFeePct ?? 2.5;
-  const cantinaRoyaltyPct = nft.cantina.royaltyPct;
+  const platformFeePct = config?.platformFeePct ?? 3.0;
+  const cantinaRoyaltyPct = nft.royaltyPct; // per-bottle royalty set at mint time
 
   // Check primary vs secondary sale
   const cantinaOwner = await db.cantina.findUnique({

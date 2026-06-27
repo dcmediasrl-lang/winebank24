@@ -160,11 +160,11 @@ function ProfiloTab({ cantina, lang }: { cantina: Cantina; lang: string }) {
             <p className="text-white font-mono">{cantina.vatNumber ?? "—"}</p>
           </div>
           <div>
-            <p className="text-white/40 text-xs mb-1">Royalty NFT</p>
+            <p className="text-white/40 text-xs mb-1">Royalty di default</p>
             <p className="text-white font-mono">{cantina.royaltyPct}%</p>
           </div>
         </div>
-        <p className="text-xs text-white/25">Per modificare P.IVA e royalty contatta l&apos;amministratore</p>
+        <p className="text-xs text-white/25">La royalty effettiva su ogni certificato si imposta al momento della creazione (1–10%). Per modificare P.IVA o il default contatta l&apos;amministratore.</p>
       </div>
 
       <Button type="submit" disabled={loading} className="w-full bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold py-3">

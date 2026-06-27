@@ -28,6 +28,8 @@ export async function POST(req: Request) {
       await handleNftPurchase(stripeSession, meta);
     } else if (meta.type === "fraction") {
       await handleFractionPurchase(stripeSession, meta);
+    } else if (meta.type === "mint_fee") {
+      await handleMintFeePaid(stripeSession, meta);
     }
   } catch (err) {
     console.error("[webhook/stripe] Error processing event", event.type, err);
@@ -93,6 +95,43 @@ async function handleNftPurchase(
     isSecondary && cantinaFee > 0
       ? sendSaleEmail(nft.cantina.user.email, `${nft.name} (royalty)`, cantinaFee)
       : Promise.resolve(),
+  ]);
+}
+
+// ─── Mint fee ─────────────────────────────────────────────────────────────────
+async function handleMintFeePaid(
+  stripeSession: Stripe.Checkout.Session,
+  meta: Record<string, string>
+) {
+  const { nftId, mintFeeCents, bottleValue } = meta;
+
+  const nft = await db.nft.findUnique({ where: { id: nftId } });
+  if (!nft || nft.status !== "PENDING_PAYMENT") return;
+
+  const hasPrice = meta.hasPrice === "true";
+  const isFractionable = meta.isFractionable === "true";
+  const newStatus = (hasPrice || isFractionable) ? "LISTED" : "MINTED";
+
+  await db.$transaction([
+    db.nft.update({
+      where: { id: nftId },
+      data: {
+        mintFeePaid: true,
+        status: newStatus,
+        isListed: hasPrice || isFractionable,
+      },
+    }),
+    db.transaction.create({
+      data: {
+        nftId,
+        sellerId: nft.ownerId,
+        type: "MINT",
+        amount: parseFloat(bottleValue),
+        platformFee: parseInt(mintFeeCents) / 100,
+        paymentMethod: "FIAT",
+        stripeId: stripeSession.id,
+      },
+    }),
   ]);
 }
 

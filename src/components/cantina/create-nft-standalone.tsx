@@ -35,6 +35,7 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
   const [denominationId, setDenominationId] = useState<string | undefined>(undefined);
   const [denominationName, setDenominationName] = useState<string>("");
   const [selectedGrapes, setSelectedGrapes] = useState<string[]>([]);
+  const [royaltyPct, setRoyaltyPct] = useState(5);
   const [form, setForm] = useState({
     name: "",
     description: "",
@@ -68,6 +69,7 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
     setDenominationId(undefined);
     setDenominationName("");
     setSelectedGrapes([]);
+    setRoyaltyPct(5);
   }
 
   async function submit(e: React.FormEvent) {
@@ -111,16 +113,13 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
           bottleFormat: form.bottleFormat || undefined,
           bottleStory: form.bottleStory || undefined,
           currentLocation: form.currentLocation || undefined,
+          royaltyPct,
         }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      toast.success(data.onChain
-        ? `Certificato creato su blockchain! Token ID: ${data.tokenId}`
-        : "Certificato digitale creato con successo!");
-      setOpen(false);
-      resetForm();
-      router.refresh();
+      // Redirect to Stripe to pay the mint fee
+      window.location.href = data.checkoutUrl;
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Errore nella creazione");
     } finally {
@@ -412,12 +411,74 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
             )}
           </div>
 
+          {/* Royalty e fee di emissione */}
+          <div className="space-y-4 p-4 bg-[#2a1010] rounded-xl border border-white/15">
+            <p className="text-xs font-bold text-amber-400/80 uppercase tracking-widest">Royalty e fee di emissione</p>
+
+            {/* Royalty cantina */}
+            <div className="space-y-2">
+              <div className="flex justify-between items-baseline">
+                <Label className="text-white font-medium">Royalty su scambi secondari</Label>
+                <span className="text-amber-400 font-bold text-lg">{royaltyPct}%</span>
+              </div>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                step="1"
+                value={royaltyPct}
+                onChange={e => setRoyaltyPct(parseInt(e.target.value))}
+                className="w-full accent-amber-500"
+              />
+              <div className="flex justify-between text-xs text-white/30">
+                <span>1% (min)</span>
+                <span>10% (max)</span>
+              </div>
+              <p className="text-xs text-white/50 leading-relaxed">
+                Ogni volta che un collezionista rivende questo certificato, ricevi il {royaltyPct}% del prezzo di vendita.
+                Questa percentuale è aggiunta al prezzo e pagata dall&apos;acquirente, non tolta al venditore.
+              </p>
+            </div>
+
+            {/* Fee di emissione */}
+            {(() => {
+              const bottleValue = isFractionable
+                ? (parseFloat(form.totalValue) || 0)
+                : (parseFloat(form.price) || 0);
+              const mintFee = bottleValue > 0 ? bottleValue * 0.05 : null;
+              return (
+                <div className="rounded-lg border border-amber-700/30 bg-amber-950/20 p-3 space-y-2">
+                  <p className="text-xs font-semibold text-amber-300">Fee di emissione (5% — una tantum)</p>
+                  {bottleValue > 0 ? (
+                    <>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-white/50">Valore bottiglia</span>
+                        <span className="text-white">€ {bottleValue.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between text-xs font-bold">
+                        <span className="text-amber-300">Fee da pagare ora</span>
+                        <span className="text-amber-300">€ {mintFee!.toFixed(2)}</span>
+                      </div>
+                      <p className="text-xs text-white/40">
+                        Dopo la conferma verrai reindirizzato a Stripe per il pagamento. Il certificato sarà attivo al completamento.
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-xs text-white/40">
+                      Inserisci il prezzo della bottiglia per calcolare la fee di emissione.
+                    </p>
+                  )}
+                </div>
+              );
+            })()}
+          </div>
+
           <Button
             type="submit"
             disabled={loading}
             className="w-full bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-base py-5"
           >
-            {loading ? "Creazione in corso..." : "Crea certificato digitale"}
+            {loading ? "Preparazione pagamento..." : "Procedi al pagamento fee →"}
           </Button>
         </form>
       </DialogContent>

@@ -5,7 +5,7 @@ export default async function AdminSettingsPage() {
   let config = await db.platformConfig.findFirst();
   if (!config) {
     config = await db.platformConfig.create({
-      data: { platformFeePct: 2.5, cantinaFeePct: 5.0 },
+      data: { platformFeePct: 3.0, mintFeePct: 5.0 },
     });
   }
 
@@ -15,7 +15,7 @@ export default async function AdminSettingsPage() {
       <FeeSettingsForm
         configId={config.id}
         platformFeePct={config.platformFeePct}
-        cantinaFeePct={config.cantinaFeePct}
+        mintFeePct={config.mintFeePct}
       />
     </div>
   );

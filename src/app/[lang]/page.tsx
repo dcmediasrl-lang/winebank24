@@ -59,7 +59,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
             titleAccent: "diventa NFT",
             subtitle: "Tokenizza, colleziona e investi in bottiglie di vino pregiato. Ogni NFT è un certificato digitale autentico su blockchain Polygon.",
             cta: { label: "Esplora il Marketplace", href: `/${lang}/marketplace` },
-            ctaSecondary: { label: "Come funziona", href: `#how-it-works` },
+            ctaSecondary: { label: "Come funziona", href: `/${lang}/come-funziona` },
           },
           {
             image: "https://images.unsplash.com/photo-1474722883778-792e7990302f?w=1600&q=85",
@@ -98,7 +98,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
             titleAccent: "becomes NFT",
             subtitle: "Tokenize and collect premium Italian wine bottles. Every NFT is an authentic digital certificate on the Polygon blockchain.",
             cta: { label: "Explore Marketplace", href: `/${lang}/marketplace` },
-            ctaSecondary: { label: "How it works", href: `#how-it-works` },
+            ctaSecondary: { label: "How it works", href: `/${lang}/come-funziona` },
           },
           {
             image: "https://images.unsplash.com/photo-1474722883778-792e7990302f?w=1600&q=85",

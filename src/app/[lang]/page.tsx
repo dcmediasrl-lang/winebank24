@@ -32,14 +32,14 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
 
   const features = lang === "en"
     ? [
-        { icon: Wine, title: "Wineries", desc: "Mint NFTs based on your bottle production. Manage collections and sales directly on the platform." },
-        { icon: Gem, title: "Collectors", desc: "Buy NFTs of rare bottles. Collect, resell or request physical delivery of the bottle." },
-        { icon: Shield, title: "Secure & Transparent", desc: "Every NFT is registered on Polygon blockchain. Verifiable ownership, tracked transfers." },
+        { icon: Wine, title: "Wineries", desc: "Create digital certificates for your bottles. Manage collections and sales directly on the platform." },
+        { icon: Gem, title: "Collectors", desc: "Buy certified digital certificates of rare bottles. Collect, resell or request physical delivery whenever you want." },
+        { icon: Shield, title: "Secure & Transparent", desc: "Every certificate is registered on Polygon blockchain. Verifiable ownership, fully tracked transfers." },
       ]
     : [
-        { icon: Wine, title: "Cantine", desc: "Minta NFT basati sulla tua produzione di bottiglie. Gestisci collezioni e vendite direttamente in piattaforma." },
-        { icon: Gem, title: "Collezionisti", desc: "Acquista NFT di bottiglie rare. Colleziona, rivendi o richiedi la consegna fisica della bottiglia." },
-        { icon: Shield, title: "Sicuro & Trasparente", desc: "Ogni NFT è registrato su blockchain Polygon. Proprietà verificabile, trasferimenti tracciati." },
+        { icon: Wine, title: "Cantine", desc: "Crea certificati digitali per le tue bottiglie. Gestisci collezioni e vendite direttamente in piattaforma." },
+        { icon: Gem, title: "Collezionisti", desc: "Acquista certificati digitali di bottiglie rare. Colleziona, rivendi o richiedi la consegna fisica della bottiglia." },
+        { icon: Shield, title: "Sicuro & Trasparente", desc: "Ogni certificato è registrato su blockchain Polygon. Proprietà verificabile, trasferimenti completamente tracciati." },
       ];
 
   return (
@@ -54,10 +54,10 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
         slides={lang === "it" ? [
           {
             image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=1600&q=85",
-            tag: "Piattaforma NFT per il vino italiano",
+            tag: "Certificati digitali per il vino italiano",
             title: "Il Grande Vino Italiano",
-            titleAccent: "diventa NFT",
-            subtitle: "Tokenizza, colleziona e investi in bottiglie di vino pregiato. Ogni NFT è un certificato digitale autentico su blockchain Polygon.",
+            titleAccent: "in collezione",
+            subtitle: "Colleziona e investi in bottiglie di vino pregiato con certificati digitali autentici su blockchain Polygon.",
             cta: { label: "Esplora il Marketplace", href: `/${lang}/marketplace` },
             ctaSecondary: { label: "Come funziona", href: `/${lang}/come-funziona` },
           },
@@ -67,7 +67,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
             title: "Colleziona",
             titleAccent: "bottiglie rare",
             titleAfter: "ovunque nel mondo",
-            subtitle: "Acquista certificati NFT di vini esclusivi. Rivendi, regala o richiedi la consegna fisica della tua bottiglia quando vuoi.",
+            subtitle: "Acquista certificati digitali di vini esclusivi. Rivendi, regala o richiedi la consegna fisica della tua bottiglia quando vuoi.",
             cta: { label: "Registrati come Collezionista", href: `/${lang}/register` },
             ctaSecondary: { label: "Sfoglia i vini", href: `/${lang}/marketplace` },
           },
@@ -76,7 +76,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
             tag: "Per le Cantine",
             title: "Porta la tua cantina",
             titleAccent: "nel futuro",
-            subtitle: "Emetti NFT delle tue migliori bottiglie. Dai visibilità alla tua produzione e raggiungi appassionati e collezionisti in tutto il mondo.",
+            subtitle: "Crea certificati digitali per le tue migliori bottiglie. Dai visibilità alla tua produzione e raggiungi appassionati e collezionisti in tutto il mondo.",
             cta: { label: "Iscriviti come Cantina", href: `/${lang}/register` },
             ctaSecondary: { label: "Scopri i vantaggi", href: `#features` },
           },
@@ -86,17 +86,17 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
             title: "Ogni bottiglia,",
             titleAccent: "certificata",
             titleAfter: "e tracciata",
-            subtitle: "Proprietà verificabile, trasferimenti tracciati. La tecnologia blockchain garantisce l'autenticità di ogni NFT e la storia completa della bottiglia.",
+            subtitle: "Proprietà verificabile, trasferimenti tracciati. La tecnologia blockchain garantisce l'autenticità di ogni certificato e la storia completa della bottiglia.",
             cta: { label: "Inizia ora", href: `/${lang}/register` },
             ctaSecondary: { label: "Leggi di più", href: `/${lang}/blog` },
           },
         ] : [
           {
             image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=1600&q=85",
-            tag: "NFT Platform for Italian Wine",
+            tag: "Digital certificates for Italian wine",
             title: "Italian Fine Wine",
-            titleAccent: "becomes NFT",
-            subtitle: "Tokenize and collect premium Italian wine bottles. Every NFT is an authentic digital certificate on the Polygon blockchain.",
+            titleAccent: "in your collection",
+            subtitle: "Collect and invest in premium Italian wine bottles with authentic digital certificates on the Polygon blockchain.",
             cta: { label: "Explore Marketplace", href: `/${lang}/marketplace` },
             ctaSecondary: { label: "How it works", href: `/${lang}/come-funziona` },
           },
@@ -106,7 +106,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
             title: "Collect",
             titleAccent: "rare bottles",
             titleAfter: "from anywhere",
-            subtitle: "Buy NFT certificates of exclusive wines. Resell, gift or request physical delivery of your bottle whenever you want.",
+            subtitle: "Buy digital certificates of exclusive wines. Resell, gift or request physical delivery of your bottle whenever you want.",
             cta: { label: "Register as Collector", href: `/${lang}/register` },
             ctaSecondary: { label: "Browse wines", href: `/${lang}/marketplace` },
           },
@@ -115,7 +115,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
             tag: "For Wineries",
             title: "Bring your winery",
             titleAccent: "into the future",
-            subtitle: "Issue NFTs of your finest bottles. Reach collectors worldwide and create new revenue streams for your production.",
+            subtitle: "Create digital certificates for your finest bottles. Reach collectors worldwide and create new revenue streams for your production.",
             cta: { label: "Join as Winery", href: `/${lang}/register` },
             ctaSecondary: { label: "Discover benefits", href: `#features` },
           },
@@ -125,7 +125,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
             title: "Every bottle,",
             titleAccent: "certified",
             titleAfter: "and traced",
-            subtitle: "Verifiable ownership, tracked transfers. Blockchain technology guarantees the authenticity of every NFT and the complete history of the bottle.",
+            subtitle: "Verifiable ownership, tracked transfers. Blockchain technology guarantees the authenticity of every certificate and the complete history of the bottle.",
             cta: { label: "Get started", href: `/${lang}/register` },
             ctaSecondary: { label: "Read more", href: `/${lang}/blog` },
           },

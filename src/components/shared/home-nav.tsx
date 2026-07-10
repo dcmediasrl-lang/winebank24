@@ -30,7 +30,7 @@ export function HomeNav({ lang, nav, dashboardUrl, userName }: HomeNavProps) {
     <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm">
 
       {/* ── Menu strip ── */}
-      <div className="flex items-center justify-end px-6 sm:px-10 py-2.5 border-b border-stone-100">
+      <div className="flex items-center justify-end px-6 sm:px-10 py-1.5">
 
         {/* Desktop */}
         <div className="hidden md:flex items-center gap-3">
@@ -80,8 +80,8 @@ export function HomeNav({ lang, nav, dashboardUrl, userName }: HomeNavProps) {
       </div>
 
       {/* ── Logo strip ── */}
-      <div className="w-full bg-white px-8 sm:px-16 py-4">
-        <img src="/logo.svg" alt="Wine Bank 24" className="w-full h-auto" style={{ maxHeight: "120px", objectFit: "contain" }} />
+      <div className="w-full bg-white px-8 sm:px-16 py-1">
+        <img src="/logo.svg" alt="Wine Bank 24" className="w-full h-auto" style={{ maxHeight: "160px", objectFit: "contain" }} />
       </div>
 
       {/* Mobile overlay */}

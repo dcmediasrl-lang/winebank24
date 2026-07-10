@@ -20,7 +20,7 @@ export function AdSenseBanner({ slot, format = "auto", className = "" }: AdSense
   useEffect(() => {
     if (consent !== "accepted" || !PUBLISHER_ID || initialized.current) return;
     try {
-      // @ts-expect-error adsbygoogle is injected by Google
+      // @ts-ignore adsbygoogle is injected by Google
       (window.adsbygoogle = window.adsbygoogle || []).push({});
       initialized.current = true;
     } catch {}

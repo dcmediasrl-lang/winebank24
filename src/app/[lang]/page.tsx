@@ -48,6 +48,11 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
       {/* NAV */}
       <HomeNav lang={lang} nav={dict.nav} dashboardUrl={dashboardUrl} userName={session?.user?.name || session?.user?.email || null} />
 
+      {/* LOGO BANNER */}
+      <div className="w-full bg-white py-6 px-8 sm:px-16">
+        <img src="/logo.svg" alt="Wine Bank 24" className="w-full h-auto" style={{ maxHeight: "90px", objectFit: "contain" }} />
+      </div>
+
       {/* HERO SLIDER */}
       <HeroSlider
         lang={lang}

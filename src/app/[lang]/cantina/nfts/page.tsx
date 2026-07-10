@@ -153,7 +153,7 @@ export default async function CantinaNftsPage({ params }: { params: Promise<{ la
                       </td>
                       <td className="py-3">
                         <div className="flex items-center gap-2 flex-wrap">
-                          {(nft.status === "MINTED" || nft.status === "LISTED") && !nft.isFractionable && (
+                          {(nft.status === "MINTED" || nft.status === "LISTED") && !nft.isFractionable && nft.ownerId === cantina.userId && (
                             <ListCantinaNftButton
                               nftId={nft.id}
                               isListed={nft.isListed}

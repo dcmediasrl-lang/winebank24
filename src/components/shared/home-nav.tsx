@@ -27,11 +27,11 @@ export function HomeNav({ lang, nav, dashboardUrl, userName }: HomeNavProps) {
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm flex items-center justify-between px-6 sm:px-10 py-2">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm flex items-center justify-between px-6 sm:px-10 py-0">
 
       {/* Logo sinistra */}
       <Link href={`/${lang}`}>
-        <img src="/logo.svg" alt="Wine Bank 24" style={{ height: "160px", width: "auto" }} />
+        <img src="/logo.svg" alt="Wine Bank 24" style={{ height: "112px", width: "auto" }} />
       </Link>
 
       {/* Desktop — destra */}

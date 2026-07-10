@@ -27,61 +27,57 @@ export function HomeNav({ lang, nav, dashboardUrl, userName }: HomeNavProps) {
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm flex items-center justify-between px-6 sm:px-10 py-2">
 
-      {/* ── Menu strip ── */}
-      <div className="flex items-center justify-end px-6 sm:px-10 py-1.5">
+      {/* Logo sinistra */}
+      <Link href={`/${lang}`}>
+        <img src="/logo.svg" alt="Wine Bank 24" style={{ height: "160px", width: "auto" }} />
+      </Link>
 
-        {/* Desktop */}
-        <div className="hidden md:flex items-center gap-3">
-          {navLinks.map(l => (
-            <Link key={l.href} href={l.href}
-              className="font-medium px-3 py-1.5 text-stone-600 hover:text-stone-900 uppercase text-sm tracking-wide transition-colors">
-              {l.label}
+      {/* Desktop — destra */}
+      <div className="hidden md:flex items-center gap-3">
+        {navLinks.map(l => (
+          <Link key={l.href} href={l.href}
+            className="font-medium px-3 py-2 text-stone-600 hover:text-stone-900 uppercase text-sm tracking-wide transition-colors">
+            {l.label}
+          </Link>
+        ))}
+        {isLoggedIn ? (
+          <>
+            {userName && <span className="text-xs text-stone-400 px-2 hidden lg:block truncate max-w-[140px]">{userName}</span>}
+            <Link href={dashboardUrl!}
+              className="flex items-center gap-2 px-5 py-2 rounded-lg font-bold text-white text-sm transition-opacity hover:opacity-90"
+              style={{ background: "var(--wine-gradient)" }}>
+              <LayoutDashboard className="w-4 h-4" /> Dashboard
             </Link>
-          ))}
-          {isLoggedIn ? (
-            <>
-              {userName && <span className="text-xs text-stone-400 px-2 hidden lg:block truncate max-w-[140px]">{userName}</span>}
-              <Link href={dashboardUrl!}
-                className="flex items-center gap-2 px-4 py-1.5 rounded-lg font-bold text-white text-sm transition-opacity hover:opacity-90"
-                style={{ background: "var(--wine-gradient)" }}>
-                <LayoutDashboard className="w-4 h-4" /> Dashboard
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link href={`/${lang}/login`}
-                className="flex items-center gap-2 px-4 py-1.5 rounded-lg font-medium text-stone-700 border border-stone-300 hover:bg-stone-50 text-sm transition-colors">
-                <LogIn className="w-4 h-4" /> {nav.login}
-              </Link>
-              <Link href={`/${lang}/register`}
-                className="flex items-center gap-2 px-4 py-1.5 rounded-lg font-bold text-white text-sm transition-opacity hover:opacity-90"
-                style={{ background: "var(--wine-gradient)" }}>
-                <UserPlus className="w-4 h-4" /> {nav.register}
-              </Link>
-            </>
-          )}
-          <Link href={lang === "en" ? "/it" : "/en"}
-            className="text-xs text-stone-400 hover:text-stone-700 transition-colors ml-1">
-            {lang === "en" ? "🇮🇹 IT" : "🇬🇧 EN"}
-          </Link>
-        </div>
-
-        {/* Mobile: lang + hamburger */}
-        <div className="flex md:hidden items-center gap-3">
-          <Link href={lang === "en" ? "/it" : "/en"} className="text-xs text-stone-400 hover:text-stone-700 transition-colors">
-            {lang === "en" ? "🇮🇹 IT" : "🇬🇧 EN"}
-          </Link>
-          <button onClick={() => setOpen(true)} className="text-stone-600 hover:text-stone-900 p-1 transition-colors">
-            <Menu className="w-6 h-6" />
-          </button>
-        </div>
+          </>
+        ) : (
+          <>
+            <Link href={`/${lang}/login`}
+              className="flex items-center gap-2 px-5 py-2 rounded-lg font-medium text-stone-700 border border-stone-300 hover:bg-stone-50 text-sm transition-colors">
+              <LogIn className="w-4 h-4" /> {nav.login}
+            </Link>
+            <Link href={`/${lang}/register`}
+              className="flex items-center gap-2 px-5 py-2 rounded-lg font-bold text-white text-sm transition-opacity hover:opacity-90"
+              style={{ background: "var(--wine-gradient)" }}>
+              <UserPlus className="w-4 h-4" /> {nav.register}
+            </Link>
+          </>
+        )}
+        <Link href={lang === "en" ? "/it" : "/en"}
+          className="text-xs text-stone-400 hover:text-stone-700 transition-colors ml-1">
+          {lang === "en" ? "🇮🇹 IT" : "🇬🇧 EN"}
+        </Link>
       </div>
 
-      {/* ── Logo strip ── */}
-      <div className="w-full bg-white px-8 sm:px-16 py-1">
-        <img src="/logo.svg" alt="Wine Bank 24" className="w-full h-auto" style={{ maxHeight: "80px", objectFit: "contain" }} />
+      {/* Mobile: lang + hamburger */}
+      <div className="flex md:hidden items-center gap-3">
+        <Link href={lang === "en" ? "/it" : "/en"} className="text-xs text-stone-400 hover:text-stone-700 transition-colors">
+          {lang === "en" ? "🇮🇹 IT" : "🇬🇧 EN"}
+        </Link>
+        <button onClick={() => setOpen(true)} className="text-stone-600 hover:text-stone-900 p-1 transition-colors">
+          <Menu className="w-6 h-6" />
+        </button>
       </div>
 
       {/* Mobile overlay */}
@@ -93,7 +89,7 @@ export function HomeNav({ lang, nav, dashboardUrl, userName }: HomeNavProps) {
         open ? "translate-x-0" : "translate-x-full"
       )}>
         <div className="flex items-center justify-between mb-8">
-          <img src="/logo.svg" alt="Wine Bank 24" className="h-8 w-auto" />
+          <img src="/logo.svg" alt="Wine Bank 24" className="h-10 w-auto" />
           <button onClick={() => setOpen(false)} className="text-stone-500 hover:text-stone-900 transition-colors">
             <X className="w-5 h-5" />
           </button>

@@ -81,7 +81,7 @@ export function HomeNav({ lang, nav, dashboardUrl, userName }: HomeNavProps) {
 
       {/* ── Logo strip ── */}
       <div className="w-full bg-white px-8 sm:px-16 py-1">
-        <img src="/logo.svg" alt="Wine Bank 24" className="w-full h-auto" style={{ maxHeight: "160px", objectFit: "contain" }} />
+        <img src="/logo.svg" alt="Wine Bank 24" className="w-full h-auto" style={{ maxHeight: "80px", objectFit: "contain" }} />
       </div>
 
       {/* Mobile overlay */}

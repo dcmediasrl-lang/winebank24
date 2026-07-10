@@ -49,7 +49,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
       <HomeNav lang={lang} nav={dict.nav} dashboardUrl={dashboardUrl} userName={session?.user?.name || session?.user?.email || null} />
 
       {/* Spacer for fixed header (menu ~44px + logo ~152px) */}
-      <div style={{ height: "175px" }} />
+      <div style={{ height: "120px" }} />
 
       {/* HERO SLIDER */}
       <HeroSlider

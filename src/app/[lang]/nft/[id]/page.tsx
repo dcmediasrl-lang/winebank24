@@ -7,7 +7,6 @@ import { InvestFractionDialog } from "@/components/collector/invest-fraction-dia
 import { MakeOfferButton } from "@/components/collector/make-offer-button";
 import { FavoriteButton } from "@/components/collector/favorite-button";
 import { DeliveryRequestButton } from "@/components/collector/delivery-request-button";
-import { ListNftButton } from "@/components/collector/list-nft-button";
 import { NftImageGallery } from "@/components/shared/nft-image-gallery";
 import Link from "next/link";
 import Image from "next/image";
@@ -25,7 +24,6 @@ import {
   Package,
   BookOpen,
   Warehouse,
-  Tag,
   Archive,
 } from "lucide-react";
 
@@ -331,47 +329,36 @@ export default async function NftDetailPage({
               <div className="rounded-xl border border-white/15 bg-[#1a0f0f] p-4 space-y-4">
                 <p className="text-xs font-bold text-white/40 uppercase tracking-widest">Questo è il tuo certificato</p>
 
-                {/* Metti in vendita */}
+                {/* Tieni in collezione */}
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2 text-sm font-semibold text-white">
-                    <Tag className="w-4 h-4 text-amber-400" /> Metti in vendita
+                    <Archive className="w-4 h-4 text-green-400" /> In collezione
                   </div>
                   <p className="text-xs text-white/40 leading-relaxed">
-                    Pubblica il certificato sul marketplace. I collezionisti potranno acquistarlo al prezzo che imposti.
-                    La royalty del {nft.royaltyPct}% andrà automaticamente alla cantina ad ogni rivendita.
-                  </p>
-                  <ListNftButton nftId={nft.id} isListed={nft.isListed} price={nft.price} />
-                </div>
-
-                {/* Tieni in collezione */}
-                <div className="pt-1 border-t border-white/10 space-y-1.5">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-white">
-                    <Archive className="w-4 h-4 text-green-400" /> Tieni in collezione
-                  </div>
-                  <p className="text-xs text-white/40 leading-relaxed">
-                    La bottiglia resta custodita presso {nft.cantina.name} nelle condizioni ottimali di conservazione.
-                    Puoi metterla in vendita in qualsiasi momento.
+                    La bottiglia è custodita presso {nft.cantina.name}. Per metterla in vendita o gestire il certificato vai nel tuo <a href="../../collector/portfolio" className="text-amber-400 underline hover:text-amber-300">portfolio</a>.
                   </p>
                 </div>
 
                 {/* Ritira bottiglia fisica */}
-                <div className="pt-1 border-t border-white/10 space-y-1.5">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-white">
-                    <Package className="w-4 h-4 text-orange-400" /> Ritira la bottiglia fisica
+                {!nft.isFractionable && (
+                  <div className="pt-1 border-t border-white/10 space-y-1.5">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-white">
+                      <Package className="w-4 h-4 text-orange-400" /> Ritira la bottiglia fisica
+                    </div>
+                    <p className="text-xs text-white/40 leading-relaxed">
+                      Richiedi la consegna fisica della bottiglia. Il certificato verrà distrutto (burn).
+                      Disponibile solo se abilitato dalla cantina.
+                    </p>
+                    <DeliveryRequestButton
+                      nftId={nft.id}
+                      nftName={nft.name}
+                      bottleValue={nft.price ?? Number(nft.totalValue ?? 0)}
+                      physicalDeliveryUnlocked={nft.physicalDeliveryUnlocked}
+                      shippingCost={nft.shippingCost}
+                      alreadyRequested={!!nft.burnRequest}
+                    />
                   </div>
-                  <p className="text-xs text-white/40 leading-relaxed">
-                    Richiedi la consegna fisica della bottiglia. Il certificato digitale verrà distrutto (burn)
-                    e riceverai la bottiglia al tuo indirizzo. Disponibile solo se abilitato dalla cantina.
-                  </p>
-                  <DeliveryRequestButton
-                    nftId={nft.id}
-                    nftName={nft.name}
-                    bottleValue={nft.price ?? Number(nft.totalValue ?? 0)}
-                    physicalDeliveryUnlocked={nft.physicalDeliveryUnlocked}
-                    shippingCost={nft.shippingCost}
-                    alreadyRequested={!!nft.burnRequest}
-                  />
-                </div>
+                )}
               </div>
             ) : nft.isListed && nft.status === "LISTED" ? (
               nft.isFractionable ? (

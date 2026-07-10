@@ -8,7 +8,11 @@ export const metadata: Metadata = {
   title: "Wine Bank 24 — NFT per il vino italiano",
   description: "Tokenizza, colleziona e commercia bottiglie di vino pregiate come NFT",
   icons: {
-    icon: "/icon.svg",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    shortcut: "/favicon.ico",
     apple: "/icon.svg",
   },
 };

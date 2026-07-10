@@ -182,7 +182,7 @@ export function CantinaEditForm({ cantina }: { cantina: CantinaData }) {
           />
         ))}
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {field("Nuova password", (
             <div className="relative">
               <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/30" />
@@ -219,7 +219,7 @@ export function CantinaEditForm({ cantina }: { cantina: CantinaData }) {
           />
         ))}
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {field("Partita IVA", (
             <Input
               value={vatNumber}

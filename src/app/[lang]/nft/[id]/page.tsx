@@ -239,7 +239,7 @@ export default async function NftDetailPage({
           </div>
 
           {/* Wine details grid */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {nft.collection.vintage && (
               <div className="bg-[#1a0f0f] rounded-xl border border-[var(--wine-border)] px-4 py-3">
                 <p className="text-xs text-white/40 flex items-center gap-1 mb-1">

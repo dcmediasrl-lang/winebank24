@@ -95,7 +95,7 @@ export function BlogPostForm({ lang, post }: { lang: string; post?: BlogPost }) 
       <Card>
         <CardContent className="pt-5 space-y-4">
           <h3 className="font-semibold text-stone-700">Metadati</h3>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1">
               <Label>Slug URL *</Label>
               <Input

@@ -105,7 +105,7 @@ export default function CantinaContrattoPage({ params }: { params: Promise<{ lan
             <p className="font-medium text-white">
               Dal momento dell'emissione del certificato digitale e fino al completamento della procedura di liquidazione, il Creator <strong className="text-red-700">non può</strong>:
             </p>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {[
                 "Vendere la bottiglia fisica",
                 "Spostare o trasferire il bene",

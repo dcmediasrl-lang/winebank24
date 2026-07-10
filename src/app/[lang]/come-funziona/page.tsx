@@ -132,7 +132,7 @@ export default async function ComeFunzionaPage({
           <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(13,7,5,0.92) 0%, rgba(13,7,5,0.65) 60%, rgba(13,7,5,0.3) 100%)" }} />
         </div>
 
-        <div className="relative z-10 max-w-5xl mx-auto px-6 py-24">
+        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold mb-6 border"
             style={{ background: "rgba(223,7,27,0.15)", borderColor: "rgba(223,7,27,0.4)", color: "#f87171" }}>
             <Wine className="w-3.5 h-3.5" />
@@ -169,7 +169,7 @@ export default async function ComeFunzionaPage({
 
       {/* ── QUICK STATS ── */}
       <section style={{ background: "var(--wine-card)", borderBottom: "1px solid var(--wine-border)" }}>
-        <div className="max-w-5xl mx-auto px-6 py-10 grid grid-cols-2 sm:grid-cols-4 gap-8">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8">
           {[
             { value: "100%", label: "Bottiglie fisiche reali" },
             { value: "Polygon", label: "Blockchain certificata" },
@@ -188,7 +188,7 @@ export default async function ComeFunzionaPage({
       </section>
 
       {/* ── STEPS ── */}
-      <section className="py-24 px-6" style={{ background: "var(--wine-bg)" }}>
+      <section className="py-14 sm:py-24 px-4 sm:px-6" style={{ background: "var(--wine-bg)" }}>
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-extrabold mb-4">6 passi per iniziare</h2>
@@ -255,7 +255,7 @@ export default async function ComeFunzionaPage({
       </section>
 
       {/* ── BENEFITS ── */}
-      <section className="py-24 px-6" style={{ background: "var(--wine-card)" }}>
+      <section className="py-14 sm:py-24 px-4 sm:px-6" style={{ background: "var(--wine-card)" }}>
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-extrabold mb-4">Perché Wine Bank 24</h2>
@@ -278,7 +278,7 @@ export default async function ComeFunzionaPage({
       </section>
 
       {/* ── WINERY SHOWCASE ── */}
-      <section className="py-24 px-6" style={{ background: "var(--wine-bg)" }}>
+      <section className="py-14 sm:py-24 px-4 sm:px-6" style={{ background: "var(--wine-bg)" }}>
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-14">
             <h2 className="text-3xl sm:text-4xl font-extrabold mb-4">Le cantine del futuro</h2>
@@ -308,7 +308,7 @@ export default async function ComeFunzionaPage({
       </section>
 
       {/* ── FAQ ── */}
-      <section className="py-24 px-6" style={{ background: "var(--wine-card)" }}>
+      <section className="py-14 sm:py-24 px-4 sm:px-6" style={{ background: "var(--wine-card)" }}>
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-14">
             <h2 className="text-3xl sm:text-4xl font-extrabold mb-4">Domande frequenti</h2>
@@ -332,7 +332,7 @@ export default async function ComeFunzionaPage({
       </section>
 
       {/* ── CTA BOTTOM ── */}
-      <section className="relative py-24 px-6 text-center overflow-hidden">
+      <section className="relative py-14 sm:py-24 px-4 sm:px-6 text-center overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="https://images.unsplash.com/photo-1516594915697-87eb3b1c14ea?w=1600&q=85"

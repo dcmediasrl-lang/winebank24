@@ -128,7 +128,7 @@ export function BottleImageUploader({ images, onChange, disabled }: Props) {
       <div className="space-y-3">
         {/* Preview grid */}
         {images.length > 0 && (
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {images.map((img, i) => (
               <div
                 key={img.previewUrl}

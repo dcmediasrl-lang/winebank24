@@ -198,7 +198,7 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
               )}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label className="text-white font-medium">Annata <span className="text-red-400">*</span></Label>
                 <Input
@@ -226,7 +226,7 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label className="text-white font-medium">Vitigni</Label>
                 {/* Selected chips */}
@@ -348,7 +348,7 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
           <div className="space-y-4 p-4 bg-[#2a1010] rounded-xl border border-white/15">
             <p className="text-xs font-bold text-amber-400/80 uppercase tracking-widest">Tipologia certificato</p>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button
                 type="button"
                 onClick={() => setIsFractionable(false)}

@@ -133,7 +133,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
       />
 
       {/* HOW IT WORKS */}
-      <section className="py-20 px-6" style={{ background: "var(--wine-card)" }}>
+      <section className="py-12 sm:py-20 px-4 sm:px-6" style={{ background: "var(--wine-card)" }}>
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-14">
             <h2 className="text-3xl font-extrabold mb-3">{dict.home.how_title}</h2>
@@ -157,12 +157,12 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
       </section>
 
       {/* ADSENSE */}
-      <div className="max-w-5xl mx-auto px-6 py-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
         <AdSenseBanner slot="homepage-hero" format="horizontal" className="w-full" />
       </div>
 
       {/* FEATURES */}
-      <section className="py-20 px-6" style={{ background: "var(--wine-bg)" }}>
+      <section className="py-12 sm:py-20 px-4 sm:px-6" style={{ background: "var(--wine-bg)" }}>
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-14">
             <h2 className="text-3xl font-extrabold mb-3">{lang === "it" ? "Per chi è Wine Bank 24" : "Who is Wine Bank 24 for"}</h2>
@@ -182,7 +182,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
       </section>
 
       {/* WINE REGIONS / COLLECTIONS */}
-      <section className="py-20 px-6" style={{ background: "var(--wine-card)" }}>
+      <section className="py-12 sm:py-20 px-4 sm:px-6" style={{ background: "var(--wine-card)" }}>
         <div className="max-w-5xl mx-auto">
           <div className="flex items-end justify-between mb-10">
             <div>
@@ -217,7 +217,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
 
       {/* BLOG PREVIEW */}
       {recentPosts.length > 0 && (
-        <section className="py-20 px-6" style={{ background: "var(--wine-bg)" }}>
+        <section className="py-12 sm:py-20 px-4 sm:px-6" style={{ background: "var(--wine-bg)" }}>
           <div className="max-w-5xl mx-auto">
             <div className="flex items-end justify-between mb-10">
               <div>
@@ -247,7 +247,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
       )}
 
       {/* CTA BANNER */}
-      <section className="py-20 px-6 text-center relative overflow-hidden" style={{ background: "var(--wine-gradient)" }}>
+      <section className="py-12 sm:py-20 px-4 sm:px-6 text-center relative overflow-hidden" style={{ background: "var(--wine-gradient)" }}>
         <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(circle at 20% 50%, white 0%, transparent 50%), radial-gradient(circle at 80% 50%, white 0%, transparent 50%)" }} />
         <div className="relative z-10 max-w-2xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-extrabold mb-4 text-white">

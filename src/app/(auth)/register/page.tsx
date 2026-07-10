@@ -133,7 +133,7 @@ export default function RegisterPage() {
               <div className="space-y-1">
                 <p className="text-xs font-semibold text-stone-400 uppercase tracking-wide">Dati anagrafici</p>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <Label>Nome *</Label>
                   <Input required value={form.firstName} onChange={e => set("firstName", e.target.value)} placeholder="Mario" />
@@ -143,7 +143,7 @@ export default function RegisterPage() {
                   <Input required value={form.lastName} onChange={e => set("lastName", e.target.value)} placeholder="Rossi" />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <Label>Data di nascita *</Label>
                   <Input required type="date" value={form.birthDate} onChange={e => set("birthDate", e.target.value)} max={new Date(Date.now() - 18 * 365.25 * 24 * 3600 * 1000).toISOString().split("T")[0]} />

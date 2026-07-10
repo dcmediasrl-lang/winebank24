@@ -94,11 +94,26 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id;
-        const dbUser = await db.user.findUnique({ where: { id: user.id! }, select: { role: true } });
+        const dbUser = await db.user.findUnique({
+          where: { id: user.id! },
+          select: { role: true, password: true, firstName: true },
+        });
         token.role = dbUser?.role ?? "COLLECTOR";
+        // Flag Google OAuth users who haven't completed their profile yet
+        if (account?.provider === "google") {
+          token.needsProfileCompletion = !dbUser?.firstName;
+        }
+      }
+      // Re-check on every token refresh so flag clears after profile completion
+      if (token.needsProfileCompletion && token.id) {
+        const dbUser = await db.user.findUnique({
+          where: { id: token.id as string },
+          select: { firstName: true },
+        });
+        token.needsProfileCompletion = !dbUser?.firstName;
       }
       return token;
     },
@@ -106,6 +121,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (token) {
         session.user.id = token.id as string;
         session.user.role = token.role as Role;
+        session.user.needsProfileCompletion = !!token.needsProfileCompletion;
       }
       return session;
     },

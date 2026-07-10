@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { Sidebar } from "@/components/shared/sidebar";
 import { getDictionary, hasLocale } from "../dictionaries";
 import { notFound } from "next/navigation";
+import { db } from "@/lib/db";
 
 export default async function CollectorLayout({
   children,
@@ -15,6 +16,15 @@ export default async function CollectorLayout({
   if (!hasLocale(lang)) notFound();
   const session = await auth();
   if (!session) redirect(`/${lang}/login`);
+
+  // Google OAuth users (no password) must complete profile before accessing collector area
+  const dbUser = await db.user.findUnique({
+    where: { id: session.user.id },
+    select: { password: true, firstName: true },
+  });
+  if (dbUser && !dbUser.password && !dbUser.firstName) {
+    redirect(`/${lang}/complete-profile`);
+  }
 
   const dict = await getDictionary(lang);
 

@@ -96,7 +96,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async jwt({ token, user, account }) {
       if (user) {
-        token.id = user.id;
+        token.id = user.id as string;
         const dbUser = await db.user.findUnique({
           where: { id: user.id! },
           select: { role: true, password: true, firstName: true },

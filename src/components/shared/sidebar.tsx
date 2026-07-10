@@ -94,7 +94,7 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
     <>
       <div className="mb-8 px-2">
         <div className="mb-3">
-          <Image src="/logo.png" alt="Wine Bank 24" width={120} height={60} className="h-12 w-auto object-contain bg-white rounded-xl px-2 py-1" priority />
+          <Image src="/logo.svg" alt="Wine Bank 24" width={120} height={60} className="h-12 w-auto object-contain bg-white rounded-xl px-2 py-1" priority />
         </div>
         <div className="text-xs text-[var(--wine-muted)]">{roleLabel}</div>
         <div className="text-sm text-white/80 font-medium truncate mt-1">{userName}</div>
@@ -133,7 +133,7 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
     <>
       {/* Mobile top bar */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-[var(--wine-card)] border-b border-[var(--wine-border)] flex items-center justify-between px-4 py-3">
-        <Image src="/logo.png" alt="Wine Bank 24" width={90} height={36} className="h-8 w-auto object-contain bg-white rounded-lg px-2 py-0.5" priority />
+        <Image src="/logo.svg" alt="Wine Bank 24" width={90} height={36} className="h-8 w-auto object-contain bg-white rounded-lg px-2 py-0.5" priority />
         <button
           onClick={() => setMobileOpen(true)}
           className="text-white/70 hover:text-white p-1"

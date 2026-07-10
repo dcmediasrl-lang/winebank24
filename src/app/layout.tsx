@@ -7,6 +7,10 @@ const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans", weight:
 export const metadata: Metadata = {
   title: "Wine Bank 24 — NFT per il vino italiano",
   description: "Tokenizza, colleziona e commercia bottiglie di vino pregiate come NFT",
+  icons: {
+    icon: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -27,136 +27,107 @@ export function HomeNav({ lang, nav, dashboardUrl, userName }: HomeNavProps) {
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-stone-200 flex items-center justify-end px-6 sm:px-10 py-3">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm">
 
-      {/* Desktop links — right-aligned */}
-      <div className="hidden md:flex items-center gap-3">
-        {navLinks.map(l => (
-          <Link
-            key={l.href}
-            href={l.href}
-            className="font-medium px-3 py-2 text-stone-600 hover:text-stone-900 uppercase text-sm tracking-wide transition-colors"
-          >
-            {l.label}
+      {/* ── Menu strip ── */}
+      <div className="flex items-center justify-end px-6 sm:px-10 py-2.5 border-b border-stone-100">
+
+        {/* Desktop */}
+        <div className="hidden md:flex items-center gap-3">
+          {navLinks.map(l => (
+            <Link key={l.href} href={l.href}
+              className="font-medium px-3 py-1.5 text-stone-600 hover:text-stone-900 uppercase text-sm tracking-wide transition-colors">
+              {l.label}
+            </Link>
+          ))}
+          {isLoggedIn ? (
+            <>
+              {userName && <span className="text-xs text-stone-400 px-2 hidden lg:block truncate max-w-[140px]">{userName}</span>}
+              <Link href={dashboardUrl!}
+                className="flex items-center gap-2 px-4 py-1.5 rounded-lg font-bold text-white text-sm transition-opacity hover:opacity-90"
+                style={{ background: "var(--wine-gradient)" }}>
+                <LayoutDashboard className="w-4 h-4" /> Dashboard
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link href={`/${lang}/login`}
+                className="flex items-center gap-2 px-4 py-1.5 rounded-lg font-medium text-stone-700 border border-stone-300 hover:bg-stone-50 text-sm transition-colors">
+                <LogIn className="w-4 h-4" /> {nav.login}
+              </Link>
+              <Link href={`/${lang}/register`}
+                className="flex items-center gap-2 px-4 py-1.5 rounded-lg font-bold text-white text-sm transition-opacity hover:opacity-90"
+                style={{ background: "var(--wine-gradient)" }}>
+                <UserPlus className="w-4 h-4" /> {nav.register}
+              </Link>
+            </>
+          )}
+          <Link href={lang === "en" ? "/it" : "/en"}
+            className="text-xs text-stone-400 hover:text-stone-700 transition-colors ml-1">
+            {lang === "en" ? "🇮🇹 IT" : "🇬🇧 EN"}
           </Link>
-        ))}
+        </div>
 
-        {isLoggedIn ? (
-          <>
-            {userName && (
-              <span className="text-xs text-stone-400 px-2 hidden lg:block truncate max-w-[140px]">
-                {userName}
-              </span>
-            )}
-            <Link
-              href={dashboardUrl!}
-              className="flex items-center gap-2 px-5 py-2 rounded-lg font-bold text-white text-sm transition-opacity hover:opacity-90"
-              style={{ background: "var(--wine-gradient)" }}
-            >
-              <LayoutDashboard className="w-4 h-4" />
-              Dashboard
-            </Link>
-          </>
-        ) : (
-          <>
-            <Link
-              href={`/${lang}/login`}
-              className="flex items-center gap-2 px-5 py-2 rounded-lg font-medium text-stone-700 border border-stone-300 hover:bg-stone-50 text-sm transition-colors"
-            >
-              <LogIn className="w-4 h-4" />
-              {nav.login}
-            </Link>
-            <Link
-              href={`/${lang}/register`}
-              className="flex items-center gap-2 px-5 py-2 rounded-lg font-bold text-white text-sm transition-opacity hover:opacity-90"
-              style={{ background: "var(--wine-gradient)" }}
-            >
-              <UserPlus className="w-4 h-4" />
-              {nav.register}
-            </Link>
-          </>
-        )}
-
-        <Link
-          href={lang === "en" ? "/it" : "/en"}
-          className="text-xs text-stone-400 hover:text-stone-700 transition-colors ml-1"
-        >
-          {lang === "en" ? "🇮🇹 IT" : "🇬🇧 EN"}
-        </Link>
+        {/* Mobile: lang + hamburger */}
+        <div className="flex md:hidden items-center gap-3">
+          <Link href={lang === "en" ? "/it" : "/en"} className="text-xs text-stone-400 hover:text-stone-700 transition-colors">
+            {lang === "en" ? "🇮🇹 IT" : "🇬🇧 EN"}
+          </Link>
+          <button onClick={() => setOpen(true)} className="text-stone-600 hover:text-stone-900 p-1 transition-colors">
+            <Menu className="w-6 h-6" />
+          </button>
+        </div>
       </div>
 
-      {/* Mobile: lang + hamburger */}
-      <div className="flex md:hidden items-center gap-3">
-        <Link
-          href={lang === "en" ? "/it" : "/en"}
-          className="text-xs text-stone-400 hover:text-stone-700 transition-colors"
-        >
-          {lang === "en" ? "🇮🇹 IT" : "🇬🇧 EN"}
-        </Link>
-        <button
-          onClick={() => setOpen(true)}
-          className="text-stone-600 hover:text-stone-900 p-1 transition-colors"
-        >
-          <Menu className="w-6 h-6" />
-        </button>
+      {/* ── Logo strip ── */}
+      <div className="w-full bg-white px-8 sm:px-16 py-4">
+        <img src="/logo.svg" alt="Wine Bank 24" className="w-full h-auto" style={{ maxHeight: "120px", objectFit: "contain" }} />
       </div>
 
       {/* Mobile overlay */}
-      {open && (
-        <div className="fixed inset-0 z-40 bg-black/60" onClick={() => setOpen(false)} />
-      )}
+      {open && <div className="fixed inset-0 z-40 bg-black/60" onClick={() => setOpen(false)} />}
 
       {/* Mobile drawer */}
-      <div
-        className={cn(
-          "fixed top-0 right-0 z-50 h-full w-72 flex flex-col p-6 shadow-2xl transition-transform duration-300 bg-white",
-          open ? "translate-x-0" : "translate-x-full"
-        )}
-      >
+      <div className={cn(
+        "fixed top-0 right-0 z-50 h-full w-72 flex flex-col p-6 shadow-2xl transition-transform duration-300 bg-white",
+        open ? "translate-x-0" : "translate-x-full"
+      )}>
         <div className="flex items-center justify-between mb-8">
           <img src="/logo.svg" alt="Wine Bank 24" className="h-8 w-auto" />
           <button onClick={() => setOpen(false)} className="text-stone-500 hover:text-stone-900 transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
-
         {isLoggedIn && userName && (
           <div className="mb-4 px-1 pb-4 border-b border-stone-200">
             <p className="text-xs text-stone-400 uppercase tracking-wide">Connesso come</p>
             <p className="text-stone-800 font-semibold text-sm mt-0.5 truncate">{userName}</p>
           </div>
         )}
-
         <nav className="flex flex-col gap-1 flex-1">
           {navLinks.map(l => (
-            <Link
-              key={l.href}
-              href={l.href}
-              onClick={() => setOpen(false)}
-              className="py-3 px-2 font-medium text-stone-700 hover:text-stone-900 uppercase text-sm tracking-wider rounded-lg hover:bg-stone-50 border-b border-stone-100 transition-colors"
-            >
+            <Link key={l.href} href={l.href} onClick={() => setOpen(false)}
+              className="py-3 px-2 font-medium text-stone-700 hover:text-stone-900 uppercase text-sm tracking-wider rounded-lg hover:bg-stone-50 border-b border-stone-100 transition-colors">
               {l.label}
             </Link>
           ))}
         </nav>
-
         <div className="flex flex-col gap-3 mt-auto pt-6">
           {isLoggedIn ? (
-            <Link
-              href={dashboardUrl!}
-              onClick={() => setOpen(false)}
+            <Link href={dashboardUrl!} onClick={() => setOpen(false)}
               className="w-full text-center flex items-center justify-center gap-2 px-5 py-3 rounded-lg font-bold text-white transition-opacity hover:opacity-90"
-              style={{ background: "var(--wine-gradient)" }}
-            >
-              <LayoutDashboard className="w-4 h-4" />
-              Dashboard
+              style={{ background: "var(--wine-gradient)" }}>
+              <LayoutDashboard className="w-4 h-4" /> Dashboard
             </Link>
           ) : (
             <>
-              <Link href={`/${lang}/login`} onClick={() => setOpen(false)} className="w-full text-center px-5 py-2.5 rounded-lg font-medium text-stone-700 border border-stone-300 hover:bg-stone-50 transition-colors">
+              <Link href={`/${lang}/login`} onClick={() => setOpen(false)}
+                className="w-full text-center px-5 py-2.5 rounded-lg font-medium text-stone-700 border border-stone-300 hover:bg-stone-50 transition-colors">
                 {nav.login}
               </Link>
-              <Link href={`/${lang}/register`} onClick={() => setOpen(false)} className="w-full text-center px-5 py-2.5 rounded-lg font-bold text-white transition-opacity hover:opacity-90" style={{ background: "var(--wine-gradient)" }}>
+              <Link href={`/${lang}/register`} onClick={() => setOpen(false)}
+                className="w-full text-center px-5 py-2.5 rounded-lg font-bold text-white transition-opacity hover:opacity-90"
+                style={{ background: "var(--wine-gradient)" }}>
                 {nav.register}
               </Link>
             </>

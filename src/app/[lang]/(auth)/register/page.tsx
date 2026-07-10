@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Wine, Mail } from "lucide-react";
+import { Wine, Mail, Eye, EyeOff } from "lucide-react";
 
 export default function RegisterPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = use(params);
@@ -16,6 +16,8 @@ export default function RegisterPage({ params }: { params: Promise<{ lang: strin
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState("");
   const [form, setForm] = useState({ email: "", password: "", confirmPassword: "" });
 
@@ -113,23 +115,35 @@ export default function RegisterPage({ params }: { params: Promise<{ lang: strin
                     {en ? "(min. 8 chars)" : "(min. 8 caratteri)"}
                   </span>
                 </Label>
-                <Input
-                  required
-                  type="password"
-                  minLength={8}
-                  value={form.password}
-                  onChange={e => set("password", e.target.value)}
-                />
+                <div className="relative">
+                  <Input
+                    required
+                    type={showPassword ? "text" : "password"}
+                    minLength={8}
+                    value={form.password}
+                    onChange={e => set("password", e.target.value)}
+                    className="pr-10"
+                  />
+                  <button type="button" onClick={() => setShowPassword(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600">
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
               </div>
               <div className="space-y-1">
                 <Label>{en ? "Confirm password" : "Conferma password"} *</Label>
-                <Input
-                  required
-                  type="password"
-                  minLength={8}
-                  value={form.confirmPassword}
-                  onChange={e => set("confirmPassword", e.target.value)}
-                />
+                <div className="relative">
+                  <Input
+                    required
+                    type={showConfirm ? "text" : "password"}
+                    minLength={8}
+                    value={form.confirmPassword}
+                    onChange={e => set("confirmPassword", e.target.value)}
+                    className="pr-10"
+                  />
+                  <button type="button" onClick={() => setShowConfirm(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600">
+                    {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
               </div>
 
               {/* Age confirmation */}

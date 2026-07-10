@@ -9,13 +9,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Wine, CheckCircle, AlertTriangle } from "lucide-react";
+import { Wine, CheckCircle, AlertTriangle, Eye, EyeOff } from "lucide-react";
 
 function LoginForm({ lang }: { lang: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const isVerified = searchParams.get("verified") === "1";
@@ -110,7 +111,12 @@ function LoginForm({ lang }: { lang: string }) {
               </div>
               <div className="space-y-1">
                 <Label>Password</Label>
-                <Input type="password" required value={password} onChange={e => setPassword(e.target.value)} />
+                <div className="relative">
+                  <Input type={showPassword ? "text" : "password"} required value={password} onChange={e => setPassword(e.target.value)} className="pr-10" />
+                  <button type="button" onClick={() => setShowPassword(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600">
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
               </div>
               <Button type="submit" disabled={loading} className="w-full text-white font-semibold" style={{ background: "var(--wine-gradient)" }}>
                 {loading

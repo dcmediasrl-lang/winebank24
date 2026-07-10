@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ListNftButton } from "@/components/collector/list-nft-button";
-import { BurnRequestButton } from "@/components/collector/burn-request-button";
+import { DeliveryRequestButton } from "@/components/collector/delivery-request-button";
 import { ListFractionButton } from "@/components/collector/list-fraction-button";
 import { NftImageGallery } from "@/components/shared/nft-image-gallery";
 import { TrendingUp, ExternalLink } from "lucide-react";
@@ -15,7 +15,11 @@ export default async function CollectorPortfolioPage({ params }: { params: Promi
   const [nfts, fractions] = await Promise.all([
     db.nft.findMany({
       where: { ownerId: session!.user.id, status: { not: "BURNED" } },
-      include: { collection: { select: { name: true } }, cantina: { select: { name: true } } },
+      include: {
+        collection: { select: { name: true } },
+        cantina: { select: { name: true } },
+        burnRequest: { select: { id: true } },
+      },
       orderBy: { createdAt: "desc" },
     }),
     db.nftFraction.findMany({
@@ -73,9 +77,19 @@ export default async function CollectorPortfolioPage({ params }: { params: Promi
                     </Badge>
                     {nft.price && <span className="font-semibold text-white">€ {nft.price.toFixed(2)}</span>}
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col gap-2">
                     <ListNftButton nftId={nft.id} isListed={nft.isListed} price={nft.price} />
-                    <BurnRequestButton nftId={nft.id} />
+                    {!nft.isFractionable && (
+                      <DeliveryRequestButton
+                        nftId={nft.id}
+                        nftName={nft.name}
+                        bottleValue={nft.price ?? 0}
+                        physicalDeliveryUnlocked={nft.physicalDeliveryUnlocked}
+                        shippingCost={nft.shippingCost}
+                        alreadyRequested={!!nft.burnRequest}
+                        compact
+                      />
+                    )}
                   </div>
                 </CardContent>
               </Card>

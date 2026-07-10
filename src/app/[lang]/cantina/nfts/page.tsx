@@ -3,10 +3,12 @@ import { db } from "@/lib/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreateNftStandalone } from "@/components/cantina/create-nft-standalone";
 import { ListCantinaNftButton } from "@/components/cantina/list-cantina-nft-button";
+import { UnlockDeliveryButton } from "@/components/cantina/unlock-delivery-button";
 import { Wine, ExternalLink } from "lucide-react";
 import Link from "next/link";
 
 const STATUS_COLOR: Record<string, string> = {
+  PENDING_PAYMENT:     "bg-yellow-900/40 text-yellow-400",
   MINTED:              "bg-white/10 text-white/60",
   LISTED:              "bg-green-900/40 text-green-400",
   SOLD:                "bg-blue-900/40 text-blue-400",
@@ -17,10 +19,11 @@ const STATUS_COLOR: Record<string, string> = {
 };
 
 const STATUS_LABEL: Record<string, string> = {
+  PENDING_PAYMENT:     "Att. pagamento fee",
   MINTED:              "In cantina",
   LISTED:              "In vendita",
   SOLD:                "Ceduto",
-  BURN_REQUESTED:      "Consegna richiesta",
+  BURN_REQUESTED:      "Ritiro richiesto",
   BURNED:              "Consegnato",
   LIQUIDATION_REQUESTED: "Liquidazione richiesta",
   LIQUIDATED:          "Liquidato",
@@ -51,6 +54,10 @@ export default async function CantinaNftsPage({ params }: { params: Promise<{ la
       fractions: { select: { id: true } },
     },
   });
+
+  const STATUS_LABEL_EXTRA: Record<string, string> = {
+    PENDING_PAYMENT: "In attesa pagamento",
+  };
 
   return (
     <div className="space-y-6">
@@ -145,12 +152,19 @@ export default async function CantinaNftsPage({ params }: { params: Promise<{ la
                         {new Date(nft.createdAt).toLocaleDateString("it-IT")}
                       </td>
                       <td className="py-3">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                           {(nft.status === "MINTED" || nft.status === "LISTED") && !nft.isFractionable && (
                             <ListCantinaNftButton
                               nftId={nft.id}
                               isListed={nft.isListed}
                               price={nft.price}
+                            />
+                          )}
+                          {nft.status !== "PENDING_PAYMENT" && nft.status !== "BURNED" && nft.status !== "LIQUIDATED" && !nft.isFractionable && (
+                            <UnlockDeliveryButton
+                              nftId={nft.id}
+                              currentlyUnlocked={nft.physicalDeliveryUnlocked}
+                              currentShippingCost={nft.shippingCost}
                             />
                           )}
                           <Link

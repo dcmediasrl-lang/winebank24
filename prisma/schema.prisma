@@ -201,9 +201,11 @@ model Nft {
   isFractionable  Boolean   @default(false)
   totalValue      Decimal?  @db.Decimal(10,2)
   availableValue  Decimal?  @db.Decimal(10,2)
-  royaltyPct      Float     @default(5.0)   // per-bottle royalty chosen by cantina (1–10%)
-  mintFeePaid     Boolean   @default(false)
-  mintFeeStripeId String?
+  royaltyPct               Float     @default(5.0)
+  mintFeePaid              Boolean   @default(false)
+  mintFeeStripeId          String?
+  physicalDeliveryUnlocked Boolean   @default(false)
+  shippingCost             Float?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 

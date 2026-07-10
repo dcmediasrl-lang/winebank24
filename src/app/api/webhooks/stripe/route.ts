@@ -30,6 +30,8 @@ export async function POST(req: Request) {
       await handleFractionPurchase(stripeSession, meta);
     } else if (meta.type === "mint_fee") {
       await handleMintFeePaid(stripeSession, meta);
+    } else if (meta.type === "burn_fee") {
+      await handleBurnFeePaid(stripeSession, meta);
     }
   } catch (err) {
     console.error("[webhook/stripe] Error processing event", event.type, err);
@@ -128,6 +130,51 @@ async function handleMintFeePaid(
         type: "MINT",
         amount: parseFloat(bottleValue),
         platformFee: parseInt(mintFeeCents) / 100,
+        paymentMethod: "FIAT",
+        stripeId: stripeSession.id,
+      },
+    }),
+  ]);
+}
+
+// ─── Burn fee (ritiro bottiglia fisica) ──────────────────────────────────────
+async function handleBurnFeePaid(
+  stripeSession: Stripe.Checkout.Session,
+  meta: Record<string, string>
+) {
+  const { nftId, buyerId, address, notes, burnFeeCents, vatCents, shippingCents } = meta;
+
+  const nft = await db.nft.findUnique({ where: { id: nftId } });
+  if (!nft || nft.status === "BURN_REQUESTED" || nft.status === "BURNED") return;
+
+  const totalPaid = (parseInt(burnFeeCents) + parseInt(vatCents) + parseInt(shippingCents)) / 100;
+
+  await db.$transaction([
+    db.nft.update({
+      where: { id: nftId },
+      data: { status: "BURN_REQUESTED", isListed: false },
+    }),
+    db.burnRequest.upsert({
+      where: { nftId },
+      create: {
+        nftId,
+        requestedBy: buyerId,
+        address,
+        notes: notes || null,
+      },
+      update: {
+        address,
+        notes: notes || null,
+      },
+    }),
+    db.transaction.create({
+      data: {
+        nftId,
+        buyerId,
+        type: "BURN",
+        amount: totalPaid,
+        platformFee: 0,
+        cantinaFee: totalPaid,
         paymentMethod: "FIAT",
         stripeId: stripeSession.id,
       },

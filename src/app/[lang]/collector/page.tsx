@@ -4,7 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Gem, TrendingUp, ShoppingCart, BarChart3 } from "lucide-react";
 import Link from "next/link";
 
-export default async function CollectorDashboardPage() {
+export default async function CollectorDashboardPage({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang } = await params;
   const session = await auth();
 
   const [nfts, fractions, transactions] = await Promise.all([
@@ -68,7 +69,7 @@ export default async function CollectorDashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Link href="/collector/portfolio" className="block">
+        <Link href={`/${lang}/collector/portfolio`} className="block">
           <Card className="hover:shadow-md transition-shadow cursor-pointer border-amber-100">
             <CardContent className="pt-5">
               <div className="flex items-center gap-3">
@@ -81,7 +82,7 @@ export default async function CollectorDashboardPage() {
             </CardContent>
           </Card>
         </Link>
-        <Link href="/marketplace" className="block">
+        <Link href={`/${lang}/marketplace`} className="block">
           <Card className="hover:shadow-md transition-shadow cursor-pointer border-blue-100">
             <CardContent className="pt-5">
               <div className="flex items-center gap-3">

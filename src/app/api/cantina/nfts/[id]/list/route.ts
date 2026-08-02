@@ -28,6 +28,15 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     return NextResponse.json({ error: "Certificato non più disponibile" }, { status: 400 });
   }
 
+  // Un bene frazionato ha un solo valore di riferimento (totalValue):
+  // impostare anche un prezzo intero genererebbe due prezzi per lo stesso bene
+  if (nft.isFractionable && isListed && price != null) {
+    return NextResponse.json(
+      { error: "Questo certificato è frazionato: il valore è definito dal valore totale, non da un prezzo di vendita." },
+      { status: 400 }
+    );
+  }
+
   const finalPrice = price ?? nft.price;
   if (isListed && (finalPrice == null || finalPrice <= 0)) {
     return NextResponse.json({ error: "Inserisci un prezzo valido maggiore di zero" }, { status: 400 });

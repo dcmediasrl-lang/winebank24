@@ -31,7 +31,7 @@ const STEPS = [
     num: "03",
     icon: Lock,
     title: "Acquista il certificato NFT",
-    body: "Con un click acquisti il certificato digitale (NFT) della bottiglia su blockchain Polygon. Il pagamento è sicuro tramite carta di credito o crypto. Ricevi la conferma d'acquisto via email con il tuo certificato.",
+    body: "Con un click acquisti il certificato digitale della bottiglia. Il pagamento è sicuro tramite carta di credito. Ricevi la conferma d'acquisto via email con il tuo certificato.",
     image: "https://images.unsplash.com/photo-1559526324-593bc073d938?w=800&q=85",
     imageAlt: "Acquisto sicuro NFT",
   },
@@ -62,8 +62,8 @@ const STEPS = [
 ];
 
 const BENEFITS = [
-  { icon: ShieldCheck, title: "Autenticità garantita", desc: "Ogni NFT è collegato a una bottiglia reale custodita in una cantina certificata. Nessuna falsificazione è possibile grazie alla blockchain." },
-  { icon: Lock, title: "Proprietà verificabile", desc: "La tua proprietà è registrata su Polygon blockchain, pubblica e immutabile. Puoi verificare il tuo NFT in qualsiasi momento." },
+  { icon: ShieldCheck, title: "Autenticità garantita", desc: "Ogni certificato è collegato a una bottiglia reale, identificata da un numero univoco e custodita in una cantina verificata." },
+  { icon: Lock, title: "Proprietà documentata", desc: "Ogni passaggio di proprietà del certificato è registrato dalla piattaforma e consultabile in qualsiasi momento." },
   { icon: BarChart3, title: "Prestigio nel tempo", desc: "I grandi vini acquisiscono prestigio e rarità nel tempo. Collezionare NFT di vino unisce passione e cultura." },
   { icon: Truck, title: "Ritiro fisico del bene", desc: "Quando la cantina abilita il ritiro, puoi riscattare la tua bottiglia pagando IVA, spedizione e una fee di piattaforma del 5%." },
   { icon: Gem, title: "Mercato secondario attivo", desc: "Rivendi i tuoi NFT direttamente nel marketplace a collezionisti da tutto il mondo, senza intermediari." },
@@ -172,7 +172,7 @@ export default async function ComeFunzionaPage({
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 grid grid-cols-3 gap-6 sm:gap-8">
           {[
             { value: "100%", label: "Bottiglie fisiche reali" },
-            { value: "Polygon", label: "Blockchain certificata" },
+            { value: "Univoco", label: "Codice per ogni bottiglia" },
             { value: "All Risks", label: "Polizza assicurativa" },
           ].map(({ value, label }) => (
             <div key={label} className="text-center">

@@ -34,12 +34,12 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
     ? [
         { icon: Wine, title: "Wineries", desc: "Create digital certificates for your bottles. Manage collections and sales directly on the platform." },
         { icon: Gem, title: "Collectors", desc: "Buy certified digital certificates of rare bottles. Collect, resell or request physical delivery when the winery makes it available." },
-        { icon: Shield, title: "Secure & Transparent", desc: "Every certificate is registered on Polygon blockchain. Verifiable ownership, fully tracked transfers." },
+        { icon: Shield, title: "Secure & Transparent", desc: "Every certificate is linked to an identified physical bottle. Documented ownership and transfers tracked by the platform." },
       ]
     : [
         { icon: Wine, title: "Cantine", desc: "Crea certificati digitali per le tue bottiglie. Gestisci collezioni e vendite direttamente in piattaforma." },
         { icon: Gem, title: "Collezionisti", desc: "Acquista certificati digitali di bottiglie rare. Colleziona, rivendi o richiedi la consegna fisica della bottiglia." },
-        { icon: Shield, title: "Sicuro & Trasparente", desc: "Ogni certificato è registrato su blockchain Polygon. Proprietà verificabile, trasferimenti completamente tracciati." },
+        { icon: Shield, title: "Sicuro & Trasparente", desc: "Ogni certificato è collegato a una bottiglia fisica identificata. Proprietà documentata e passaggi tracciati dalla piattaforma." },
       ];
 
   return (
@@ -60,7 +60,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
             tag: "Certificati digitali per il vino da collezione",
             title: "Il grande vino da collezione",
             titleAccent: "da custodire in formato digitale",
-            subtitle: "Colleziona bottiglie di vino pregiato con certificati digitali autentici su blockchain Polygon.",
+            subtitle: "Colleziona bottiglie di vino pregiato: ogni certificato digitale documenta proprietà e provenienza di una bottiglia reale.",
             cta: { label: "Esplora il Marketplace", href: `/${lang}/marketplace` },
             ctaSecondary: { label: "Come funziona", href: `/${lang}/come-funziona` },
           },
@@ -85,11 +85,11 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
           },
           {
             image: "https://images.unsplash.com/photo-1516594915697-87eb3b1c14ea?w=1600&q=85",
-            tag: "Blockchain & Sicurezza",
+            tag: "Autenticità & Sicurezza",
             title: "Ogni bottiglia,",
             titleAccent: "certificata",
             titleAfter: "e tracciata",
-            subtitle: "Proprietà verificabile, trasferimenti tracciati. La tecnologia blockchain garantisce l'autenticità di ogni certificato e la storia completa della bottiglia.",
+            subtitle: "Proprietà documentata e trasferimenti tracciati: ogni passaggio del certificato e la storia della bottiglia restano consultabili.",
             cta: { label: "Inizia ora", href: `/${lang}/register` },
             ctaSecondary: { label: "Leggi di più", href: `/${lang}/blog` },
           },
@@ -99,7 +99,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
             tag: "Digital certificates for fine wine",
             title: "Fine collectible wine",
             titleAccent: "preserved in digital form",
-            subtitle: "Collect premium wine bottles with authentic digital certificates on the Polygon blockchain.",
+            subtitle: "Collect premium wine bottles: every digital certificate documents the ownership and provenance of a real bottle.",
             cta: { label: "Explore Marketplace", href: `/${lang}/marketplace` },
             ctaSecondary: { label: "How it works", href: `/${lang}/come-funziona` },
           },
@@ -124,11 +124,11 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
           },
           {
             image: "https://images.unsplash.com/photo-1516594915697-87eb3b1c14ea?w=1600&q=85",
-            tag: "Blockchain & Security",
+            tag: "Authenticity & Security",
             title: "Every bottle,",
             titleAccent: "certified",
             titleAfter: "and traced",
-            subtitle: "Verifiable ownership, tracked transfers. Blockchain technology guarantees the authenticity of every certificate and the complete history of the bottle.",
+            subtitle: "Documented ownership and tracked transfers: every change of hands and the full history of the bottle remain on record.",
             cta: { label: "Get started", href: `/${lang}/register` },
             ctaSecondary: { label: "Read more", href: `/${lang}/blog` },
           },
@@ -198,12 +198,14 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
             {[
-              { name: "Toscana", img: "https://images.unsplash.com/photo-1533777857889-4be7c70b33f7?w=400&q=80", count: lang === "it" ? "142 NFT" : "142 NFTs" },
-              { name: "Piemonte", img: "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=400&q=80", count: lang === "it" ? "98 NFT" : "98 NFTs" },
-              { name: "Sicilia", img: "https://images.unsplash.com/photo-1474722883778-792e7990302f?w=400&q=80", count: lang === "it" ? "76 NFT" : "76 NFTs" },
-              { name: "Veneto", img: "https://images.unsplash.com/photo-1562601579-599dec564e06?w=400&q=80", count: lang === "it" ? "63 NFT" : "63 NFTs" },
-              { name: "Campania", img: "https://images.unsplash.com/photo-1504279577054-acfeccf8fc52?w=400&q=80", count: lang === "it" ? "45 NFT" : "45 NFTs" },
-              { name: "Lombardia", img: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&q=80", count: lang === "it" ? "38 NFT" : "38 NFTs" },
+              // Nessun conteggio: i numeri pubblici devono corrispondere a dati reali.
+              // Le regioni sono descritte dalle loro denominazioni tipiche.
+              { name: "Toscana", img: "https://images.unsplash.com/photo-1533777857889-4be7c70b33f7?w=400&q=80", count: "Brunello · Bolgheri · Chianti" },
+              { name: "Piemonte", img: "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=400&q=80", count: "Barolo · Barbaresco" },
+              { name: "Sicilia", img: "https://images.unsplash.com/photo-1474722883778-792e7990302f?w=400&q=80", count: "Etna · Nero d\u2019Avola" },
+              { name: "Veneto", img: "https://images.unsplash.com/photo-1562601579-599dec564e06?w=400&q=80", count: "Amarone · Valpolicella" },
+              { name: "Campania", img: "https://images.unsplash.com/photo-1504279577054-acfeccf8fc52?w=400&q=80", count: "Taurasi · Fiano" },
+              { name: "Lombardia", img: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&q=80", count: "Franciacorta · Valtellina" },
             ].map(({ name, img, count }) => (
               <Link key={name} href={`/${lang}/marketplace`} className="group relative rounded-xl overflow-hidden block" style={{ aspectRatio: "1", border: "1px solid var(--wine-border)" }}>
                 <Image src={img} alt={name} fill sizes="(max-width: 640px) 50vw, 25vw" className="object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -257,7 +259,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
             {lang === "it" ? "Inizia a collezionare oggi" : "Start collecting today"}
           </h2>
           <p className="text-white/80 mb-8 text-lg">
-            {lang === "it" ? "Unisciti a migliaia di appassionati e cantine sul primo marketplace NFT per il vino da collezione." : "Join thousands of enthusiasts and wineries on the first NFT marketplace for collectible wine."}
+            {lang === "it" ? "Scopri bottiglie selezionate, documentate e custodite in condizioni controllate." : "Discover selected bottles, documented and kept in controlled conditions."}
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
             <Link href={`/${lang}/register`} className="px-8 py-3 rounded-lg font-bold bg-white transition-opacity hover:opacity-90" style={{ color: "var(--wine-red)" }}>

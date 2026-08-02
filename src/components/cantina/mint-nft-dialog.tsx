@@ -40,7 +40,7 @@ export function MintNftDialog({ collectionId, cantinaId, collectionName }: {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       if (data.onChain) {
-        toast.success(`NFT mintato su blockchain! Token ID: ${data.tokenId}`);
+        toast.success(`Certificato creato. Codice: ${data.tokenId}`);
       } else {
         toast.success("NFT creato con successo!");
       }
@@ -106,7 +106,7 @@ export function MintNftDialog({ collectionId, cantinaId, collectionName }: {
             </div>
           )}
           <Button type="submit" disabled={loading} className="w-full bg-amber-500 hover:bg-amber-600 text-stone-950">
-            {loading ? "Minting in corso..." : "Minta sulla Blockchain"}
+            {loading ? "Creazione in corso…" : "Crea il certificato"}
           </Button>
         </form>
       </DialogContent>

@@ -176,6 +176,14 @@ async function handleMintFeePaid(
       },
     }),
   ]);
+
+  await notify({
+    userId: nft.ownerId,
+    type: "NFT_MINTED",
+    title: "Certificato attivato",
+    body: `"${nft.name}" è ora ${newStatus === "LISTED" ? "pubblicato nel marketplace" : "attivo nella tua collezione"}.`,
+    link: "/cantina/nfts",
+  });
 }
 
 // ─── Burn fee (ritiro bottiglia fisica) ──────────────────────────────────────
@@ -185,7 +193,10 @@ async function handleBurnFeePaid(
 ) {
   const { nftId, buyerId, address, notes, burnFeeCents, vatCents, shippingCents } = meta;
 
-  const nft = await db.nft.findUnique({ where: { id: nftId } });
+  const nft = await db.nft.findUnique({
+    where: { id: nftId },
+    include: { cantina: { select: { userId: true } } },
+  });
   if (!nft || nft.status === "BURN_REQUESTED" || nft.status === "BURNED") return;
 
   const totalPaid = (parseInt(burnFeeCents) + parseInt(vatCents) + parseInt(shippingCents)) / 100;
@@ -223,6 +234,24 @@ async function handleBurnFeePaid(
       },
     }),
   ]);
+
+  // La cantina deve preparare e spedire la bottiglia fisica
+  await Promise.allSettled([
+    notify({
+      userId: nft.cantina.userId,
+      type: "DELIVERY_REQUESTED",
+      title: "Richiesta di ritiro bottiglia",
+      body: `"${nft.name}" — il collezionista ha pagato e attende la spedizione.`,
+      link: "/cantina/nfts",
+    }),
+    notify({
+      userId: buyerId,
+      type: "DELIVERY_REQUESTED",
+      title: "Richiesta di ritiro registrata",
+      body: `Pagamento ricevuto per "${nft.name}". La cantina preparerà la spedizione.`,
+      link: "/collector/portfolio",
+    }),
+  ]);
 }
 
 // ─── Quota di co-proprietà ───────────────────────────────────────────────────
@@ -238,7 +267,7 @@ async function handleFractionPurchase(
 
   const nft = await db.nft.findUnique({
     where: { id: nftId },
-    include: { cantina: { select: { user: { select: { email: true } } } } },
+    include: { cantina: { select: { userId: true, user: { select: { email: true } } } } },
   });
   if (!nft) return;
 
@@ -280,6 +309,20 @@ async function handleFractionPurchase(
   ]);
 
   await Promise.allSettled([
+    notify({
+      userId: buyerId,
+      type: "NFT_PURCHASED",
+      title: "Quota acquistata",
+      body: `${fractionPct.toFixed(2)}% di "${nft.name}" per € ${investedAmount.toFixed(2)}`,
+      link: "/collector/portfolio",
+    }),
+    notify({
+      userId: nft.cantina.userId,
+      type: "NFT_SOLD",
+      title: "Quota di co-proprietà venduta",
+      body: `${fractionPct.toFixed(2)}% di "${nft.name}"${newAvailable <= 0 ? " — quote esaurite" : ` — restano € ${newAvailable.toFixed(2)}`}`,
+      link: "/cantina/nfts",
+    }),
     sendPurchaseEmail(buyer.email, `${nft.name} — quota ${fractionPct.toFixed(2)}%`, investedAmount),
   ]);
 }

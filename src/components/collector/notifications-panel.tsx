@@ -36,11 +36,13 @@ function timeAgo(iso: string, en: boolean) {
 }
 
 export function NotificationsPanel({
-  lang, initialNotifications, initialPrefs,
+  lang, initialNotifications, initialPrefs, basePath = "collector",
 }: {
   lang: string;
   initialNotifications: Notification[];
   initialPrefs: Prefs;
+  /** Sezione del pannello in cui vive la pagina: i link vengono riscritti di conseguenza */
+  basePath?: "collector" | "cantina";
 }) {
   const en = lang === "en";
   const router = useRouter();
@@ -48,6 +50,11 @@ export function NotificationsPanel({
   const [prefs, setPrefs] = useState(initialPrefs);
   const [savingPref, setSavingPref] = useState(false);
   const unread = items.filter(i => !i.read).length;
+
+  // Le notifiche salvano link "/collector/...": per la cantina puntano alle
+  // pagine equivalenti del suo pannello (offerte, portfolio, reports esistono in entrambi)
+  const resolveLink = (link: string) =>
+    `/${lang}${basePath === "cantina" ? link.replace("/collector/", "/cantina/") : link}`;
 
   async function markAllRead() {
     setItems(items.map(i => ({ ...i, read: true })));
@@ -144,7 +151,7 @@ export function NotificationsPanel({
               return (
                 <li key={n.id}>
                   {n.link ? (
-                    <Link href={`/${lang}${n.link}`} onClick={() => openOne(n)}>{inner}</Link>
+                    <Link href={resolveLink(n.link)} onClick={() => openOne(n)}>{inner}</Link>
                   ) : (
                     <button className="w-full text-left" onClick={() => openOne(n)}>{inner}</button>
                   )}

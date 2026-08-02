@@ -74,6 +74,7 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
     { href: p("/cantina/portfolio"), label: dict.portfolio ?? "Collezione", icon: Package },
     { href: p("/cantina/blog"), label: dict.blog, icon: FileText },
     { href: p("/cantina/offerte"), label: dict.offerte, icon: Tag },
+    { href: p("/cantina/notifiche"), label: dict.notifications ?? "Notifiche", icon: Bell },
     { href: p("/cantina/reports"), label: dict.reports, icon: BarChart3 },
     { href: p("/cantina/wishlist"), label: "Wishlist clienti", icon: BookmarkPlus },
     { href: p("/cantina/impostazioni"), label: "Impostazioni", icon: Settings },

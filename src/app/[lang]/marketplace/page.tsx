@@ -7,6 +7,7 @@ import { BuyFractionButton } from "@/components/collector/buy-fraction-button";
 import { MakeOfferButton } from "@/components/collector/make-offer-button";
 import { FavoriteButton } from "@/components/collector/favorite-button";
 import { NftImageGallery } from "@/components/shared/nft-image-gallery";
+import { publicNftFilter } from "@/lib/demo-content";
 import { AdSenseBanner } from "@/components/shared/adsense-banner";
 import { auth } from "@/lib/auth";
 import Link from "next/link";
@@ -49,6 +50,7 @@ export default async function MarketplacePage({
   const [allListedNfts, listedFractions, mintedNfts] = await Promise.all([
     db.nft.findMany({
       where: {
+        ...publicNftFilter,
         isListed: true,
         status: "LISTED",
         ...(filterRegion || filterType
@@ -77,7 +79,7 @@ export default async function MarketplacePage({
       orderBy: { updatedAt: "desc" },
     }).catch(() => []),
     db.nftFraction.findMany({
-      where: { isListed: true },
+      where: { isListed: true, ...(Object.keys(publicNftFilter).length ? { nft: publicNftFilter } : {}) },
       include: {
         nft: {
           include: {
@@ -90,7 +92,7 @@ export default async function MarketplacePage({
       orderBy: { updatedAt: "desc" },
     }).catch(() => []),
     db.nft.findMany({
-      where: { status: "MINTED" },
+      where: { status: "MINTED", ...publicNftFilter },
       include: {
         cantina: { select: { id: true, name: true } },
         collection: { select: { name: true, vintage: true, grape: true } },

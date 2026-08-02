@@ -182,6 +182,9 @@ model Cantina {
   logoUrl     String?
   isVerified  Boolean  @default(false)
   isBlocked   Boolean  @default(false)
+  // §15 — contenuto dimostrativo: escluso dalle pagine pubbliche in produzione
+  // e dai motori di ricerca, visibile solo agli amministratori e in staging
+  isDemo      Boolean  @default(false)
   royaltyPct       Float    @default(5.0)
   stripeAccountId  String?  // Stripe Connect account ID (for automatic split payments)
   // Bank transfer alternative

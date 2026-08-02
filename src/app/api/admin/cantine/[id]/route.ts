@@ -19,6 +19,7 @@ const patchSchema = z.object({
   vatNumber: z.string().optional().nullable(),
   royaltyPct: z.number().min(0).max(50).optional(),
   isVerified: z.boolean().optional(),
+  isDemo: z.boolean().optional(),
 });
 
 export async function GET(
@@ -108,6 +109,7 @@ export async function PATCH(
   if (body.vatNumber !== undefined) cantinaUpdate.vatNumber = body.vatNumber || null;
   if (body.royaltyPct !== undefined) cantinaUpdate.royaltyPct = body.royaltyPct;
   if (body.isVerified !== undefined) cantinaUpdate.isVerified = body.isVerified;
+  if (body.isDemo !== undefined) cantinaUpdate.isDemo = body.isDemo;
 
   await db.$transaction([
     ...(Object.keys(userUpdate).length > 0

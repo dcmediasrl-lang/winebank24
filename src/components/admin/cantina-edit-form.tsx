@@ -18,6 +18,7 @@ interface CantinaData {
   vatNumber: string | null;
   royaltyPct: number;
   isVerified: boolean;
+  isDemo: boolean;
   contractAcceptedAt: string | null;
   user: {
     id: string;
@@ -48,6 +49,7 @@ export function CantinaEditForm({ cantina }: { cantina: CantinaData }) {
   const [vatNumber, setVatNumber] = useState(cantina.vatNumber ?? "");
   const [royaltyPct, setRoyaltyPct] = useState(cantina.royaltyPct);
   const [isVerified, setIsVerified] = useState(cantina.isVerified);
+  const [isDemo, setIsDemo] = useState(cantina.isDemo);
   const [isBlocked, setIsBlocked] = useState(cantina.user.isBlocked);
 
   async function patch(payload: Record<string, unknown>) {
@@ -77,6 +79,7 @@ export function CantinaEditForm({ cantina }: { cantina: CantinaData }) {
         vatNumber: vatNumber || null,
         royaltyPct,
         isVerified,
+        isDemo,
         isBlocked,
       };
       if (newPassword) payload.password = newPassword;
@@ -155,6 +158,9 @@ export function CantinaEditForm({ cantina }: { cantina: CantinaData }) {
         </Badge>
         {cantina.contractAcceptedAt && (
           <Badge className="bg-green-800/60 text-green-300 border-green-700">Contratto accettato</Badge>
+        )}
+        {isDemo && (
+          <Badge className="bg-amber-900/60 text-amber-300 border-amber-700">Dimostrativa</Badge>
         )}
         <span className="ml-auto text-white/40 text-xs">
           {cantina._count.nfts} NFT · {cantina._count.collections} collezioni
@@ -279,6 +285,22 @@ export function CantinaEditForm({ cantina }: { cantina: CantinaData }) {
             className="accent-[var(--wine-red)] w-4 h-4"
           />
           <span className="text-sm text-white/80">Cantina verificata (badge)</span>
+        </label>
+
+        <label className="flex items-start gap-2 cursor-pointer mt-3">
+          <input
+            type="checkbox"
+            checked={isDemo}
+            onChange={e => setIsDemo(e.target.checked)}
+            className="accent-amber-500 w-4 h-4 mt-0.5"
+          />
+          <span className="text-sm text-white/80">
+            Contenuto dimostrativo
+            <span className="block text-xs text-white/40 mt-0.5">
+              La cantina e le sue bottiglie restano visibili a te e al proprietario, ma non compaiono
+              nelle pagine pubbliche in produzione e non vengono indicizzate.
+            </span>
+          </span>
         </label>
       </section>
 

@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Plus, Gem, AlertTriangle, X } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { BottleImageUploader, type UploadedImage } from "./bottle-image-uploader";
 import { WineDenominationPicker } from "@/components/shared/wine-denomination-picker";
 
@@ -27,7 +26,6 @@ const REGIONS = [
 ];
 
 export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
-  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isFractionable, setIsFractionable] = useState(false);
@@ -60,16 +58,6 @@ export function CreateNftStandalone({ cantinaId }: { cantinaId: string }) {
 
   function removeGrape(grape: string) {
     setSelectedGrapes(prev => prev.filter(g => g !== grape));
-  }
-
-  function resetForm() {
-    setForm({ name: "", description: "", vintage: new Date().getFullYear().toString(), region: "", bottleNumber: "1", price: "", totalValue: "", bottleFormat: "", bottleStory: "", currentLocation: "" });
-    setImages([]);
-    setIsFractionable(false);
-    setDenominationId(undefined);
-    setDenominationName("");
-    setSelectedGrapes([]);
-    setRoyaltyPct(5);
   }
 
   async function submit(e: React.FormEvent) {

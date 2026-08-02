@@ -34,7 +34,7 @@ export async function POST(req: Request) {
   }
 
   const config = await db.platformConfig.findFirst();
-  const platformFeePct = config?.platformFeePct ?? 3.0;
+  const platformFeePct = config?.platformFeePct ?? 7.0;
   const cantinaRoyaltyPct = nft.royaltyPct; // per-bottle royalty set at mint time
 
   // Check primary vs secondary sale
@@ -45,20 +45,24 @@ export async function POST(req: Request) {
   const isPrimarySale = nft.ownerId === cantinaOwner?.userId;
 
   // ── Fee calculation ────────────────────────────────────────────────────────
-  // Policy: ALL commissions are added ON TOP of the listed price (buyer pays).
-  // The seller always receives exactly nft.price.
-  //
-  // Primary sale:   buyer pays  price + platform_fee
-  // Secondary sale: buyer pays  price + platform_fee + cantina_royalty
+  // Le commissioni acquirente sono AGGIUNTE al prezzo di listino.
+  // Primaria:   acquirente paga  prezzo + commissione piattaforma
+  // Secondaria: acquirente paga  prezzo + commissione + royalty cantina;
+  //             il venditore privato riceve prezzo − fee venditore 3%
   // ──────────────────────────────────────────────────────────────────────────
+  const sellerFeePct = 3.0; // fee lato venditore sulle vendite secondarie
   const baseCents       = Math.round(nft.price * 100);
   const platformFeeCents = Math.round(nft.price * platformFeePct / 100 * 100);
   const royaltyCents     = isPrimarySale
     ? 0
     : Math.round(nft.price * cantinaRoyaltyPct / 100 * 100);
+  const sellerFeeCents   = isPrimarySale
+    ? 0
+    : Math.round(nft.price * sellerFeePct / 100 * 100);
   const totalBuyerCents  = baseCents + platformFeeCents + royaltyCents;
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+  const lang = req.headers.get("referer")?.match(/\/(it|en)\//)?.[1] ?? "it";
 
   // ── Stripe line items — buyer sees full breakdown ──────────────────────────
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -118,17 +122,19 @@ export async function POST(req: Request) {
       cantinaRoyaltyPct: cantinaRoyaltyPct.toString(),
       royaltyCents: royaltyCents.toString(),
       totalBuyerCents: totalBuyerCents.toString(),
+      sellerFeeCents: sellerFeeCents.toString(),
       isPrimarySale: isPrimarySale ? "true" : "false",
     },
-    success_url: `${appUrl}/it/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${appUrl}/it/marketplace`,
+    success_url: `${appUrl}/${lang}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${appUrl}/${lang}/marketplace`,
   };
 
   // Stripe Connect split: platform takes its fee as application_fee.
   // The cantina royalty (secondary) is paid out separately by the platform.
   if (nft.cantina.stripeAccountId) {
     sessionParams.payment_intent_data = {
-      application_fee_amount: platformFeeCents,
+      // La piattaforma trattiene commissione acquirente + fee venditore (secondario)
+      application_fee_amount: platformFeeCents + sellerFeeCents,
       transfer_data: { destination: nft.cantina.stripeAccountId },
     };
   }

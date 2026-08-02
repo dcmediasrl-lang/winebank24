@@ -6,7 +6,7 @@ import "./globals.css";
 const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans", weight: ["400", "500", "600", "700", "800"] });
 
 export const metadata: Metadata = {
-  title: "Wine Bank 24 — NFT per il vino italiano",
+  title: "Wine Bank 24 — NFT per i vini da collezione",
   description: "Tokenizza, colleziona e commercia bottiglie di vino pregiate come NFT",
   icons: {
     icon: [

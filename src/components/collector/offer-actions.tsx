@@ -4,14 +4,15 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { Check, X, Undo2 } from "lucide-react";
+import { Check, X, Undo2, CreditCard } from "lucide-react";
 
 interface OfferActionsProps {
   offerId: string;
   mode: "seller" | "buyer";
+  status?: string;
 }
 
-export function OfferActions({ offerId, mode }: OfferActionsProps) {
+export function OfferActions({ offerId, mode, status }: OfferActionsProps) {
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
 
@@ -28,7 +29,7 @@ export function OfferActions({ offerId, mode }: OfferActionsProps) {
         toast.error(data.error ?? "Errore nell'operazione");
         return;
       }
-      if (action === "accept") toast.success("Offerta accettata! Proprietà trasferita.");
+      if (action === "accept") toast.success("Offerta accettata. L\u2019acquirente riceverà la richiesta di pagamento: la proprietà si trasferisce a pagamento avvenuto.");
       else if (action === "reject") toast.success("Offerta rifiutata.");
       else toast.success("Offerta ritirata.");
       router.refresh();
@@ -37,6 +38,35 @@ export function OfferActions({ offerId, mode }: OfferActionsProps) {
     } finally {
       setLoading(null);
     }
+  }
+
+  async function payNow() {
+    setLoading("pay");
+    try {
+      const res = await fetch(`/api/offers/${offerId}/checkout`, { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      window.location.href = data.url;
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Errore nel pagamento. Riprova.");
+      setLoading(null);
+    }
+  }
+
+  if (mode === "buyer" && status === "ACCEPTED") {
+    return (
+      <div className="mt-3">
+        <Button
+          size="sm"
+          onClick={payNow}
+          disabled={!!loading}
+          className="bg-green-600 hover:bg-green-700 text-white"
+        >
+          <CreditCard className="w-4 h-4 mr-1" />
+          {loading === "pay" ? "Reindirizzamento…" : "Paga ora e ricevi la proprietà"}
+        </Button>
+      </div>
+    );
   }
 
   if (mode === "seller") {

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -55,10 +56,6 @@ export default async function CantinaNftsPage({ params }: { params: Promise<{ la
     },
   });
 
-  const STATUS_LABEL_EXTRA: Record<string, string> = {
-    PENDING_PAYMENT: "In attesa pagamento",
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -108,7 +105,7 @@ export default async function CantinaNftsPage({ params }: { params: Promise<{ la
                       <td className="py-3 pr-4">
                         <div className="flex items-center gap-3">
                           {nft.imageUrl ? (
-                            <img src={nft.imageUrl} alt={nft.name} className="w-10 h-10 rounded object-cover shrink-0" />
+                            <Image src={nft.imageUrl} alt={nft.name} width={40} height={40} className="w-10 h-10 rounded object-cover shrink-0" />
                           ) : (
                             <div className="w-10 h-10 rounded bg-[#231515] flex items-center justify-center shrink-0">
                               <Wine className="w-5 h-5 text-amber-400" />
@@ -160,7 +157,7 @@ export default async function CantinaNftsPage({ params }: { params: Promise<{ la
                               price={nft.price}
                             />
                           )}
-                          {nft.status !== "PENDING_PAYMENT" && nft.status !== "BURNED" && nft.status !== "LIQUIDATED" && !nft.isFractionable && (
+                          {nft.status !== "PENDING_PAYMENT" && nft.status !== "BURNED" && nft.status !== "LIQUIDATED" && (
                             <UnlockDeliveryButton
                               nftId={nft.id}
                               currentlyUnlocked={nft.physicalDeliveryUnlocked}

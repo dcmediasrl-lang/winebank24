@@ -7,7 +7,7 @@
     "register": "Registrati"
   },
   "footer": {
-    "tagline": "Piattaforma di collezionismo digitale per vini pregiati italiani",
+    "tagline": "Piattaforma di collezionismo digitale per vini pregiati",
     "terms": "Termini e Condizioni",
     "privacy": "Privacy Policy",
     "contacts": "Contatti",
@@ -21,7 +21,7 @@
     "cta_register": "Crea un account",
     "how_title": "Come funziona",
     "how_1_title": "Scegli una bottiglia",
-    "how_1_desc": "Sfoglia il marketplace e scegli tra le bottiglie certificate delle migliori cantine italiane.",
+    "how_1_desc": "Sfoglia il marketplace e scegli tra le bottiglie certificate delle migliori cantine.",
     "how_2_title": "Acquista il certificato",
     "how_2_desc": "Acquista il certificato digitale (NFT) in modo semplice e sicuro con carta di credito.",
     "how_3_title": "Cedi o ritira",
@@ -119,7 +119,10 @@
     "collector": "Collezionista",
     "blog": "Blog",
     "offerte": "Offerte",
-    "profilo": "Il mio Profilo"
+    "profilo": "Il mio Profilo",
+    "portfolio": "Collezione",
+    "notifications": "Notifiche",
+    "personal_details": "Anagrafica"
   },
   "blog": {
     "title": "Blog",

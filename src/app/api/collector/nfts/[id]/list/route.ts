@@ -10,14 +10,28 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   const { id } = await params;
   const { isListed, price } = await req.json();
 
-  const nft = await db.nft.findUnique({ where: { id } });
+  if (isListed && (typeof price !== "number" || !isFinite(price) || price <= 0)) {
+    return NextResponse.json({ error: "Inserisci un prezzo valido maggiore di zero" }, { status: 400 });
+  }
+
+  const nft = await db.nft.findUnique({
+    where: { id },
+    include: { cantina: { select: { userId: true } } },
+  });
   if (!nft || nft.ownerId !== session.user.id) {
     return NextResponse.json({ error: "Non autorizzato" }, { status: 403 });
   }
+  if (nft.status === "BURN_REQUESTED" || nft.status === "BURNED") {
+    return NextResponse.json({ error: "Certificato non più disponibile" }, { status: 400 });
+  }
+
+  // Alla rimozione dalla vendita: la produzione della cantina torna MINTED,
+  // un NFT acquistato da un collezionista torna SOLD
+  const unlistedStatus = nft.cantina.userId === session.user.id ? "MINTED" : "SOLD";
 
   await db.nft.update({
     where: { id },
-    data: { isListed, price, status: isListed ? "LISTED" : "MINTED" },
+    data: { isListed, price: isListed ? price : nft.price, status: isListed ? "LISTED" : unlistedStatus },
   });
 
   return NextResponse.json({ success: true });

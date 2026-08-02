@@ -7,12 +7,11 @@ import { OfferActions } from "@/components/collector/offer-actions";
 import { Tag, Inbox, Send } from "lucide-react";
 import { db } from "@/lib/db";
 
-type OfferStatus = "PENDING" | "ACCEPTED" | "REJECTED" | "WITHDRAWN";
-
 function statusBadge(status: string) {
   const map: Record<string, { label: string; className: string }> = {
     PENDING: { label: "In attesa", className: "bg-yellow-900/40 text-yellow-400" },
-    ACCEPTED: { label: "Accettata", className: "bg-green-900/40 text-green-400" },
+    ACCEPTED: { label: "Accettata — in attesa di pagamento", className: "bg-green-900/40 text-green-400" },
+    COMPLETED: { label: "Completata", className: "bg-green-900/60 text-green-300" },
     REJECTED: { label: "Rifiutata", className: "bg-red-900/40 text-red-400" },
     WITHDRAWN: { label: "Ritirata", className: "bg-white/10 text-[var(--wine-muted)]" },
   };
@@ -250,7 +249,7 @@ export default async function OffertePage({
             {pastSent.map((offer) => {
               const price = getListedPrice(offer.nft, offer.fraction);
               return (
-                <Card key={offer.id} className="opacity-60 border-[var(--wine-border)]">
+                <Card key={offer.id} className={`border-[var(--wine-border)] ${offer.status === "ACCEPTED" ? "" : "opacity-60"}`}>
                   <CardHeader className="pb-2 pt-4">
                     <div className="flex items-start justify-between">
                       <CardTitle className="text-sm font-semibold">
@@ -268,6 +267,9 @@ export default async function OffertePage({
                       )}
                     </p>
                     <p className="text-xs">{formatDate(offer.createdAt)}</p>
+                    {offer.status === "ACCEPTED" && (
+                      <OfferActions offerId={offer.id} mode="buyer" status={offer.status} />
+                    )}
                   </CardContent>
                 </Card>
               );

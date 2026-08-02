@@ -30,7 +30,7 @@ export async function POST(req: Request) {
     const data = schema.parse(body);
 
     const existing = await db.user.findUnique({ where: { email: data.email } });
-    if (existing) {
+    if (existing?.password) {
       return NextResponse.json({ error: "Email già registrata" }, { status: 400 });
     }
 
@@ -38,15 +38,28 @@ export async function POST(req: Request) {
     const verifyToken = randomBytes(32).toString("hex");
     const verifyExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h
 
-    const user = await db.user.create({
-      data: {
-        email: data.email,
-        password: hashed,
-        role: "COLLECTOR",
-        emailVerifyToken: verifyToken,
-        emailVerifyExpiry: verifyExpiry,
-      },
-    });
+    // An existing row without password is a leftover from a Google sign-in
+    // attempt that never completed registration: let the user claim it
+    const user = existing
+      ? await db.user.update({
+          where: { id: existing.id },
+          data: {
+            password: hashed,
+            role: "COLLECTOR",
+            emailVerified: null,
+            emailVerifyToken: verifyToken,
+            emailVerifyExpiry: verifyExpiry,
+          },
+        })
+      : await db.user.create({
+          data: {
+            email: data.email,
+            password: hashed,
+            role: "COLLECTOR",
+            emailVerifyToken: verifyToken,
+            emailVerifyExpiry: verifyExpiry,
+          },
+        });
 
     await logActivity(user.id, "REGISTER", `IP: ${ip}`);
     await sendVerificationEmail(data.email, verifyToken);

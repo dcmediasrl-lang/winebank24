@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,8 +33,8 @@ export default async function CantinaCollectionsPage() {
           {collections.map((col) => (
             <Card key={col.id} className="hover:shadow-md transition-shadow">
               {col.coverImage && (
-                <div className="h-40 overflow-hidden rounded-t-lg">
-                  <img src={col.coverImage} alt={col.name} className="w-full h-full object-cover" />
+                <div className="relative h-40 overflow-hidden rounded-t-lg">
+                  <Image src={col.coverImage} alt={col.name} fill sizes="(max-width: 640px) 100vw, 33vw" className="object-cover" />
                 </div>
               )}
               <CardHeader className="pb-2">

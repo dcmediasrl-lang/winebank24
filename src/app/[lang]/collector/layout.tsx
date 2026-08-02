@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { Sidebar } from "@/components/shared/sidebar";
 import { getDictionary, hasLocale } from "../dictionaries";
@@ -16,9 +17,13 @@ export default async function CollectorLayout({
   const session = await auth();
   if (!session) redirect(`/${lang}/login`);
 
-  if (session.user.needsProfileCompletion) {
-    redirect(`/${lang}/complete-profile`);
-  }
+  // Every collector must have completed the profile (name, birthdate,
+  // fiscal code, 18+ and T&C) before accessing the platform
+  const dbUser = await db.user.findUnique({
+    where: { id: session.user.id },
+    select: { firstName: true },
+  });
+  if (!dbUser?.firstName) redirect(`/${lang}/complete-profile`);
 
   const dict = await getDictionary(lang);
 

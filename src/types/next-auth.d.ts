@@ -10,7 +10,6 @@ declare module "next-auth" {
     user: {
       id: string;
       role: Role;
-      needsProfileCompletion?: boolean;
       name?: string | null;
       email?: string | null;
       image?: string | null;
@@ -22,6 +21,5 @@ declare module "next-auth/jwt" {
   interface JWT {
     id: string;
     role: Role;
-    needsProfileCompletion?: boolean;
-  }
+    }
 }

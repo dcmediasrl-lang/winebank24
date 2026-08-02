@@ -28,6 +28,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      // Google verifies email ownership, so linking to the existing
+      // credentials account with the same email is safe
+      allowDangerousEmailAccountLinking: true,
     }),
     Credentials({
       async authorize(credentials) {
@@ -84,36 +87,29 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
-  events: {
-    async createUser({ user }) {
-      if (!user.id) return;
-      const dbUser = await db.user.findUnique({ where: { id: user.id }, select: { password: true } });
-      if (dbUser && !dbUser.password) {
-        await db.user.update({ where: { id: user.id }, data: { emailVerified: new Date() } });
-      }
-    },
-  },
   callbacks: {
-    async jwt({ token, user, account }) {
+    async signIn({ user, account }) {
+      // Google can only log in users who already completed the normal
+      // registration (email + password). It never creates new accounts.
+      if (account?.provider === "google") {
+        if (!user.email) return "/it/login?error=google_not_registered";
+        const existing = await db.user.findUnique({
+          where: { email: user.email },
+          select: { password: true, isBlocked: true },
+        });
+        if (!existing?.password) return "/it/login?error=google_not_registered";
+        if (existing.isBlocked) return "/it/login?error=blocked";
+      }
+      return true;
+    },
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id as string;
         const dbUser = await db.user.findUnique({
           where: { id: user.id! },
-          select: { role: true, password: true, firstName: true },
+          select: { role: true },
         });
         token.role = dbUser?.role ?? "COLLECTOR";
-        // Flag Google OAuth users who haven't completed their profile yet
-        if (account?.provider === "google") {
-          token.needsProfileCompletion = !dbUser?.firstName;
-        }
-      }
-      // Re-check on every token refresh so flag clears after profile completion
-      if (token.needsProfileCompletion && token.id) {
-        const dbUser = await db.user.findUnique({
-          where: { id: token.id as string },
-          select: { firstName: true },
-        });
-        token.needsProfileCompletion = !dbUser?.firstName;
       }
       return token;
     },
@@ -121,7 +117,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (token) {
         session.user.id = token.id as string;
         session.user.role = token.role as Role;
-        session.user.needsProfileCompletion = !!token.needsProfileCompletion;
       }
       return session;
     },

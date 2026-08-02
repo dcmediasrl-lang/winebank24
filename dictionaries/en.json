@@ -7,7 +7,7 @@
     "register": "Sign up"
   },
   "footer": {
-    "tagline": "Digital collectibles platform for fine Italian wines",
+    "tagline": "Digital collectibles platform for fine wines",
     "terms": "Terms & Conditions",
     "privacy": "Privacy Policy",
     "contacts": "Contact",
@@ -119,7 +119,10 @@
     "collector": "Collector",
     "blog": "Blog",
     "offerte": "Offers",
-    "profilo": "My Profile"
+    "profilo": "My Profile",
+    "portfolio": "Collection",
+    "notifications": "Notifications",
+    "personal_details": "Personal details"
   },
   "blog": {
     "title": "Blog",

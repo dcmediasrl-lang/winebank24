@@ -12,18 +12,32 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   const { id } = await params;
   const { isListed, price } = await req.json();
 
+  if (isListed && price !== undefined && (typeof price !== "number" || !isFinite(price) || price <= 0)) {
+    return NextResponse.json({ error: "Inserisci un prezzo valido maggiore di zero" }, { status: 400 });
+  }
+
   const cantina = await db.cantina.findUnique({ where: { userId: session.user.id } });
   const nft = await db.nft.findUnique({ where: { id } });
 
-  if (!nft || !cantina || nft.cantinaId !== cantina.id) {
+  // La cantina può gestire solo gli NFT che possiede ancora: una volta
+  // venduti a un collezionista, la vendita è decisa dal nuovo proprietario
+  if (!nft || !cantina || nft.cantinaId !== cantina.id || nft.ownerId !== session.user.id) {
     return NextResponse.json({ error: "Non autorizzato" }, { status: 403 });
+  }
+  if (nft.status === "BURN_REQUESTED" || nft.status === "BURNED") {
+    return NextResponse.json({ error: "Certificato non più disponibile" }, { status: 400 });
+  }
+
+  const finalPrice = price ?? nft.price;
+  if (isListed && (finalPrice == null || finalPrice <= 0)) {
+    return NextResponse.json({ error: "Inserisci un prezzo valido maggiore di zero" }, { status: 400 });
   }
 
   await db.nft.update({
     where: { id },
     data: {
       isListed,
-      price: price ?? nft.price,
+      price: finalPrice,
       status: isListed ? "LISTED" : "MINTED",
     },
   });

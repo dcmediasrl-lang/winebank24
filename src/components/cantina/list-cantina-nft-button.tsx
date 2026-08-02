@@ -54,7 +54,7 @@ export function ListCantinaNftButton({ nftId, isListed, price }: {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger className={cn(buttonVariants({ size: "sm" }), "bg-amber-500 hover:bg-amber-600 text-stone-950")}>
-        <ShoppingCart className="w-3 h-3 mr-1" /> Metti in vendita
+        <ShoppingCart className="w-3 h-3 mr-1" /> Pubblica NFT nel marketplace
       </DialogTrigger>
       <DialogContent className="max-w-sm">
         <DialogHeader>

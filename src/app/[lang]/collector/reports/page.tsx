@@ -2,8 +2,14 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShoppingCart, TrendingUp, Gem, Package } from "lucide-react";
+import Link from "next/link";
 
-export default async function CollectorReportsPage() {
+export default async function CollectorReportsPage({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}) {
+  const { lang } = await params;
   const session = await auth();
 
   const [transactions, nftStats] = await Promise.all([
@@ -87,7 +93,7 @@ export default async function CollectorReportsPage() {
         <CardContent>
           {transactions.length === 0 ? (
             <p className="text-[var(--wine-muted)] text-sm text-center py-8">
-              Nessuna transazione ancora. Visita il <a href="/marketplace" className="text-[#df071b] hover:underline">Marketplace</a> per acquistare il tuo primo NFT.
+              Nessuna transazione ancora. Visita il <Link href={`/${lang}/marketplace`} className="text-[#df071b] hover:underline">Marketplace</Link> per acquistare il tuo primo NFT.
             </p>
           ) : (
             <div className="overflow-x-auto">

@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Gem, Package, TrendingUp, Wine } from "lucide-react";
+import { Gem, Package, TrendingUp } from "lucide-react";
 
 export default async function CantinaDashboard() {
   const session = await auth();

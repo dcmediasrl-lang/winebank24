@@ -14,6 +14,9 @@ export async function POST(req: Request) {
 
   const nft = await db.nft.findUnique({ where: { id: nftId } });
   if (!nft) return NextResponse.json({ error: "NFT non trovato" }, { status: 404 });
+  if (nft.status !== "BURN_REQUESTED") {
+    return NextResponse.json({ error: "Nessuna richiesta di burn in attesa per questo NFT" }, { status: 400 });
+  }
 
   let txHash: string | undefined;
 
@@ -35,6 +38,11 @@ export async function POST(req: Request) {
     db.burnRequest.update({
       where: { id: burnRequestId },
       data: { approved: true, processedAt: new Date() },
+    }),
+    // Il certificato non esiste più: rifiuta le offerte pendenti
+    db.offer.updateMany({
+      where: { nftId, status: "PENDING" },
+      data: { status: "REJECTED" },
     }),
     db.transaction.create({
       data: {

@@ -7,39 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { ShieldCheck } from "lucide-react";
+import { TAX_ID_SPECS, getTaxIdSpec, validateTaxId } from "@/lib/tax-id";
 
-const COUNTRIES = [
-  // UE
-  { code: "IT", name: "Italia", group: "UE" },
-  { code: "DE", name: "Germania", group: "UE" },
-  { code: "FR", name: "Francia", group: "UE" },
-  { code: "ES", name: "Spagna", group: "UE" },
-  { code: "NL", name: "Paesi Bassi", group: "UE" },
-  { code: "BE", name: "Belgio", group: "UE" },
-  { code: "AT", name: "Austria", group: "UE" },
-  { code: "PT", name: "Portogallo", group: "UE" },
-  { code: "GR", name: "Grecia", group: "UE" },
-  { code: "PL", name: "Polonia", group: "UE" },
-  // Extra UE
-  { code: "CH", name: "Svizzera", group: "Extra UE" },
-  { code: "GB", name: "Regno Unito", group: "Extra UE" },
-  { code: "US", name: "Stati Uniti", group: "Extra UE" },
-  { code: "OTHER", name: "Altro", group: "Extra UE" },
-];
-
-const EU_CODES = new Set(["IT","DE","FR","ES","NL","BE","AT","PT","GR","PL"]);
-
-function taxIdLabel(country: string): string {
-  if (country === "IT") return "Codice Fiscale";
-  if (EU_CODES.has(country)) return "Codice fiscale estero o numero documento d'identità";
-  return "Numero passaporto";
-}
-
-function taxIdPlaceholder(country: string): string {
-  if (country === "IT") return "RSSMRA80A01H501U";
-  if (EU_CODES.has(country)) return "es. DE123456789";
-  return "es. AA1234567";
-}
+const MAX_BIRTH_DATE = new Date(Date.now() - 18 * 365.25 * 24 * 3600 * 1000)
+  .toISOString().split("T")[0];
 
 interface Props {
   open: boolean;
@@ -53,8 +24,8 @@ export function KycGateDialog({ open, onOpenChange, onComplete }: Props) {
     firstName: "", lastName: "", birthDate: "", country: "IT", fiscalCode: "",
   });
 
-  const maxBirthDate = new Date(Date.now() - 18 * 365.25 * 24 * 3600 * 1000)
-    .toISOString().split("T")[0];
+  const maxBirthDate = MAX_BIRTH_DATE;
+  const spec = getTaxIdSpec(form.country);
 
   function set(field: string, value: string) {
     setForm(f => ({ ...f, [field]: value }));
@@ -62,6 +33,17 @@ export function KycGateDialog({ open, onOpenChange, onComplete }: Props) {
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
+
+    const taxError = validateTaxId(form.country, form.fiscalCode, {
+      firstName: form.firstName,
+      lastName: form.lastName,
+      birthDate: new Date(form.birthDate),
+    });
+    if (taxError) {
+      toast.error(taxError);
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch("/api/user/kyc", {
@@ -120,39 +102,32 @@ export function KycGateDialog({ open, onOpenChange, onComplete }: Props) {
           </div>
 
           <div className="space-y-1">
-            <Label className="text-xs">Paese di residenza *</Label>
+            <Label className="text-xs">Paese di provenienza *</Label>
             <select
               required
               value={form.country}
               onChange={e => set("country", e.target.value)}
               className="w-full h-9 px-3 rounded-md border border-stone-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
             >
-              {["UE", "Extra UE"].map(group => (
-                <optgroup key={group} label={group}>
-                  {COUNTRIES.filter(c => c.group === group).map(c => (
-                    <option key={c.code} value={c.code}>{c.name}</option>
-                  ))}
-                </optgroup>
+              {TAX_ID_SPECS.map(s => (
+                <option key={s.country} value={s.country}>{s.nameIt}</option>
               ))}
             </select>
           </div>
 
           <div className="space-y-1">
-            <Label className="text-xs">{taxIdLabel(form.country)} *</Label>
+            <Label className="text-xs">{spec?.labelIt} *</Label>
             <Input
               required
               value={form.fiscalCode}
-              onChange={e => set("fiscalCode", form.country === "IT" ? e.target.value.toUpperCase() : e.target.value)}
-              placeholder={taxIdPlaceholder(form.country)}
-              maxLength={form.country === "IT" ? 16 : 30}
+              onChange={e => set("fiscalCode", e.target.value.toUpperCase())}
+              placeholder={spec?.placeholder}
+              maxLength={30}
+              className="uppercase"
             />
-            {form.country !== "IT" && (
-              <p className="text-xs text-stone-400">
-                {EU_CODES.has(form.country)
-                  ? "Inserisci il codice fiscale del tuo paese o il numero del documento d'identità."
-                  : "Inserisci il numero del tuo passaporto in corso di validità."}
-              </p>
-            )}
+            <p className="text-xs text-stone-400">
+              Il codice viene verificato automaticamente con i tuoi dati anagrafici.
+            </p>
           </div>
 
           <Button

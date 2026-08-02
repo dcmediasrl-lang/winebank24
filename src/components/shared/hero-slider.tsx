@@ -20,7 +20,7 @@ interface HeroSliderProps {
   slides: Slide[];
 }
 
-export function HeroSlider({ lang, slides }: HeroSliderProps) {
+export function HeroSlider({ slides }: HeroSliderProps) {
   const [current, setCurrent] = useState(0);
   const [animating, setAnimating] = useState(false);
   const [paused, setPaused] = useState(false);

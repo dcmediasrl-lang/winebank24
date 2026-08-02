@@ -44,10 +44,10 @@ function LoginForm({ lang }: { lang: string }) {
   return (
     <div className="min-h-screen flex items-center justify-center px-4" style={{ background: "var(--wine-bg)" }}>
       <div className="w-full max-w-sm">
-        <div className="flex items-center justify-center gap-2 mb-8">
+        <Link href={`/${lang}`} className="flex items-center justify-center gap-2 mb-8 hover:opacity-80 transition-opacity">
           <Wine className="w-8 h-8 text-[#e97770]" />
           <span className="text-2xl font-bold text-white">Wine Bank 24</span>
-        </div>
+        </Link>
 
         {isVerified && (
           <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-lg px-4 py-3 mb-4">
@@ -64,6 +64,12 @@ function LoginForm({ lang }: { lang: string }) {
             <p className="text-sm text-red-700">
               {errorType === "token_invalid"
                 ? (lang === "en" ? "Invalid or expired verification link." : "Link di verifica non valido o scaduto.")
+                : errorType === "google_not_registered"
+                ? (lang === "en"
+                    ? "No account is registered with this Google email. Please sign up first using the registration form."
+                    : "Nessun account registrato con questa email Google. Registrati prima con il modulo di registrazione.")
+                : errorType === "blocked"
+                ? (lang === "en" ? "This account has been blocked." : "Questo account è stato bloccato.")
                 : (lang === "en" ? "An error occurred. Please try again." : "Si è verificato un errore. Riprova.")}
             </p>
           </div>

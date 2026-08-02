@@ -46,7 +46,7 @@ const TEXTAREA = "w-full px-3 py-2.5 rounded-lg border border-white/20 bg-black/
 
 // ─── Profilo tab ────────────────────────────────────────────────────────────
 
-function ProfiloTab({ cantina, lang }: { cantina: Cantina; lang: string }) {
+function ProfiloTab({ cantina }: { cantina: Cantina; lang: string }) {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     name: cantina.name,

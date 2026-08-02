@@ -5,6 +5,56 @@ const APP_URL = process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "
 
 type Attachment = { name: string; content: string }; // base64 content
 
+// ── Layout email brandizzato Wine Bank 24 ────────────────────────────────────
+// Header scuro con logo testuale (le email non rendono l'SVG in modo affidabile),
+// corpo bianco, pulsante opzionale, footer con disclaimer. Testato su client
+// desktop/mobile: tabelle inline, nessun CSS esterno.
+export function emailLayout(opts: {
+  heading: string;
+  intro: string;
+  bodyHtml?: string;
+  cta?: { label: string; url: string };
+  footerNote?: string;
+}): string {
+  const { heading, intro, bodyHtml = "", cta, footerNote } = opts;
+  const button = cta
+    ? `<tr><td style="padding:8px 0 4px">
+         <a href="${cta.url}" style="display:inline-block;background:#A21C19;color:#ffffff;font-weight:700;font-size:15px;padding:13px 30px;border-radius:10px;text-decoration:none">${cta.label}</a>
+       </td></tr>`
+    : "";
+  return `
+  <div style="background:#f5f2f2;padding:24px 12px;font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.06)">
+      <tr>
+        <td style="background:#13110C;padding:22px 32px">
+          <span style="font-size:20px;font-weight:800;color:#ffffff;letter-spacing:0.3px">Wine<span style="color:#e97770">Bank</span> 24</span>
+          <span style="font-size:18px;margin-left:2px">🍷</span>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:32px">
+          <h1 style="margin:0 0 12px;font-size:21px;color:#13110C;font-weight:800">${heading}</h1>
+          <p style="margin:0 0 18px;font-size:15px;line-height:1.6;color:#4b4642">${intro}</p>
+          <table role="presentation" cellpadding="0" cellspacing="0">${bodyHtml}${button}</table>
+          ${footerNote ? `<p style="margin:20px 0 0;font-size:12px;line-height:1.5;color:#a8a29e">${footerNote}</p>` : ""}
+        </td>
+      </tr>
+      <tr>
+        <td style="background:#faf7f7;border-top:1px solid #eee;padding:20px 32px">
+          <p style="margin:0 0 6px;font-size:11px;line-height:1.5;color:#9c9490">
+            ⚠️ Wine Bank 24 è una piattaforma di collezionismo. I certificati digitali (NFT) non costituiscono strumenti finanziari ai sensi della Direttiva MiFID II.
+          </p>
+          <p style="margin:0;font-size:11px;color:#c4bcb8">app.winebank24.eu · © ${new Date().getFullYear()} Wine Bank 24</p>
+        </td>
+      </tr>
+    </table>
+  </div>`;
+}
+
+function infoRow(label: string, value: string): string {
+  return `<tr><td style="padding:6px 0;font-size:14px;color:#4b4642"><span style="color:#a8a29e">${label}:</span> <strong style="color:#13110C">${value}</strong></td></tr>`;
+}
+
 async function sendEmail(to: string, subject: string, html: string, attachments?: Attachment[]) {
   const body: Record<string, unknown> = {
     sender: { name: FROM_NAME, email: FROM_EMAIL },
@@ -36,18 +86,12 @@ export async function sendVerificationEmail(email: string, token: string) {
     await sendEmail(
       email,
       "Verifica la tua email — Wine Bank 24",
-      `
-      <div style="font-family:sans-serif;max-width:480px;margin:0 auto">
-        <h2 style="color:#1c1917">Benvenuto su Wine Bank 24</h2>
-        <p>Clicca il pulsante qui sotto per verificare il tuo indirizzo email e attivare il tuo account:</p>
-        <a href="${url}" style="display:inline-block;background:#f59e0b;color:#1c1917;font-weight:600;padding:12px 24px;border-radius:8px;text-decoration:none;margin:16px 0">
-          Verifica email
-        </a>
-        <p style="color:#78716c;font-size:13px">Il link scade tra 24 ore. Se non hai creato un account, ignora questa email.</p>
-        <hr style="border:none;border-top:1px solid #e7e5e4;margin:24px 0"/>
-        <p style="color:#a8a29e;font-size:12px">Wine Bank 24 — Piattaforma di collezionismo digitale per vini pregiati italiani</p>
-      </div>
-      `
+      emailLayout({
+        heading: "Benvenuto su Wine Bank 24",
+        intro: "Conferma il tuo indirizzo email per attivare l'account e iniziare a collezionare vini pregiati certificati.",
+        cta: { label: "Verifica email", url },
+        footerNote: "Il link scade tra 24 ore. Se non hai creato un account, ignora questa email.",
+      })
     );
   } catch (err) {
     console.error("[email] Failed to send verification email to", email, err);
@@ -59,11 +103,12 @@ export async function sendPurchaseEmail(to: string, nftName: string, price: numb
     await sendEmail(
       to,
       `Acquisto completato: ${nftName}`,
-      `
-      <h2>Acquisto confermato!</h2>
-      <p>Hai acquistato <strong>${nftName}</strong> per <strong>€ ${price.toFixed(2)}</strong>.</p>
-      <p>Puoi trovarlo nella tua <a href="${APP_URL}/collector/portfolio">collezione personale</a>.</p>
-      `
+      emailLayout({
+        heading: "Acquisto confermato! 🎉",
+        intro: "Il certificato è ora nella tua collezione personale.",
+        bodyHtml: infoRow("Certificato", nftName) + infoRow("Importo", `€ ${price.toFixed(2)}`),
+        cta: { label: "Vai alla mia collezione", url: `${APP_URL}/it/collector/portfolio` },
+      })
     );
   } catch (err) {
     console.error("[email] Failed to send purchase email to", to, err);
@@ -75,11 +120,12 @@ export async function sendSaleEmail(to: string, nftName: string, amount: number)
     await sendEmail(
       to,
       `Cessione completata: ${nftName}`,
-      `
-      <h2>Il tuo certificato è stato ceduto!</h2>
-      <p><strong>${nftName}</strong> è stato acquisito da un altro collezionista per <strong>€ ${amount.toFixed(2)}</strong>.</p>
-      <p>Controlla il tuo <a href="${APP_URL}/cantina/reports">report cessioni</a>.</p>
-      `
+      emailLayout({
+        heading: "Il tuo certificato è stato ceduto!",
+        intro: "Un altro collezionista ha acquisito il tuo certificato.",
+        bodyHtml: infoRow("Certificato", nftName) + infoRow("Importo ricevuto", `€ ${amount.toFixed(2)}`),
+        cta: { label: "Vedi il report", url: `${APP_URL}/it/collector/reports` },
+      })
     );
   } catch (err) {
     console.error("[email] Failed to send sale email to", to, err);
@@ -121,7 +167,7 @@ export async function sendWelcomeCantinaEmail(to: string, contactName: string, c
         </p>
 
         <hr style="border:none;border-top:1px solid rgba(255,255,255,0.1);margin:28px 0"/>
-        <p style="color:#666;font-size:12px;text-align:center">Wine Bank 24 — Piattaforma di collezionismo digitale per vini pregiati italiani<br/>
+        <p style="color:#666;font-size:12px;text-align:center">Wine Bank 24 — Piattaforma di collezionismo digitale per vini pregiati<br/>
           <a href="${APP_URL}" style="color:#993300">${APP_URL}</a>
         </p>
       </div>
@@ -157,7 +203,7 @@ export async function sendContractEmail(to: string, cantinaName: string, pdfByte
         </a>
       </div>
       <hr style="border:none;border-top:1px solid rgba(255,255,255,0.1);margin:24px 0"/>
-      <p style="color:#666;font-size:12px;text-align:center">Wine Bank 24 — Piattaforma NFT per vini pregiati italiani</p>
+      <p style="color:#666;font-size:12px;text-align:center">Wine Bank 24 — Piattaforma NFT per vini pregiati</p>
     </div>
     `,
     [{ name: "contratto-creator-winebank24.pdf", content: base64 }],
@@ -213,7 +259,7 @@ export async function sendCantinaAccountSetupEmail(
         </p>
         <hr style="border:none;border-top:1px solid rgba(255,255,255,0.1);margin:28px 0"/>
         <p style="color:#666;font-size:12px;text-align:center">
-          Wine Bank 24 — Piattaforma NFT per vini pregiati italiani<br/>
+          Wine Bank 24 — Piattaforma NFT per vini pregiati<br/>
           <a href="${APP_URL}" style="color:#993300">${APP_URL}</a>
         </p>
       </div>

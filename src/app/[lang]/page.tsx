@@ -33,7 +33,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
   const features = lang === "en"
     ? [
         { icon: Wine, title: "Wineries", desc: "Create digital certificates for your bottles. Manage collections and sales directly on the platform." },
-        { icon: Gem, title: "Collectors", desc: "Buy certified digital certificates of rare bottles. Collect, resell or request physical delivery whenever you want." },
+        { icon: Gem, title: "Collectors", desc: "Buy certified digital certificates of rare bottles. Collect, resell or request physical delivery when the winery makes it available." },
         { icon: Shield, title: "Secure & Transparent", desc: "Every certificate is registered on Polygon blockchain. Verifiable ownership, fully tracked transfers." },
       ]
     : [
@@ -57,10 +57,10 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
         slides={lang === "it" ? [
           {
             image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=1600&q=85",
-            tag: "Certificati digitali per il vino italiano",
-            title: "Il Grande Vino Italiano",
-            titleAccent: "in collezione",
-            subtitle: "Colleziona e investi in bottiglie di vino pregiato con certificati digitali autentici su blockchain Polygon.",
+            tag: "Certificati digitali per il vino da collezione",
+            title: "Il grande vino da collezione",
+            titleAccent: "da custodire in formato digitale",
+            subtitle: "Colleziona bottiglie di vino pregiato con certificati digitali autentici su blockchain Polygon.",
             cta: { label: "Esplora il Marketplace", href: `/${lang}/marketplace` },
             ctaSecondary: { label: "Come funziona", href: `/${lang}/come-funziona` },
           },
@@ -70,7 +70,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
             title: "Colleziona",
             titleAccent: "bottiglie rare",
             titleAfter: "ovunque nel mondo",
-            subtitle: "Acquista certificati digitali di vini esclusivi. Rivendi, regala o richiedi la consegna fisica della tua bottiglia quando vuoi.",
+            subtitle: "Acquista certificati digitali di vini esclusivi. Rivendi, regala o richiedi la consegna fisica quando la cantina la rende disponibile.",
             cta: { label: "Registrati come Collezionista", href: `/${lang}/register` },
             ctaSecondary: { label: "Sfoglia i vini", href: `/${lang}/marketplace` },
           },
@@ -96,10 +96,10 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
         ] : [
           {
             image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=1600&q=85",
-            tag: "Digital certificates for Italian wine",
-            title: "Italian Fine Wine",
-            titleAccent: "in your collection",
-            subtitle: "Collect and invest in premium Italian wine bottles with authentic digital certificates on the Polygon blockchain.",
+            tag: "Digital certificates for fine wine",
+            title: "Fine collectible wine",
+            titleAccent: "preserved in digital form",
+            subtitle: "Collect premium wine bottles with authentic digital certificates on the Polygon blockchain.",
             cta: { label: "Explore Marketplace", href: `/${lang}/marketplace` },
             ctaSecondary: { label: "How it works", href: `/${lang}/come-funziona` },
           },
@@ -109,7 +109,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
             title: "Collect",
             titleAccent: "rare bottles",
             titleAfter: "from anywhere",
-            subtitle: "Buy digital certificates of exclusive wines. Resell, gift or request physical delivery of your bottle whenever you want.",
+            subtitle: "Buy digital certificates of exclusive wines. Resell, gift or request physical delivery when the winery makes it available.",
             cta: { label: "Register as Collector", href: `/${lang}/register` },
             ctaSecondary: { label: "Browse wines", href: `/${lang}/marketplace` },
           },
@@ -190,7 +190,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
           <div className="flex items-end justify-between mb-10">
             <div>
               <h2 className="text-3xl font-extrabold">{lang === "it" ? "Regioni del Vino" : "Wine Regions"}</h2>
-              <p className="mt-2" style={{ color: "var(--wine-muted)" }}>{lang === "it" ? "Esplora le migliori regioni vinicole d'Italia" : "Explore Italy's finest wine regions"}</p>
+              <p className="mt-2" style={{ color: "var(--wine-muted)" }}>{lang === "it" ? "Esplora le migliori regioni vinicole del mondo" : "Explore the world's finest wine regions"}</p>
             </div>
             <Link href={`/${lang}/marketplace`} className="text-sm font-bold flex items-center gap-2 hover:opacity-80 transition-opacity" style={{ color: "#df071b" }}>
               {lang === "it" ? "Vedi tutto" : "See all"} <ArrowRight className="w-4 h-4" />
@@ -206,7 +206,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
               { name: "Lombardia", img: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&q=80", count: lang === "it" ? "38 NFT" : "38 NFTs" },
             ].map(({ name, img, count }) => (
               <Link key={name} href={`/${lang}/marketplace`} className="group relative rounded-xl overflow-hidden block" style={{ aspectRatio: "1", border: "1px solid var(--wine-border)" }}>
-                <img src={img} alt={name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <Image src={img} alt={name} fill sizes="(max-width: 640px) 50vw, 25vw" className="object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                 <div className="absolute bottom-4 left-4">
                   <div className="font-bold text-white">{name}</div>
@@ -234,8 +234,8 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               {recentPosts.map((post, i) => (
                 <Link key={post.slug} href={`/${lang}/blog/${post.slug}`} className="group rounded-2xl overflow-hidden block transition-transform hover:-translate-y-1" style={{ background: "var(--wine-card)", border: "1px solid var(--wine-border)" }}>
-                  <div className="h-48 overflow-hidden">
-                    <img src={`/pic0${(i % 3) + 1}.jpg`} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <div className="relative h-48 overflow-hidden">
+                    <Image src={`/pic0${(i % 3) + 1}.jpg`} alt="" fill sizes="(max-width: 640px) 100vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-500" />
                   </div>
                   <div className="p-5">
                     {post.category && <span className="text-xs font-bold uppercase tracking-wide" style={{ color: "#df071b" }}>{post.category}</span>}
@@ -257,7 +257,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
             {lang === "it" ? "Inizia a collezionare oggi" : "Start collecting today"}
           </h2>
           <p className="text-white/80 mb-8 text-lg">
-            {lang === "it" ? "Unisciti a migliaia di appassionati e cantine sul primo marketplace NFT per il vino italiano." : "Join thousands of enthusiasts and wineries on the first NFT marketplace for Italian wine."}
+            {lang === "it" ? "Unisciti a migliaia di appassionati e cantine sul primo marketplace NFT per il vino da collezione." : "Join thousands of enthusiasts and wineries on the first NFT marketplace for collectible wine."}
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
             <Link href={`/${lang}/register`} className="px-8 py-3 rounded-lg font-bold bg-white transition-opacity hover:opacity-90" style={{ color: "var(--wine-red)" }}>

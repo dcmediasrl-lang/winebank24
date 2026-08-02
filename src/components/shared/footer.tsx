@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Mail } from "lucide-react";
+import { Mail, ShieldAlert } from "lucide-react";
 
 type Dict = {
   footer: {
@@ -90,13 +90,16 @@ export function Footer({ dict, lang }: { dict: Dict; lang: string }) {
 
       {/* Disclaimer + copyright */}
       <div style={{ borderTop: "1px solid var(--wine-border)", background: "var(--wine-bg)" }}>
-        <div className="max-w-7xl mx-auto px-6 py-5 space-y-2">
-          <p className="text-xs text-white/40 leading-relaxed">
-            ⚠️ {dict.footer.disclaimer}{" "}
-            {en
-              ? "Collecting digital certificates does not constitute an investment activity. The value of collectibles may vary."
-              : "L'acquisizione di certificati digitali non costituisce attività di investimento. Il valore dei beni da collezione può variare."}
-          </p>
+        <div className="max-w-7xl mx-auto px-6 py-6 space-y-4">
+          <div className="flex items-start gap-3 rounded-xl border border-amber-500/25 bg-amber-500/5 px-4 py-3.5">
+            <ShieldAlert className="w-5 h-5 text-amber-400/90 shrink-0 mt-0.5" />
+            <p className="text-xs sm:text-[13px] text-white/55 leading-relaxed">
+              <span className="font-semibold text-white/75">{dict.footer.disclaimer}</span>{" "}
+              {en
+                ? "Collecting digital certificates does not constitute an investment activity. The value of collectibles may vary."
+                : "L'acquisizione di certificati digitali non costituisce attività di investimento. Il valore dei beni da collezione può variare."}
+            </p>
+          </div>
           <p className="text-xs text-white/30">
             © {new Date().getFullYear()} Wine Bank 24. {dict.footer.rights}
           </p>

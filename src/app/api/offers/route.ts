@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { z } from "zod";
+import { notify } from "@/lib/notifications";
 
 const createOfferSchema = z.object({
   nftId: z.string().optional(),
@@ -90,6 +91,18 @@ export async function POST(req: Request) {
         message: message ?? null,
         status: "PENDING",
       },
+    });
+
+    // Notifica al venditore
+    const itemName = nftId
+      ? (await db.nft.findUnique({ where: { id: nftId }, select: { name: true } }))?.name
+      : (await db.nftFraction.findUnique({ where: { id: fractionId! }, select: { nft: { select: { name: true } } } }))?.nft.name;
+    await notify({
+      userId: sellerId,
+      type: "OFFER_RECEIVED",
+      title: "Hai ricevuto una nuova offerta",
+      body: `€ ${amount.toFixed(2)} per "${itemName ?? "un tuo articolo"}"`,
+      link: "/collector/offerte",
     });
 
     return NextResponse.json({ offer });

@@ -7,7 +7,7 @@ import { hasLocale } from "../dictionaries";
 
 export const metadata = {
   title: "Come funziona — Wine Bank 24",
-  description: "Scopri come collezionare, acquistare e investire in NFT di vino pregiato italiano su Wine Bank 24.",
+  description: "Scopri come collezionare e acquistare NFT di vino pregiato su Wine Bank 24.",
 };
 
 const STEPS = [
@@ -15,15 +15,15 @@ const STEPS = [
     num: "01",
     icon: Gem,
     title: "Crea il tuo account collezionista",
-    body: "La registrazione è gratuita e richiede solo la tua email. In pochi minuti hai accesso all'intero marketplace di bottiglie certificate da cantine italiane selezionate.",
-    image: "https://images.unsplash.com/photo-1560472355-536de3962603?w=800&q=85",
-    imageAlt: "Registrazione sulla piattaforma",
+    body: "La registrazione è gratuita e richiede solo la tua email. In pochi minuti hai accesso all'intero marketplace di bottiglie certificate da cantine selezionate.",
+    image: "https://images.unsplash.com/photo-1584916201218-f4242ceb4809?w=800&q=85",
+    imageAlt: "Cantina casalinga con bottiglie in collezione",
   },
   {
     num: "02",
     icon: Wine,
     title: "Esplora e scegli il tuo vino",
-    body: "Naviga tra centinaia di NFT di vini italiani d'eccellenza: Barolo, Brunello, Amarone, Bolgheri e molti altri. Ogni scheda mostra i dettagli del vino, la cantina, le condizioni di conservazione e la storia della bottiglia.",
+    body: "Naviga tra centinaia di NFT di vini d'eccellenza: Barolo, Brunello, Amarone, Bolgheri e molti altri. Ogni scheda mostra i dettagli del vino, la cantina, le condizioni di conservazione e la storia della bottiglia.",
     image: "https://images.unsplash.com/photo-1553361371-9b22f78e8b1d?w=800&q=85",
     imageAlt: "Selezione vini nel marketplace",
   },
@@ -53,9 +53,9 @@ const STEPS = [
   },
   {
     num: "06",
-    icon: Truck,
-    title: "Rivendi o ritira la tua bottiglia",
-    body: "Hai due opzioni: rivendere l'NFT nel marketplace a chi vuole acquistarlo, oppure richiedere la consegna fisica della bottiglia. In questo caso l'NFT viene bruciato (invalidato) e la bottiglia ti viene spedita dove preferisci.",
+    icon: Wine,
+    title: "Rivendi o custodisci il tuo NFT",
+    body: "Hai due opzioni: rivendere l'NFT nel marketplace a chi vuole acquistarlo, oppure custodirlo nella tua collezione per tutto il tempo che vuoi. E quando la cantina abilita il ritiro fisico, potrai anche riscattare la bottiglia reale.",
     image: "https://images.unsplash.com/photo-1516594915697-87eb3b1c14ea?w=800&q=85",
     imageAlt: "Consegna bottiglia fisica",
   },
@@ -64,10 +64,10 @@ const STEPS = [
 const BENEFITS = [
   { icon: ShieldCheck, title: "Autenticità garantita", desc: "Ogni NFT è collegato a una bottiglia reale custodita in una cantina certificata. Nessuna falsificazione è possibile grazie alla blockchain." },
   { icon: Lock, title: "Proprietà verificabile", desc: "La tua proprietà è registrata su Polygon blockchain, pubblica e immutabile. Puoi verificare il tuo NFT in qualsiasi momento." },
-  { icon: BarChart3, title: "Potenziale di valorizzazione", desc: "I grandi vini tendono ad aumentare di valore nel tempo. Collezionare NFT di vino unisce la passione all'investimento." },
-  { icon: Truck, title: "Ritiro fisico sempre possibile", desc: "Puoi ritirare la tua bottiglia quando vuoi. Non sei mai 'bloccato': il vino è tuo, in tutti i sensi." },
+  { icon: BarChart3, title: "Prestigio nel tempo", desc: "I grandi vini acquisiscono prestigio e rarità nel tempo. Collezionare NFT di vino unisce passione e cultura." },
+  { icon: Truck, title: "Ritiro fisico del bene", desc: "Quando la cantina abilita il ritiro, puoi riscattare la tua bottiglia pagando IVA, spedizione e una fee di piattaforma del 5%." },
   { icon: Gem, title: "Mercato secondario attivo", desc: "Rivendi i tuoi NFT direttamente nel marketplace a collezionisti da tutto il mondo, senza intermediari." },
-  { icon: Wine, title: "Cantine italiane selezionate", desc: "Solo cantine con standard di conservazione certificati e polizza assicurativa possono iscriversi alla piattaforma." },
+  { icon: Wine, title: "Cantine selezionate", desc: "Solo cantine con standard di conservazione certificati e polizza assicurativa possono iscriversi alla piattaforma." },
 ];
 
 const FAQS = [
@@ -126,7 +126,7 @@ export default async function ComeFunzionaPage({
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="https://images.unsplash.com/photo-1474722883778-792e7990302f?w=1600&q=90"
-            alt="Cantina italiana"
+            alt="Cantina"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(13,7,5,0.92) 0%, rgba(13,7,5,0.65) 60%, rgba(13,7,5,0.3) 100%)" }} />
@@ -145,7 +145,7 @@ export default async function ComeFunzionaPage({
             </span>
           </h1>
           <p className="text-xl text-white/75 max-w-xl mb-10 leading-relaxed">
-            Acquista certificati digitali di bottiglie di vino pregiato italiano. La bottiglia rimane custodita in cantina, tu possiedi il certificato — e puoi ritirare il vino quando vuoi.
+            Acquista certificati digitali di bottiglie di vino pregiato. La bottiglia rimane custodita in cantina, tu possiedi il certificato — e puoi riscattarla quando la cantina ne abilita il ritiro.
           </p>
           <div className="flex flex-wrap gap-4">
             <Link href={`/${lang}/register`}
@@ -169,12 +169,11 @@ export default async function ComeFunzionaPage({
 
       {/* ── QUICK STATS ── */}
       <section style={{ background: "var(--wine-card)", borderBottom: "1px solid var(--wine-border)" }}>
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 grid grid-cols-3 gap-6 sm:gap-8">
           {[
             { value: "100%", label: "Bottiglie fisiche reali" },
             { value: "Polygon", label: "Blockchain certificata" },
             { value: "All Risks", label: "Polizza assicurativa" },
-            { value: "15 gg", label: "Consegna fisica garantita" },
           ].map(({ value, label }) => (
             <div key={label} className="text-center">
               <div className="text-2xl sm:text-3xl font-extrabold mb-1"
@@ -238,14 +237,14 @@ export default async function ComeFunzionaPage({
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=1600&q=85"
-          alt="Cantina italiana"
+          alt="Cantina"
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 flex items-center justify-center"
           style={{ background: "rgba(13,7,5,0.65)" }}>
           <blockquote className="text-center px-8">
             <p className="text-2xl sm:text-3xl font-bold text-white italic mb-4">
-              &ldquo;Il vino italiano di qualità è tra i migliori investimenti alternativi degli ultimi vent&apos;anni.&rdquo;
+              &ldquo;Il vino di qualità è tra i beni da collezione più ricercati degli ultimi vent&apos;anni.&rdquo;
             </p>
             <cite className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.5)" }}>
               Liv-ex Fine Wine Index, 2024

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useSyncExternalStore } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Cookie } from "lucide-react";
@@ -9,34 +9,30 @@ export type CookieConsent = "accepted" | "declined" | null;
 
 const STORAGE_KEY = "wb24_cookie_consent";
 
+function subscribe(callback: () => void) {
+  window.addEventListener("wb24:cookie-consent", callback);
+  return () => window.removeEventListener("wb24:cookie-consent", callback);
+}
+
+function getSnapshot(): CookieConsent {
+  return localStorage.getItem(STORAGE_KEY) as CookieConsent;
+}
+
 export function useCookieConsent(): CookieConsent {
-  const [consent, setConsent] = useState<CookieConsent>(null);
-  useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY) as CookieConsent;
-    setConsent(stored);
-    window.addEventListener("wb24:cookie-consent", () => {
-      setConsent(localStorage.getItem(STORAGE_KEY) as CookieConsent);
-    });
-  }, []);
-  return consent;
+  return useSyncExternalStore(subscribe, getSnapshot, () => null);
 }
 
 export function CookieBanner({ lang }: { lang: string }) {
-  const [visible, setVisible] = useState(false);
+  // "pending" on the server keeps the banner hidden until hydration
+  const consent = useSyncExternalStore(subscribe, getSnapshot, () => "pending" as const);
   const en = lang === "en";
-
-  useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) setVisible(true);
-  }, []);
 
   function respond(choice: "accepted" | "declined") {
     localStorage.setItem(STORAGE_KEY, choice);
     window.dispatchEvent(new Event("wb24:cookie-consent"));
-    setVisible(false);
   }
 
-  if (!visible) return null;
+  if (consent !== null) return null;
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 p-4 md:p-6">

@@ -19,10 +19,35 @@ export async function POST(req: Request) {
   });
 
   if (!nft) return NextResponse.json({ error: "Certificato non trovato" }, { status: 404 });
-  if (nft.ownerId !== session.user.id) return NextResponse.json({ error: "Non sei il proprietario" }, { status: 403 });
   if (!nft.physicalDeliveryUnlocked) return NextResponse.json({ error: "La cantina non ha ancora abilitato il ritiro fisico" }, { status: 400 });
   if (nft.status === "BURN_REQUESTED" || nft.status === "BURNED") {
     return NextResponse.json({ error: "Ritiro già richiesto o completato" }, { status: 400 });
+  }
+
+  if (nft.isFractionable) {
+    // Certificato in co-proprietà: il riscatto è possibile solo per chi
+    // possiede il 100% delle quote, dopo aver liquidato gli altri collezionisti
+    const fractions = await db.nftFraction.findMany({
+      where: { nftId: nft.id },
+      select: { ownerId: true },
+    });
+    if (fractions.length === 0) {
+      return NextResponse.json({ error: "Nessuna quota emessa per questo certificato" }, { status: 400 });
+    }
+    if (fractions.some(f => f.ownerId !== session.user.id)) {
+      return NextResponse.json(
+        { error: "Per riscattare la bottiglia devi prima acquisire le quote degli altri collezionisti, facendo loro un'offerta di liquidazione" },
+        { status: 400 }
+      );
+    }
+    if (Number(nft.availableValue ?? 0) > 0) {
+      return NextResponse.json(
+        { error: "Alcune quote di questo certificato sono ancora disponibili presso la cantina: devi acquisirle prima di poter riscattare la bottiglia" },
+        { status: 400 }
+      );
+    }
+  } else if (nft.ownerId !== session.user.id) {
+    return NextResponse.json({ error: "Non sei il proprietario" }, { status: 403 });
   }
 
   const bottleValue = nft.price ?? Number(nft.totalValue ?? 0);
@@ -30,7 +55,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Valore bottiglia non determinabile" }, { status: 400 });
   }
 
-  const burnFee = bottleValue * 0.02;
+  // Fee di piattaforma 5% (copre le transazioni Stripe), pagata da chi riscatta
+  const burnFee = bottleValue * 0.05;
   const vat = burnFee * 0.22;
   const shipping = nft.shippingCost ?? 0;
 
@@ -39,6 +65,7 @@ export async function POST(req: Request) {
   const shippingCents = Math.round(shipping * 100);
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+  const lang = req.headers.get("referer")?.match(/\/(it|en)\//)?.[1] ?? "it";
 
   const sessionParams: Record<string, unknown> = {
     mode: "payment",
@@ -49,7 +76,7 @@ export async function POST(req: Request) {
           unit_amount: burnFeeCents,
           product_data: {
             name: `Fee di ritiro — ${nft.name}`,
-            description: `2% del valore della bottiglia (€ ${bottleValue.toFixed(2)})`,
+            description: `5% del valore della bottiglia (€ ${bottleValue.toFixed(2)})`,
           },
         },
         quantity: 1,
@@ -85,14 +112,16 @@ export async function POST(req: Request) {
       vatCents: vatCents.toString(),
       shippingCents: shippingCents.toString(),
     },
-    success_url: `${appUrl}/it/collector/portfolio?delivery=success`,
-    cancel_url: `${appUrl}/it/nft/${nft.id}`,
+    success_url: `${appUrl}/${lang}/collector/portfolio?delivery=success`,
+    cancel_url: `${appUrl}/${lang}/nft/${nft.id}`,
   };
 
-  // Transfer everything to the cantina via Stripe Connect
+  // Via Stripe Connect: la fee 5% resta alla piattaforma,
+  // alla cantina vanno IVA e spedizione
   if (nft.cantina.stripeAccountId) {
     sessionParams.payment_intent_data = {
       transfer_data: { destination: nft.cantina.stripeAccountId },
+      application_fee_amount: burnFeeCents,
     };
   }
 

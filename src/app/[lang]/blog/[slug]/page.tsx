@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { getDictionary, hasLocale } from "../../dictionaries";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
@@ -37,8 +38,8 @@ export default async function BlogPostPage({ params }: { params: Promise<{ lang:
         </Link>
 
         {post.coverImage && (
-          <div className="rounded-xl overflow-hidden mb-8 h-64 sm:h-80">
-            <img src={post.coverImage} alt={title} className="w-full h-full object-cover" />
+          <div className="relative rounded-xl overflow-hidden mb-8 h-64 sm:h-80">
+            <Image src={post.coverImage} alt={title} fill sizes="(max-width: 768px) 100vw, 768px" className="object-cover" />
           </div>
         )}
 

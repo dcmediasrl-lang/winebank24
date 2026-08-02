@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { getDictionary, hasLocale } from "../dictionaries";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
@@ -44,8 +45,8 @@ export default async function BlogPage({ params }: { params: Promise<{ lang: str
             {posts.map(post => (
               <Link key={post.slug} href={`/${lang}/blog/${post.slug}`} className="group block bg-[var(--wine-card)] rounded-xl border border-[var(--wine-border)] overflow-hidden hover:shadow-md transition-shadow hover:bg-[var(--wine-card-hover)]">
                 {post.coverImage && (
-                  <div className="h-48 overflow-hidden">
-                    <img src={post.coverImage} alt={lang === "en" ? post.titleEn : post.titleIt} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  <div className="relative h-48 overflow-hidden">
+                    <Image src={post.coverImage} alt={lang === "en" ? post.titleEn : post.titleIt} fill sizes="(max-width: 640px) 100vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-300" />
                   </div>
                 )}
                 <div className="p-5">

@@ -53,10 +53,10 @@ export default function RegisterPage({ params }: { params: Promise<{ lang: strin
     return (
       <div className="min-h-screen flex items-center justify-center bg-[var(--wine-bg)] px-4 py-8">
         <div className="w-full max-w-sm text-center">
-          <div className="flex items-center justify-center gap-2 mb-8">
+          <Link href={`/${lang}`} className="flex items-center justify-center gap-2 mb-8 hover:opacity-80 transition-opacity">
             <Wine className="w-8 h-8 text-[#df071b]" />
             <span className="text-2xl font-bold text-white">Wine Bank 24</span>
-          </div>
+          </Link>
           <Card>
             <CardContent className="pt-8 pb-8">
               <Mail className="w-12 h-12 text-amber-500 mx-auto mb-4" />
@@ -83,10 +83,10 @@ export default function RegisterPage({ params }: { params: Promise<{ lang: strin
   return (
     <div className="min-h-screen flex items-center justify-center bg-[var(--wine-bg)] px-4 py-8">
       <div className="w-full max-w-md">
-        <div className="flex items-center justify-center gap-2 mb-8">
+        <Link href={`/${lang}`} className="flex items-center justify-center gap-2 mb-8 hover:opacity-80 transition-opacity">
           <Wine className="w-8 h-8 text-[#df071b]" />
           <span className="text-2xl font-bold text-white">Wine Bank 24</span>
-        </div>
+        </Link>
         <Card>
           <CardHeader>
             <CardTitle className="text-center">{en ? "Create account" : "Crea account"}</CardTitle>

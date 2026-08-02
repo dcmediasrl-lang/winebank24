@@ -51,7 +51,7 @@ export default async function CollectorPortfolioPage({ params }: { params: Promi
               <Card key={nft.id} className="overflow-hidden hover:shadow-md transition-shadow">
                 <Link href={`/${lang}/nft/${nft.id}`}>
                   <NftImageGallery
-                    images={(nft as any).imageGallery ?? []}
+                    images={nft.imageGallery ?? []}
                     fallbackUrl={nft.imageUrl ?? undefined}
                     alt={nft.name}
                     className="h-44"

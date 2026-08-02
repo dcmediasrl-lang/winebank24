@@ -1,0 +1,288 @@
+import { db } from "@/lib/db";
+
+/**
+ * Esegue il trasferimento di proprietà per un'offerta ACCETTATA e PAGATA.
+ * Chiamata esclusivamente dal webhook Stripe dopo checkout.session.completed.
+ * Ritorna false se l'offerta non è più nello stato giusto (già processata).
+ */
+export async function executeOfferTransfer(params: {
+  offerId: string;
+  stripeId: string;
+  platformFee: number;
+}): Promise<boolean> {
+  const { offerId, stripeId, platformFee } = params;
+
+  const offer = await db.offer.findUnique({
+    where: { id: offerId },
+    include: { nft: true, fraction: true },
+  });
+  if (!offer || offer.status !== "ACCEPTED") return false;
+
+  await db.$transaction(async (tx) => {
+    if (offer.nftId && offer.nft) {
+      const nft = offer.nft;
+
+      if (nft.isFractionable) {
+        // ── NFT frazionabile: crea/accresce la quota dell'acquirente ────────
+        const totalValue = Number(nft.totalValue ?? 0);
+        const availableValue = Number(nft.availableValue ?? 0);
+
+        if (offer.amount > availableValue) {
+          throw new Error("Valore non più disponibile per questo importo");
+        }
+
+        const pct = totalValue > 0 ? (offer.amount / totalValue) * 100 : 0;
+        const newAvailable = availableValue - offer.amount;
+
+        await tx.nft.update({
+          where: { id: nft.id },
+          data: {
+            availableValue: newAvailable,
+            status: newAvailable <= 0 ? "SOLD" : nft.status,
+          },
+        });
+
+        const existing = await tx.nftFraction.findFirst({
+          where: { nftId: nft.id, ownerId: offer.buyerId },
+        });
+        if (existing) {
+          await tx.nftFraction.update({
+            where: { id: existing.id },
+            data: {
+              percentage: Number(existing.percentage) + pct,
+              investedAmount: Number(existing.investedAmount) + offer.amount,
+            },
+          });
+        } else {
+          await tx.nftFraction.create({
+            data: {
+              nftId: nft.id,
+              ownerId: offer.buyerId,
+              percentage: pct,
+              investedAmount: offer.amount,
+            },
+          });
+        }
+      } else {
+        // ── NFT intero: verifica che il venditore sia ancora proprietario ───
+        if (nft.ownerId !== offer.sellerId) {
+          throw new Error("Il venditore non possiede più questo certificato");
+        }
+        await tx.nft.update({
+          where: { id: offer.nftId },
+          data: {
+            ownerId: offer.buyerId,
+            isListed: false,
+            status: "SOLD",
+            price: null,
+          },
+        });
+
+        // Rifiuta le altre offerte pendenti su questo NFT
+        await tx.offer.updateMany({
+          where: { nftId: offer.nftId, status: "PENDING", id: { not: offerId } },
+          data: { status: "REJECTED" },
+        });
+      }
+
+      await tx.transaction.create({
+        data: {
+          nftId: offer.nftId,
+          buyerId: offer.buyerId,
+          sellerId: offer.sellerId,
+          type: "BUY",
+          amount: offer.amount,
+          platformFee,
+          paymentMethod: "FIAT",
+          stripeId,
+        },
+      });
+    } else if (offer.fractionId && offer.fraction) {
+      // ── Quota di co-proprietà (liquidazione tra collezionisti) ────────────
+      const fraction = offer.fraction;
+      if (fraction.ownerId !== offer.sellerId) {
+        throw new Error("Il venditore non possiede più questa quota");
+      }
+      const totalPct = Number(fraction.percentage);
+      const listedPct = fraction.listedPercentage !== null
+        ? Number(fraction.listedPercentage)
+        : totalPct;
+      const isPartialSale = listedPct < totalPct;
+      const askingPrice = offer.amount;
+      const soldInvestedAmount = isPartialSale
+        ? Number(fraction.investedAmount) * (listedPct / totalPct)
+        : Number(fraction.investedAmount);
+      const remainingPct = totalPct - listedPct;
+      const remainingInvestedAmount = Number(fraction.investedAmount) - soldInvestedAmount;
+
+      if (isPartialSale) {
+        await tx.nftFraction.update({
+          where: { id: offer.fractionId },
+          data: {
+            percentage: remainingPct,
+            investedAmount: remainingInvestedAmount,
+            isListed: false,
+            askingPrice: null,
+            listedPercentage: null,
+          },
+        });
+
+        const existingBuyerFraction = await tx.nftFraction.findFirst({
+          where: { nftId: fraction.nftId, ownerId: offer.buyerId },
+        });
+        if (existingBuyerFraction) {
+          await tx.nftFraction.update({
+            where: { id: existingBuyerFraction.id },
+            data: {
+              percentage: Number(existingBuyerFraction.percentage) + listedPct,
+              investedAmount: Number(existingBuyerFraction.investedAmount) + askingPrice,
+            },
+          });
+        } else {
+          await tx.nftFraction.create({
+            data: {
+              nftId: fraction.nftId,
+              ownerId: offer.buyerId,
+              percentage: listedPct,
+              investedAmount: askingPrice,
+              isListed: false,
+            },
+          });
+        }
+      } else {
+        await tx.nftFraction.update({
+          where: { id: offer.fractionId },
+          data: {
+            ownerId: offer.buyerId,
+            investedAmount: askingPrice,
+            isListed: false,
+            askingPrice: null,
+            listedPercentage: null,
+          },
+        });
+      }
+
+      await tx.transaction.create({
+        data: {
+          nftId: fraction.nftId,
+          buyerId: offer.buyerId,
+          sellerId: offer.sellerId,
+          type: "BUY",
+          amount: offer.amount,
+          platformFee,
+          paymentMethod: "FIAT",
+          stripeId,
+        },
+      });
+
+      await tx.offer.updateMany({
+        where: { fractionId: offer.fractionId, status: "PENDING", id: { not: offerId } },
+        data: { status: "REJECTED" },
+      });
+    }
+
+    await tx.offer.update({ where: { id: offerId }, data: { status: "COMPLETED" } });
+  });
+
+  return true;
+}
+
+/**
+ * Trasferimento di una quota in vendita diretta (senza offerta), dopo pagamento.
+ * Chiamata esclusivamente dal webhook Stripe.
+ */
+export async function executeFractionResaleTransfer(params: {
+  fractionId: string;
+  buyerId: string;
+  stripeId: string;
+  platformFee: number;
+}): Promise<boolean> {
+  const { fractionId, buyerId, stripeId, platformFee } = params;
+
+  const fraction = await db.nftFraction.findUnique({ where: { id: fractionId } });
+  if (!fraction || !fraction.isListed) return false;
+  if (fraction.ownerId === buyerId) return false;
+
+  const sellerId = fraction.ownerId;
+  const askingPrice = Number(fraction.askingPrice ?? fraction.investedAmount);
+  const totalPct = Number(fraction.percentage);
+  const listedPct = fraction.listedPercentage !== null
+    ? Number(fraction.listedPercentage)
+    : totalPct;
+  const isPartialSale = listedPct < totalPct;
+  const soldInvestedAmount = isPartialSale
+    ? Number(fraction.investedAmount) * (listedPct / totalPct)
+    : Number(fraction.investedAmount);
+  const remainingPct = totalPct - listedPct;
+  const remainingInvestedAmount = Number(fraction.investedAmount) - soldInvestedAmount;
+
+  await db.$transaction(async (tx) => {
+    if (isPartialSale) {
+      await tx.nftFraction.update({
+        where: { id: fractionId },
+        data: {
+          percentage: remainingPct,
+          investedAmount: remainingInvestedAmount,
+          isListed: false,
+          askingPrice: null,
+          listedPercentage: null,
+        },
+      });
+
+      const existingBuyerFraction = await tx.nftFraction.findFirst({
+        where: { nftId: fraction.nftId, ownerId: buyerId },
+      });
+      if (existingBuyerFraction) {
+        await tx.nftFraction.update({
+          where: { id: existingBuyerFraction.id },
+          data: {
+            percentage: Number(existingBuyerFraction.percentage) + listedPct,
+            investedAmount: Number(existingBuyerFraction.investedAmount) + askingPrice,
+          },
+        });
+      } else {
+        await tx.nftFraction.create({
+          data: {
+            nftId: fraction.nftId,
+            ownerId: buyerId,
+            percentage: listedPct,
+            investedAmount: askingPrice,
+            isListed: false,
+          },
+        });
+      }
+    } else {
+      await tx.nftFraction.update({
+        where: { id: fractionId },
+        data: {
+          ownerId: buyerId,
+          investedAmount: askingPrice,
+          isListed: false,
+          askingPrice: null,
+          listedPercentage: null,
+        },
+      });
+    }
+
+    await tx.transaction.create({
+      data: {
+        nftId: fraction.nftId,
+        buyerId,
+        sellerId,
+        type: "BUY",
+        amount: askingPrice,
+        platformFee,
+        paymentMethod: "FIAT",
+        stripeId,
+      },
+    });
+
+    // Rifiuta le offerte pendenti sulla quota venduta
+    await tx.offer.updateMany({
+      where: { fractionId, status: "PENDING" },
+      data: { status: "REJECTED" },
+    });
+  });
+
+  return true;
+}

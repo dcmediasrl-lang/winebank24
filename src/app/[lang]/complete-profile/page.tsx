@@ -9,6 +9,10 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Wine } from "lucide-react";
+import { TAX_ID_SPECS, getTaxIdSpec, validateTaxId } from "@/lib/tax-id";
+
+const MAX_BIRTH_DATE = new Date(Date.now() - 18 * 365.25 * 24 * 60 * 60 * 1000)
+  .toISOString().split("T")[0];
 
 export default function CompleteProfilePage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = use(params);
@@ -19,8 +23,12 @@ export default function CompleteProfilePage({ params }: { params: Promise<{ lang
     firstName: "",
     lastName: "",
     birthDate: "",
+    country: "IT",
     fiscalCode: "",
   });
+
+  const spec = getTaxIdSpec(form.country);
+  const codeLabel = spec ? (en ? spec.labelEn : spec.labelIt) : "";
 
   function set(field: string, value: string) {
     setForm(f => ({ ...f, [field]: value }));
@@ -37,6 +45,17 @@ export default function CompleteProfilePage({ params }: { params: Promise<{ lang
       return;
     }
 
+    // Client-side tax ID validation (repeated server-side)
+    const taxError = validateTaxId(form.country, form.fiscalCode, {
+      firstName: form.firstName,
+      lastName: form.lastName,
+      birthDate: birth,
+    });
+    if (taxError) {
+      toast.error(taxError);
+      return;
+    }
+
     setLoading(true);
     try {
       // Save KYC data
@@ -47,7 +66,7 @@ export default function CompleteProfilePage({ params }: { params: Promise<{ lang
           firstName: form.firstName,
           lastName: form.lastName,
           birthDate: form.birthDate,
-          country: "IT",
+          country: form.country,
           fiscalCode: form.fiscalCode,
         }),
       });
@@ -70,10 +89,10 @@ export default function CompleteProfilePage({ params }: { params: Promise<{ lang
   return (
     <div className="min-h-screen flex items-center justify-center bg-[var(--wine-bg)] px-4 py-8">
       <div className="w-full max-w-md">
-        <div className="flex items-center justify-center gap-2 mb-8">
+        <Link href={`/${lang}`} className="flex items-center justify-center gap-2 mb-8 hover:opacity-80 transition-opacity">
           <Wine className="w-8 h-8 text-[#df071b]" />
           <span className="text-2xl font-bold text-white">Wine Bank 24</span>
-        </div>
+        </Link>
         <Card>
           <CardHeader>
             <CardTitle className="text-center">
@@ -113,7 +132,7 @@ export default function CompleteProfilePage({ params }: { params: Promise<{ lang
                 <Input
                   required
                   type="date"
-                  max={new Date(Date.now() - 18 * 365.25 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]}
+                  max={MAX_BIRTH_DATE}
                   value={form.birthDate}
                   onChange={e => set("birthDate", e.target.value)}
                 />
@@ -123,14 +142,35 @@ export default function CompleteProfilePage({ params }: { params: Promise<{ lang
               </div>
 
               <div className="space-y-1">
-                <Label>{en ? "Fiscal code" : "Codice fiscale"} *</Label>
+                <Label>{en ? "Country" : "Paese di provenienza"} *</Label>
+                <select
+                  required
+                  value={form.country}
+                  onChange={e => set("country", e.target.value)}
+                  className="w-full h-9 px-3 rounded-md border border-[var(--wine-border)] bg-[var(--wine-card)] text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                >
+                  {TAX_ID_SPECS.map(s => (
+                    <option key={s.country} value={s.country}>
+                      {en ? s.nameEn : s.nameIt}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-1">
+                <Label>{codeLabel} *</Label>
                 <Input
                   required
                   value={form.fiscalCode}
                   onChange={e => set("fiscalCode", e.target.value.toUpperCase())}
-                  placeholder="RSSMRA80A01H501Z"
+                  placeholder={spec?.placeholder}
                   className="uppercase"
                 />
+                <p className="text-xs text-[var(--wine-muted)]">
+                  {en
+                    ? "The code is automatically checked against your personal details."
+                    : "Il codice viene verificato automaticamente con i tuoi dati anagrafici."}
+                </p>
               </div>
 
               {/* Age confirmation */}

@@ -4,6 +4,8 @@ import { getStripe } from "@/lib/stripe";
 import { db } from "@/lib/db";
 import { sendPurchaseEmail, sendSaleEmail } from "@/lib/email";
 import type Stripe from "stripe";
+import { executeOfferTransfer, executeFractionResaleTransfer } from "@/lib/offer-transfer";
+import { notify } from "@/lib/notifications";
 
 export async function POST(req: Request) {
   const body = await req.text();
@@ -23,6 +25,15 @@ export async function POST(req: Request) {
   const stripeSession = event.data.object as Stripe.Checkout.Session;
   const meta = stripeSession.metadata!;
 
+  // Idempotenza: Stripe può recapitare lo stesso evento più volte
+  const alreadyProcessed = await db.transaction.findFirst({
+    where: { stripeId: stripeSession.id },
+    select: { id: true },
+  });
+  if (alreadyProcessed) {
+    return NextResponse.json({ received: true, duplicate: true });
+  }
+
   try {
     if (meta.type === "nft") {
       await handleNftPurchase(stripeSession, meta);
@@ -32,6 +43,19 @@ export async function POST(req: Request) {
       await handleMintFeePaid(stripeSession, meta);
     } else if (meta.type === "burn_fee") {
       await handleBurnFeePaid(stripeSession, meta);
+    } else if (meta.type === "offer") {
+      await executeOfferTransfer({
+        offerId: meta.offerId,
+        stripeId: stripeSession.id,
+        platformFee: parseInt(meta.platformFeeCents || "0") / 100,
+      });
+    } else if (meta.type === "fraction_resale") {
+      await executeFractionResaleTransfer({
+        fractionId: meta.fractionId,
+        buyerId: meta.buyerId,
+        stripeId: stripeSession.id,
+        platformFee: parseInt(meta.platformFeeCents || "0") / 100,
+      });
     }
   } catch (err) {
     console.error("[webhook/stripe] Error processing event", event.type, err);
@@ -46,7 +70,7 @@ async function handleNftPurchase(
   stripeSession: Stripe.Checkout.Session,
   meta: Record<string, string>
 ) {
-  const { nftId, buyerId, sellerId, cantinaId, platformFeePct, cantinaRoyaltyPct, isPrimarySale } = meta;
+  const { nftId, buyerId, sellerId, platformFeePct, cantinaRoyaltyPct, isPrimarySale } = meta;
 
   const nft = await db.nft.findUnique({
     where: { id: nftId },
@@ -60,11 +84,22 @@ async function handleNftPurchase(
   const buyer = await db.user.findUnique({ where: { id: buyerId }, select: { email: true, name: true } });
   if (!buyer) return;
 
+  // Doppia vendita: se il proprietario è cambiato dopo la creazione del
+  // checkout, questo pagamento va rimborsato manualmente — non trasferire
+  if (nft.ownerId !== sellerId) {
+    console.error(
+      `[webhook/stripe] DOPPIA VENDITA: NFT ${nftId} pagato da ${buyerId} ma il proprietario non è più ${sellerId}. Rimborsare la sessione ${stripeSession.id}`
+    );
+    return;
+  }
+
   const price = nft.price;
-  const platformFee = price * (parseFloat(platformFeePct) / 100);
+  const isSecondary = isPrimarySale === "false";
+  const sellerFee = parseInt(meta.sellerFeeCents || "0") / 100;
+  // platformFee = commissione acquirente + fee venditore 3% (secondario)
+  const platformFee = price * (parseFloat(platformFeePct) / 100) + sellerFee;
 
   // cantinaFee = royalty on secondary sales (seller is a collector, not the cantina)
-  const isSecondary = isPrimarySale === "false";
   const cantinaFee = isSecondary ? price * (parseFloat(cantinaRoyaltyPct) / 100) : 0;
 
   await db.$transaction([
@@ -89,10 +124,16 @@ async function handleNftPurchase(
     }),
   ]);
 
+  // Notifiche in-app (rispettano le preferenze utente)
+  await Promise.allSettled([
+    notify({ userId: buyerId, type: "NFT_PURCHASED", title: "Acquisto completato", body: `Hai acquistato "${nft.name}"`, link: "/collector/portfolio" }),
+    notify({ userId: sellerId, type: "NFT_SOLD", title: "Hai venduto un certificato", body: `"${nft.name}" venduto per € ${(price - sellerFee).toFixed(2)}`, link: "/collector/reports" }),
+  ]);
+
   // Send email notifications
   await Promise.allSettled([
     sendPurchaseEmail(buyer.email, nft.name, price),
-    sendSaleEmail(nft.owner.email, nft.name, price - platformFee - cantinaFee),
+    sendSaleEmail(nft.owner.email, nft.name, price - sellerFee),
     // Notify cantina of royalty on secondary sales
     isSecondary && cantinaFee > 0
       ? sendSaleEmail(nft.cantina.user.email, `${nft.name} (royalty)`, cantinaFee)
@@ -148,6 +189,8 @@ async function handleBurnFeePaid(
   if (!nft || nft.status === "BURN_REQUESTED" || nft.status === "BURNED") return;
 
   const totalPaid = (parseInt(burnFeeCents) + parseInt(vatCents) + parseInt(shippingCents)) / 100;
+  // La fee 5% resta alla piattaforma; alla cantina vanno IVA e spedizione
+  const platformShare = parseInt(burnFeeCents) / 100;
 
   await db.$transaction([
     db.nft.update({
@@ -173,8 +216,8 @@ async function handleBurnFeePaid(
         buyerId,
         type: "BURN",
         amount: totalPaid,
-        platformFee: 0,
-        cantinaFee: totalPaid,
+        platformFee: platformShare,
+        cantinaFee: totalPaid - platformShare,
         paymentMethod: "FIAT",
         stripeId: stripeSession.id,
       },

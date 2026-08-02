@@ -6,7 +6,7 @@ import { CookieBanner } from "@/components/shared/cookie-banner";
 import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
-  title: "Wine Bank 24 — NFT per il vino italiano",
+  title: "Wine Bank 24 — NFT per i vini da collezione",
   description: "Tokenizza, colleziona e commercia bottiglie di vino pregiate come NFT",
 };
 

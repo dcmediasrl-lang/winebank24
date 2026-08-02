@@ -21,7 +21,7 @@ export default async function AdminWineDbPage() {
       <div className="flex items-center gap-3">
         <Database className="w-7 h-7 text-amber-400" />
         <div>
-          <h1 className="text-2xl font-bold text-white">Database Vini Italiani</h1>
+          <h1 className="text-2xl font-bold text-white">Database Vini</h1>
           <p className="text-[var(--wine-muted)] text-sm mt-0.5">
             Denominazioni DOC/DOCG/IGT — {denominations.length} totali
           </p>

@@ -45,7 +45,7 @@ export async function POST(req: Request) {
     }
 
     const config = await db.platformConfig.findFirst();
-    const platformFeePct = config?.platformFeePct ?? 2.5;
+    const platformFeePct = config?.platformFeePct ?? 7.0;
 
     const amountCents = Math.round(body.amount * 100);
     const platformFeeCents = Math.round(amountCents * platformFeePct / 100);
@@ -53,6 +53,7 @@ export async function POST(req: Request) {
     const percentage = (body.amount / totalValue) * 100;
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+  const lang = req.headers.get("referer")?.match(/\/(it|en)\//)?.[1] ?? "it";
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sessionParams: any = {
@@ -80,8 +81,8 @@ export async function POST(req: Request) {
         percentage: percentage.toString(),
         platformFeePct: platformFeePct.toString(),
       },
-      success_url: `${appUrl}/it/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${appUrl}/it/marketplace`,
+      success_url: `${appUrl}/${lang}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${appUrl}/${lang}/marketplace`,
     };
 
     // Stripe Connect split when cantina has account

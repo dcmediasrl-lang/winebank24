@@ -24,7 +24,7 @@ type Cantina = {
 const SECTION = "bg-[#2a1010] rounded-xl border border-white/10 p-5 space-y-4";
 const TEXTAREA = "w-full px-3 py-2.5 rounded-lg border border-white/20 bg-black/30 text-white placeholder:text-white/30 text-sm resize-none focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20";
 
-export function CantinaProfileForm({ lang, cantina }: { lang: string; cantina: Cantina }) {
+export function CantinaProfileForm({ cantina }: { lang: string; cantina: Cantina }) {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     name: cantina.name,

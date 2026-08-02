@@ -26,12 +26,14 @@ export function WineDenominationPicker({ onSelect, value }: Props) {
   const [inputValue, setInputValue] = useState(value ?? "");
   const [results, setResults] = useState<WineDenominationResult[]>([]);
   const [open, setOpen] = useState(false);
+  const [prevValue, setPrevValue] = useState(value);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  if (value !== prevValue) {
+    setPrevValue(value);
     setInputValue(value ?? "");
-  }, [value]);
+  }
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {

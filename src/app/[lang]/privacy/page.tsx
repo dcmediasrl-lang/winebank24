@@ -1,7 +1,6 @@
-import Link from "next/link";
 import { getDictionary, hasLocale } from "../dictionaries";
 import { notFound } from "next/navigation";
-import { Wine } from "lucide-react";
+import { LegalHeader } from "@/components/shared/legal-header";
 
 export default async function PrivacyPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
@@ -11,15 +10,7 @@ export default async function PrivacyPage({ params }: { params: Promise<{ lang: 
 
   return (
     <div className="min-h-screen bg-[var(--wine-bg)]">
-      <header className="bg-[var(--wine-card)] text-white px-8 py-4 flex items-center justify-between">
-        <Link href={`/${lang}`} className="flex items-center gap-2">
-          <Wine className="w-5 h-5 text-amber-400" />
-          <span className="font-bold">Wine Bank 24</span>
-        </Link>
-        <Link href={lang === "en" ? "/it/privacy" : "/en/privacy"} className="text-[var(--wine-muted)] text-xs hover:text-[#df071b]">
-          {lang === "en" ? "🇮🇹 IT" : "🇬🇧 EN"}
-        </Link>
-      </header>
+      <LegalHeader lang={lang} />
       <div className="max-w-4xl mx-auto px-6 py-16">
         <div className="mb-10">
           <h1 className="text-3xl font-bold text-white mb-2">{en ? "Privacy Policy" : "Privacy Policy"}</h1>

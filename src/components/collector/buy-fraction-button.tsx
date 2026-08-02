@@ -61,8 +61,8 @@ export function BuyFractionButton({
       const res = await fetch(`/api/collector/fractions/${fractionId}/buy`, { method: "POST" });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Errore");
-      toast.success(`${displayPct.toFixed(2)}% acquisito con successo!`);
-      router.refresh();
+      window.location.href = data.url;
+      return;
     } catch (e: unknown) {
       toast.error(e instanceof Error ? e.message : "Errore nell'acquisto");
     } finally {

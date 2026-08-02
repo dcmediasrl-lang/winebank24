@@ -17,10 +17,10 @@ export default async function MarketplacePage({
   searchParams,
 }: {
   params: Promise<{ lang: string }>;
-  searchParams: Promise<{ region?: string; type?: string; q?: string }>;
+  searchParams: Promise<{ region?: string; type?: string; vintage?: string; grape?: string; q?: string }>;
 }) {
   const { lang } = await params;
-  const { region: filterRegion, type: filterType } = await searchParams;
+  const { region: filterRegion, type: filterType, vintage: filterVintage, grape: filterGrape } = await searchParams;
   const session = await auth();
 
   // Check whether the logged-in user has already accepted buyer terms and completed KYC
@@ -59,6 +59,14 @@ export default async function MarketplacePage({
               },
             }
           : {}),
+        ...(filterVintage || filterGrape
+          ? {
+              collection: {
+                ...(filterVintage ? { vintage: parseInt(filterVintage, 10) } : {}),
+                ...(filterGrape ? { grape: filterGrape } : {}),
+              },
+            }
+          : {}),
       },
       include: {
         cantina: { select: { id: true, name: true } },
@@ -67,7 +75,7 @@ export default async function MarketplacePage({
         denomination: { select: { name: true, type: true, region: true } },
       },
       orderBy: { updatedAt: "desc" },
-    }).catch(() => [] as any[]),
+    }).catch(() => []),
     db.nftFraction.findMany({
       where: { isListed: true },
       include: {
@@ -80,7 +88,7 @@ export default async function MarketplacePage({
         owner: { select: { id: true, name: true, email: true } },
       },
       orderBy: { updatedAt: "desc" },
-    }).catch(() => [] as any[]),
+    }).catch(() => []),
     db.nft.findMany({
       where: { status: "MINTED" },
       include: {
@@ -90,7 +98,7 @@ export default async function MarketplacePage({
       },
       orderBy: { createdAt: "desc" },
       take: 12,
-    }).catch(() => [] as any[]),
+    }).catch(() => []),
   ]);
 
   const nfts = allListedNfts.filter((n) => !n.isFractionable);
@@ -102,6 +110,13 @@ export default async function MarketplacePage({
   const uniqueRegions = Array.from(
     new Set(allListedNfts.map((n) => n.denomination?.region).filter(Boolean) as string[])
   ).sort();
+  const uniqueVintages = Array.from(
+    new Set(allListedNfts.map((n) => n.collection?.vintage).filter(Boolean) as number[])
+  ).sort((a, b) => b - a);
+  const uniqueGrapes = Array.from(
+    new Set(allListedNfts.map((n) => n.collection?.grape).filter(Boolean) as string[])
+  ).sort();
+  const hasActiveFilter = !!(filterRegion || filterType || filterVintage || filterGrape);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-10" style={{ color: "white" }}>
@@ -114,7 +129,7 @@ export default async function MarketplacePage({
         </div>
 
         {/* Filter bar */}
-        {(uniqueRegions.length > 0 || filterRegion || filterType) && (
+        {(uniqueRegions.length > 0 || uniqueVintages.length > 0 || uniqueGrapes.length > 0 || hasActiveFilter) && (
           <div className="flex flex-wrap items-center gap-2 mb-8 p-3 rounded-lg bg-[var(--wine-card)] border border-[var(--wine-border)]">
             <Filter className="w-4 h-4 text-white/40 shrink-0" />
             <span className="text-xs text-white/40 mr-1">Filtri:</span>
@@ -151,7 +166,37 @@ export default async function MarketplacePage({
               </Link>
             ))}
 
-            {(filterRegion || filterType) && (
+            {/* Vintage filters */}
+            {uniqueVintages.map((v) => (
+              <Link
+                key={`v-${v}`}
+                href={filterVintage === String(v) ? `/${lang}/marketplace` : `/${lang}/marketplace?vintage=${v}`}
+                className={`text-xs px-3 py-1 rounded-full border transition-colors ${
+                  filterVintage === String(v)
+                    ? "bg-purple-600 border-purple-600 text-white font-medium"
+                    : "border-white/20 text-white/60 hover:border-white/40"
+                }`}
+              >
+                {v}
+              </Link>
+            ))}
+
+            {/* Grape (vitigno) filters */}
+            {uniqueGrapes.map((g) => (
+              <Link
+                key={`g-${g}`}
+                href={filterGrape === g ? `/${lang}/marketplace` : `/${lang}/marketplace?grape=${encodeURIComponent(g)}`}
+                className={`text-xs px-3 py-1 rounded-full border transition-colors ${
+                  filterGrape === g
+                    ? "bg-teal-600 border-teal-600 text-white font-medium"
+                    : "border-white/20 text-white/60 hover:border-white/40"
+                }`}
+              >
+                {g}
+              </Link>
+            ))}
+
+            {hasActiveFilter && (
               <Link
                 href={`/${lang}/marketplace`}
                 className="text-xs text-white/40 hover:text-white ml-auto"
@@ -169,7 +214,7 @@ export default async function MarketplacePage({
               <Users className="w-5 h-5 text-[#df071b]" />
               <h2 className="text-xl font-bold text-white">Diventa co-proprietario</h2>
             </div>
-            <p className="text-[var(--wine-muted)] text-sm mb-5">Acquista una quota di un'esclusiva bottiglia di vino. La bottiglia originale è custodita e certificata dalla cantina.</p>
+            <p className="text-[var(--wine-muted)] text-sm mb-5">Acquista una quota di un’esclusiva bottiglia di vino. La bottiglia originale è custodita e certificata dalla cantina.</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {fractionableNfts.map((nft) => {
                 const totalValue = Number(nft.totalValue ?? 0);
@@ -177,13 +222,13 @@ export default async function MarketplacePage({
                 const soldPct = totalValue > 0 ? ((totalValue - availableValue) / totalValue) * 100 : 0;
                 return (
                   <Card key={nft.id} className="overflow-hidden hover:shadow-lg transition-shadow group border-amber-200 relative">
-                    <div className="relative h-48">
-                      <Link href={`/${lang}/nft/${nft.id}`} className="block h-48">
+                    <div className="relative aspect-square">
+                      <Link href={`/${lang}/nft/${nft.id}`} className="block h-full">
                         <NftImageGallery
                           images={nft.imageGallery ?? []}
                           fallbackUrl={nft.imageUrl ?? undefined}
                           alt={nft.name}
-                          className="h-48"
+                          className="w-full h-full"
                         />
                         <Badge className="absolute top-2 right-2 bg-[#993300] text-white text-xs z-10">Co-proprietà</Badge>
                       </Link>
@@ -262,12 +307,12 @@ export default async function MarketplacePage({
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {availableFractions.map((fraction) => (
                 <Card key={fraction.id} className="overflow-hidden hover:shadow-lg transition-shadow border-blue-100">
-                  <div className="h-48 relative">
+                  <div className="aspect-square relative">
                     <NftImageGallery
                       images={fraction.nft.imageGallery ?? []}
                       fallbackUrl={fraction.nft.imageUrl ?? undefined}
                       alt={fraction.nft.name}
-                      className="h-48"
+                      className="w-full h-full"
                     />
                     <Badge className="absolute top-2 right-2 bg-blue-500 text-white text-xs z-10">Quota</Badge>
                   </div>
@@ -351,12 +396,12 @@ export default async function MarketplacePage({
               {nfts.map((nft) => (
                 <Card key={nft.id} className="overflow-hidden hover:shadow-lg transition-shadow group">
                   <Link href={`/${lang}/nft/${nft.id}`} className="block">
-                    <div className="relative">
+                    <div className="relative aspect-square">
                       <NftImageGallery
                         images={nft.imageGallery ?? []}
                         fallbackUrl={nft.imageUrl ?? undefined}
                         alt={nft.name}
-                        className="h-48"
+                        className="w-full h-full"
                       />
                       {session && (
                         <div className="absolute top-2 left-2 z-10">
@@ -436,12 +481,12 @@ export default async function MarketplacePage({
               {mintedNfts.map((nft) => (
                 <Link key={nft.id} href={`/${lang}/nft/${nft.id}`} className="block group">
                   <Card className="overflow-hidden hover:shadow-lg transition-shadow border-white/10 opacity-80 hover:opacity-100">
-                    <div className="relative">
+                    <div className="relative aspect-square">
                       <NftImageGallery
                         images={nft.imageGallery ?? []}
                         fallbackUrl={nft.imageUrl ?? undefined}
                         alt={nft.name}
-                        className="h-48"
+                        className="w-full h-full"
                       />
                       <div className="absolute inset-0 bg-black/30 flex items-end p-2">
                         <Badge className="bg-white/10 border border-white/20 text-white/80 text-xs backdrop-blur-sm">

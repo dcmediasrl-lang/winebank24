@@ -50,7 +50,7 @@ export function UnlockDeliveryButton({
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded border border-green-700/40 text-green-400 hover:bg-green-900/20 transition-colors" title="Ritiro fisico abilitato">
-          <Unlock className="w-3 h-3" /> Ritiro ON
+          <Unlock className="w-3 h-3" /> Riscatto abilitato
         </DialogTrigger>
         <DialogContent className="max-w-sm">
           <DialogHeader>
@@ -92,7 +92,7 @@ export function UnlockDeliveryButton({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded border border-white/20 text-white/50 hover:border-amber-500 hover:text-amber-400 transition-colors" title="Abilita ritiro bottiglia fisica">
-        <Lock className="w-3 h-3" /> Ritiro OFF
+        <Lock className="w-3 h-3" /> Abilita riscatto bottiglia
       </DialogTrigger>
       <DialogContent className="max-w-sm">
         <DialogHeader>
@@ -109,7 +109,7 @@ export function UnlockDeliveryButton({
           <div className="p-3 rounded-lg bg-amber-950/30 border border-amber-700/30 text-xs text-amber-300/80 leading-relaxed space-y-1">
             <p>Il collezionista pagherà:</p>
             <ul className="list-disc list-inside space-y-0.5 text-amber-300/60">
-              <li>Fee di ritiro: 2% del valore della bottiglia</li>
+              <li>Fee di ritiro: 5% del valore della bottiglia (trattenuta dalla piattaforma)</li>
               <li>IVA: 22% sulla fee</li>
               <li>Costo spedizione: quanto imposti tu qui sotto</li>
             </ul>

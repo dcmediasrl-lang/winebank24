@@ -96,7 +96,7 @@ export function MintNftDialog({ collectionId, cantinaId, collectionName }: {
                 onChange={e => setForm(f => ({ ...f, totalValue: e.target.value }))}
                 placeholder="1000.00"
               />
-              <p className="text-xs text-stone-500">I collettori potranno investire qualsiasi importo fino al valore totale.</p>
+              <p className="text-xs text-stone-500">I collezionisti potranno acquistare quote di qualsiasi importo fino al valore totale.</p>
             </div>
           )}
           {!form.isFractionable && (

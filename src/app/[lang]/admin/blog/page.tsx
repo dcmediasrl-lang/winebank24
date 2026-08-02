@@ -3,14 +3,12 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Plus, Edit, Eye, EyeOff, Calendar } from "lucide-react";
-import { getDictionary, hasLocale } from "../../dictionaries";
+import { hasLocale } from "../../dictionaries";
 import { notFound } from "next/navigation";
 
 export default async function AdminBlogPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
-  const dict = await getDictionary(lang);
-
   const posts = await db.blogPost.findMany({
     orderBy: { createdAt: "desc" },
   });

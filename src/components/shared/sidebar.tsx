@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import {
   LayoutDashboard, Users, Gem, ShoppingCart, BarChart3,
   Settings, LogOut, Wine, Package, FileText, Shield, Tag,
-  Menu, X, Heart, BookmarkPlus, Database, Home, Banknote,
+  Menu, X, Heart, BookmarkPlus, Database, Home, Banknote, UserCog, Bell,
 } from "lucide-react";
 
 type Role = "ADMIN" | "CANTINA" | "COLLECTOR";
@@ -22,6 +22,9 @@ type SidebarDict = {
   security: string;
   collections: string;
   my_nfts: string;
+  portfolio?: string;
+  notifications?: string;
+  personal_details?: string;
   reports: string;
   users: string;
   wineries: string;
@@ -68,6 +71,7 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
     homeLink,
     { href: p("/cantina"), label: dict.dashboard, icon: LayoutDashboard },
     { href: p("/cantina/nfts"), label: dict.my_nfts, icon: Gem },
+    { href: p("/cantina/portfolio"), label: dict.portfolio ?? "Collezione", icon: Package },
     { href: p("/cantina/blog"), label: dict.blog, icon: FileText },
     { href: p("/cantina/offerte"), label: dict.offerte, icon: Tag },
     { href: p("/cantina/reports"), label: dict.reports, icon: BarChart3 },
@@ -81,9 +85,11 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
     { href: p("/collector/portfolio"), label: dict.my_collection, icon: Package },
     { href: p("/marketplace"), label: dict.marketplace, icon: ShoppingCart },
     { href: p("/collector/offerte"), label: dict.offerte, icon: Tag },
+    { href: p("/collector/notifiche"), label: dict.notifications ?? "Notifiche", icon: Bell },
     { href: p("/collector/reports"), label: dict.history, icon: BarChart3 },
     { href: p("/collector/preferiti"), label: "Preferiti", icon: Heart },
     { href: p("/collector/wishlist"), label: "Wishlist", icon: BookmarkPlus },
+    { href: p("/collector/anagrafica"), label: dict.personal_details ?? "Anagrafica", icon: UserCog },
     { href: p("/collector/settings"), label: dict.security, icon: Shield },
   ];
 
@@ -94,10 +100,10 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
     <>
       <div className="mb-8 px-2">
         <div className="mb-3">
-          <Image src="/logo.svg" alt="Wine Bank 24" width={120} height={60} className="h-12 w-auto object-contain bg-white rounded-xl px-2 py-1" priority />
+          <Image src="/logo.svg" alt="Wine Bank 24" width={120} height={60} className="h-11 w-auto object-contain" priority />
         </div>
-        <div className="text-xs text-[var(--wine-muted)]">{roleLabel}</div>
-        <div className="text-sm text-white/80 font-medium truncate mt-1">{userName}</div>
+        <div className="text-xs text-stone-400 uppercase tracking-wide">{roleLabel}</div>
+        <div className="text-sm text-stone-800 font-semibold truncate mt-1">{userName}</div>
       </div>
 
       <nav className="flex-1 space-y-1">
@@ -109,8 +115,8 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
             className={cn(
               "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
               pathname === href
-                ? "font-semibold text-white bg-[#993300]"
-                : "text-white/70 hover:bg-[#231515] hover:text-white"
+                ? "font-semibold text-white bg-[#A21C19] shadow-sm"
+                : "text-stone-600 hover:bg-stone-100 hover:text-stone-900"
             )}
           >
             <Icon className="w-4 h-4 shrink-0" />
@@ -121,7 +127,7 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
 
       <button
         onClick={() => signOut({ callbackUrl: `/${lang}/login` })}
-        className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-[var(--wine-muted)] hover:bg-[var(--wine-card-hover)] hover:text-[#df071b] transition-colors mt-4"
+        className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-stone-500 hover:bg-red-50 hover:text-[#df071b] transition-colors mt-4 border-t border-stone-100 pt-4"
       >
         <LogOut className="w-4 h-4" />
         {dict.logout}
@@ -132,11 +138,11 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
   return (
     <>
       {/* Mobile top bar */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-[var(--wine-card)] border-b border-[var(--wine-border)] flex items-center justify-between px-4 py-3">
-        <Image src="/logo.svg" alt="Wine Bank 24" width={90} height={36} className="h-8 w-auto object-contain bg-white rounded-lg px-2 py-0.5" priority />
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-white border-b border-stone-200 shadow-sm flex items-center justify-between px-4 py-3">
+        <Image src="/logo.svg" alt="Wine Bank 24" width={90} height={36} className="h-8 w-auto object-contain" priority />
         <button
           onClick={() => setMobileOpen(true)}
-          className="text-white/70 hover:text-white p-1"
+          className="text-stone-700 hover:text-stone-900 p-1"
         >
           <Menu className="w-6 h-6" />
         </button>
@@ -152,12 +158,12 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
 
       {/* Mobile drawer */}
       <aside className={cn(
-        "lg:hidden fixed top-0 left-0 z-50 h-full w-72 bg-[var(--wine-card)] text-white px-4 py-6 flex flex-col transition-transform duration-300",
+        "lg:hidden fixed top-0 left-0 z-50 h-full w-72 bg-white text-stone-800 px-4 py-6 flex flex-col transition-transform duration-300 shadow-xl",
         mobileOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         <button
           onClick={() => setMobileOpen(false)}
-          className="absolute top-4 right-4 text-white/40 hover:text-white"
+          className="absolute top-4 right-4 text-stone-400 hover:text-stone-700"
         >
           <X className="w-5 h-5" />
         </button>
@@ -165,7 +171,7 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
       </aside>
 
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex flex-col w-64 min-h-screen bg-[var(--wine-card)] text-white px-4 py-6 shrink-0">
+      <aside className="hidden lg:flex flex-col w-64 min-h-screen bg-white text-stone-800 border-r border-stone-200 px-4 py-6 shrink-0">
         {navContent}
       </aside>
     </>

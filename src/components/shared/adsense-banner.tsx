@@ -4,6 +4,12 @@ import { useEffect, useRef } from "react";
 // ref on <ins> is kept for future use (e.g. checking ad visibility)
 import { useCookieConsent } from "./cookie-banner";
 
+declare global {
+  interface Window {
+    adsbygoogle?: Record<string, unknown>[];
+  }
+}
+
 interface AdSenseBannerProps {
   slot: string;
   format?: "auto" | "rectangle" | "horizontal";
@@ -20,7 +26,6 @@ export function AdSenseBanner({ slot, format = "auto", className = "" }: AdSense
   useEffect(() => {
     if (consent !== "accepted" || !PUBLISHER_ID || initialized.current) return;
     try {
-      // @ts-ignore adsbygoogle is injected by Google
       (window.adsbygoogle = window.adsbygoogle || []).push({});
       initialized.current = true;
     } catch {}

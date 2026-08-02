@@ -4,7 +4,7 @@ import { useState, use } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Wine, Shield, AlertTriangle, CheckCircle } from "lucide-react";
+import { Shield, AlertTriangle, CheckCircle } from "lucide-react";
 import { CONTRACT_CANTINA_VERSION } from "@/lib/contracts";
 
 export default function CantinaContrattoPage({ params }: { params: Promise<{ lang: string }> }) {
@@ -26,7 +26,7 @@ export default function CantinaContrattoPage({ params }: { params: Promise<{ lan
       router.push(`/${lang}/cantina`);
       router.refresh();
     } catch {
-      toast.error("Errore durante l'accettazione. Riprova.");
+      toast.error("Errore durante l’accettazione. Riprova.");
     } finally {
       setLoading(false);
     }
@@ -52,8 +52,8 @@ export default function CantinaContrattoPage({ params }: { params: Promise<{ lan
       <div className="flex gap-3 bg-[#993300]/10 border border-[#993300]/40 rounded-xl p-4">
         <AlertTriangle className="w-5 h-5 text-[#df071b] shrink-0 mt-0.5" />
         <p className="text-sm text-white/80 leading-relaxed">
-          Il presente contratto regola il rapporto tra la tua cantina ("<strong>Creator</strong>") e
-          la piattaforma Wine Bank 24 ("<strong>Piattaforma</strong>"). L'accettazione è obbligatoria
+          Il presente contratto regola il rapporto tra la tua cantina (“<strong>Creator</strong>”) e
+          la piattaforma Wine Bank 24 (“<strong>Piattaforma</strong>”). L’accettazione è obbligatoria
           per operare sulla piattaforma. Conserva una copia di questo documento.
         </p>
       </div>
@@ -71,7 +71,7 @@ export default function CantinaContrattoPage({ params }: { params: Promise<{ lan
             <ul className="space-y-2 pl-4">
               <li className="flex gap-2"><span className="text-[#df071b] font-bold shrink-0">①</span><span><strong>Custodia qualificata</strong> — il Creator si obbliga a custodire il bene fisico (bottiglia) in conformità agli standard stabiliti dalla Piattaforma, assumendo le responsabilità di un depositario professionale ai sensi degli artt. 1766 ss. c.c.</span></li>
               <li className="flex gap-2"><span className="text-[#df071b] font-bold shrink-0">②</span><span><strong>Mandato con rappresentanza limitata</strong> — la Piattaforma agisce come intermediario tecnico per conto del Creator nella gestione dei certificati digitali, nei limiti espressamente previsti dal presente contratto.</span></li>
-              <li className="flex gap-2"><span className="text-[#df071b] font-bold shrink-0">③</span><span><strong>Vincolo di indisponibilità del bene</strong> — dal momento dell'iscrizione del certificato digitale nella piattaforma, il bene fisico sottostante è gravato da un vincolo contrattuale di indisponibilità fino al completamento della procedura di liquidazione.</span></li>
+              <li className="flex gap-2"><span className="text-[#df071b] font-bold shrink-0">③</span><span><strong>Vincolo di indisponibilità del bene</strong> — dal momento dell’iscrizione del certificato digitale nella piattaforma, il bene fisico sottostante è gravato da un vincolo contrattuale di indisponibilità fino al completamento della procedura di liquidazione.</span></li>
             </ul>
           </div>
         </section>
@@ -91,7 +91,7 @@ export default function CantinaContrattoPage({ params }: { params: Promise<{ lan
               <li>Descrizione delle condizioni di conservazione</li>
             </ul>
             <div className="bg-white/5 rounded-lg p-3 text-xs text-white/70 font-mono mt-2">
-              Esempio: "Sassicaia 2015 — Tenuta San Guido — Lotto 0042/500 — conservata in cantina a temperatura controllata 14°C, umidità 70%, cantina certificata Wine Bank 24"
+              Esempio: “Sassicaia 2015 — Tenuta San Guido — Lotto 0042/500 — conservata in cantina a temperatura controllata 14°C, umidità 70%, cantina certificata Wine Bank 24”
             </div>
           </div>
         </section>
@@ -103,7 +103,7 @@ export default function CantinaContrattoPage({ params }: { params: Promise<{ lan
           </div>
           <div className="px-5 py-4 space-y-3">
             <p className="font-medium text-white">
-              Dal momento dell'emissione del certificato digitale e fino al completamento della procedura di liquidazione, il Creator <strong className="text-red-700">non può</strong>:
+              Dal momento dell’emissione del certificato digitale e fino al completamento della procedura di liquidazione, il Creator <strong className="text-red-700">non può</strong>:
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {[
@@ -121,7 +121,7 @@ export default function CantinaContrattoPage({ params }: { params: Promise<{ lan
               ))}
             </div>
             <p className="text-sm">
-              Qualsiasi atto dispositivo sul bene fisico in violazione del presente vincolo è inefficace nei confronti della Piattaforma e dei titolari di certificati digitali, e costituisce inadempimento grave con le conseguenze di cui all'art. A.5.
+              Qualsiasi atto dispositivo sul bene fisico in violazione del presente vincolo è inefficace nei confronti della Piattaforma e dei titolari di certificati digitali, e costituisce inadempimento grave con le conseguenze di cui all’art. A.5.
             </p>
           </div>
         </section>
@@ -135,9 +135,9 @@ export default function CantinaContrattoPage({ params }: { params: Promise<{ lan
             <p>Il Creator si obbliga a:</p>
             <ul className="space-y-2 pl-2">
               <li className="flex gap-2 items-start"><CheckCircle className="w-4 h-4 text-green-600 shrink-0 mt-0.5" /><span><strong>Conservazione a norma:</strong> temperatura 10–16°C, umidità 60–80%, assenza di vibrazioni e luce diretta, posizione orizzontale, conformità alle norme UNI EN ISO 9000 per la conservazione di prodotti enologici pregiati.</span></li>
-              <li className="flex gap-2 items-start"><CheckCircle className="w-4 h-4 text-green-600 shrink-0 mt-0.5" /><span><strong>Assicurazione obbligatoria:</strong> polizza All Risks per il valore totale dei beni certificati, con la Piattaforma e i titolari di certificati come beneficiari in caso di sinistro. La polizza deve essere presentata alla Piattaforma entro 30 giorni dall'iscrizione e rinnovata annualmente.</span></li>
+              <li className="flex gap-2 items-start"><CheckCircle className="w-4 h-4 text-green-600 shrink-0 mt-0.5" /><span><strong>Assicurazione obbligatoria:</strong> polizza All Risks per il valore totale dei beni certificati, con la Piattaforma e i titolari di certificati come beneficiari in caso di sinistro. La polizza deve essere presentata alla Piattaforma entro 30 giorni dall’iscrizione e rinnovata annualmente.</span></li>
               <li className="flex gap-2 items-start"><CheckCircle className="w-4 h-4 text-green-600 shrink-0 mt-0.5" /><span><strong>Audit annuale:</strong> il Creator si sottopone a verifica annuale dello stato di conservazione dei beni, condotta da ispettore accreditato dalla Piattaforma, a proprie spese.</span></li>
-              <li className="flex gap-2 items-start"><CheckCircle className="w-4 h-4 text-green-600 shrink-0 mt-0.5" /><span><strong>Accesso ispettivo:</strong> la Piattaforma ha diritto di accesso ispettivo con preavviso di 48 ore, in qualsiasi momento, per verificare lo stato dei beni. In caso di emergenza (sinistro, segnalazione di irregolarità), l'accesso è immediato.</span></li>
+              <li className="flex gap-2 items-start"><CheckCircle className="w-4 h-4 text-green-600 shrink-0 mt-0.5" /><span><strong>Accesso ispettivo:</strong> la Piattaforma ha diritto di accesso ispettivo con preavviso di 48 ore, in qualsiasi momento, per verificare lo stato dei beni. In caso di emergenza (sinistro, segnalazione di irregolarità), l’accesso è immediato.</span></li>
               <li className="flex gap-2 items-start"><CheckCircle className="w-4 h-4 text-green-600 shrink-0 mt-0.5" /><span><strong>Notifica immediata:</strong> il Creator comunica alla Piattaforma entro 24 ore qualsiasi evento che possa pregiudicare lo stato di conservazione del bene (allagamento, furto, incendio, guasto impianto).</span></li>
             </ul>
           </div>
@@ -177,21 +177,21 @@ export default function CantinaContrattoPage({ params }: { params: Promise<{ lan
                 <span className="text-red-400 font-bold text-lg shrink-0">1.</span>
                 <div>
                   <p className="font-semibold text-red-400">Penale del 200% del valore stimato del bene</p>
-                  <p className="text-xs text-red-400/80">Calcolato al valore di mercato al momento dell'accertamento della violazione. Dovuta immediatamente, senza necessità di messa in mora.</p>
+                  <p className="text-xs text-red-400/80">Calcolato al valore di mercato al momento dell’accertamento della violazione. Dovuta immediatamente, senza necessità di messa in mora.</p>
                 </div>
               </div>
               <div className="flex gap-3 bg-red-900/20 border border-red-900/40 rounded-lg p-3">
                 <span className="text-red-400 font-bold text-lg shrink-0">2.</span>
                 <div>
                   <p className="font-semibold text-red-400">Escussione immediata della polizza assicurativa</p>
-                  <p className="text-xs text-red-400/80">La Piattaforma è autorizzata ad agire direttamente nei confronti dell'assicuratore per conto dei titolari di certificati.</p>
+                  <p className="text-xs text-red-400/80">La Piattaforma è autorizzata ad agire direttamente nei confronti dell’assicuratore per conto dei titolari di certificati.</p>
                 </div>
               </div>
               <div className="flex gap-3 bg-red-900/20 border border-red-900/40 rounded-lg p-3">
                 <span className="text-red-400 font-bold text-lg shrink-0">3.</span>
                 <div>
                   <p className="font-semibold text-red-400">Risoluzione immediata del contratto</p>
-                  <p className="text-xs text-red-400/80">Sospensione immediata dell'account, rimozione di tutti i certificati attivi, esclusione permanente dalla piattaforma. Salvo il diritto al risarcimento del maggior danno.</p>
+                  <p className="text-xs text-red-400/80">Sospensione immediata dell’account, rimozione di tutti i certificati attivi, esclusione permanente dalla piattaforma. Salvo il diritto al risarcimento del maggior danno.</p>
                 </div>
               </div>
             </div>
@@ -222,7 +222,7 @@ export default function CantinaContrattoPage({ params }: { params: Promise<{ lan
           { key: "c1", text: "Ho letto integralmente il contratto e ne comprendo il contenuto." },
           { key: "c2", text: "Accetto il vincolo di indisponibilità del bene fisico per tutta la durata della certificazione digitale." },
           { key: "c3", text: "Mi impegno a rispettare gli obblighi di custodia (conservazione a norma, assicurazione, audit annuale, accesso ispettivo)." },
-          { key: "c4", text: "Prendo atto della clausola penale del 200% per violazione del vincolo di indisponibilità e dell'immediata risoluzione del contratto." },
+          { key: "c4", text: "Prendo atto della clausola penale del 200% per violazione del vincolo di indisponibilità e dell’immediata risoluzione del contratto." },
           { key: "c5", text: "Autorizzo Wine Bank 24 ad agire come mandatario con rappresentanza limitata per la gestione dei certificati digitali relativi ai miei prodotti." },
         ] as { key: keyof typeof checks; text: string }[]).map(({ key, text }) => (
           <label key={key} className="flex items-start gap-3 cursor-pointer group">
@@ -244,7 +244,7 @@ export default function CantinaContrattoPage({ params }: { params: Promise<{ lan
         </Button>
 
         <p className="text-xs text-[var(--wine-muted)] text-center">
-          L'accettazione viene registrata con timestamp e IP. Versione contratto: {CONTRACT_CANTINA_VERSION}
+          L’accettazione viene registrata con timestamp e IP. Versione contratto: {CONTRACT_CANTINA_VERSION}
         </p>
       </div>
     </div>

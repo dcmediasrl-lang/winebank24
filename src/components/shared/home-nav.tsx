@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import Link from "next/link";
 import { Menu, X, LayoutDashboard, LogIn, UserPlus } from "lucide-react";
@@ -31,7 +32,7 @@ export function HomeNav({ lang, nav, dashboardUrl, userName }: HomeNavProps) {
 
       {/* Logo sinistra */}
       <Link href={`/${lang}`}>
-        <img src="/logo.svg" alt="Wine Bank 24" style={{ height: "112px", width: "auto" }} />
+        <Image src="/logo.svg" alt="Wine Bank 24" width={300} height={112} style={{ height: "112px", width: "auto" }} />
       </Link>
 
       {/* Desktop — destra */}
@@ -89,7 +90,7 @@ export function HomeNav({ lang, nav, dashboardUrl, userName }: HomeNavProps) {
         open ? "translate-x-0" : "translate-x-full"
       )}>
         <div className="flex items-center justify-between mb-8">
-          <img src="/logo.svg" alt="Wine Bank 24" className="h-10 w-auto" />
+          <Image src="/logo.svg" alt="Wine Bank 24" width={107} height={40} className="h-10 w-auto" />
           <button onClick={() => setOpen(false)} className="text-stone-500 hover:text-stone-900 transition-colors">
             <X className="w-5 h-5" />
           </button>

@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
 
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next();
@@ -7,13 +6,11 @@ export async function middleware(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
 
-  // Redirect Google OAuth users who haven't completed profile
-  if (/\/(it|en)\/collector/.test(pathname)) {
-    const token = await getToken({ req: request, secret: process.env.AUTH_SECRET });
-    if (token?.needsProfileCompletion) {
-      const lang = pathname.split("/")[1] || "it";
-      return NextResponse.redirect(new URL(`/${lang}/complete-profile`, request.url));
-    }
+  // Legacy auth URLs without lang prefix (NextAuth pages, old links)
+  if (/^\/(login|register)(\/|$)/.test(pathname)) {
+    return NextResponse.redirect(
+      new URL(`/it${pathname}${request.nextUrl.search}`, request.url)
+    );
   }
 
   return response;

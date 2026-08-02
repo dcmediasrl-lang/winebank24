@@ -30,7 +30,12 @@ export async function POST(req: Request) {
       const account = await stripe.accounts.create({
         type: "express",
         country: "IT",
-        capabilities: { transfers: { requested: true } },
+        // transfers-only richiede l'approvazione della piattaforma da parte
+        // di Stripe: la coppia card_payments + transfers è la config standard
+        capabilities: {
+          card_payments: { requested: true },
+          transfers: { requested: true },
+        },
         business_profile: { name: cantina.name },
       });
       accountId = account.id;

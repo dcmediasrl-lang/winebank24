@@ -11,7 +11,6 @@ import { Package, Lock, AlertTriangle, Euro } from "lucide-react";
 
 export function DeliveryRequestButton({
   nftId,
-  nftName,
   bottleValue,
   physicalDeliveryUnlocked,
   shippingCost,
@@ -31,7 +30,7 @@ export function DeliveryRequestButton({
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const burnFee = bottleValue * 0.02;
+  const burnFee = bottleValue * 0.05;
   const vat = burnFee * 0.22;
   const shipping = shippingCost ?? 0;
   const total = burnFee + vat + shipping;
@@ -97,7 +96,7 @@ export function DeliveryRequestButton({
                 <span>€ {bottleValue.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-xs">
-                <span className="text-white/60">Fee di ritiro (2%)</span>
+                <span className="text-white/60">Fee di ritiro (5%)</span>
                 <span className="text-white">€ {burnFee.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-xs">

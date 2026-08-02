@@ -1,5 +1,5 @@
 import { BlogPostForm } from "@/components/admin/blog-post-form";
-import { getDictionary, hasLocale } from "../../../dictionaries";
+import { hasLocale } from "../../../dictionaries";
 import { notFound } from "next/navigation";
 
 export default async function NewBlogPostPage({ params }: { params: Promise<{ lang: string }> }) {

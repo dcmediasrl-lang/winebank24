@@ -269,3 +269,21 @@ export async function sendCantinaAccountSetupEmail(
     console.error("[email] Failed to send cantina account setup email", err);
   }
 }
+
+export async function sendPasswordResetEmail(to: string, token: string) {
+  const url = `${APP_URL}/it/reset-password?token=${token}`;
+  try {
+    await sendEmail(
+      to,
+      "Reimposta la tua password — Wine Bank 24",
+      emailLayout({
+        heading: "Reimposta la tua password",
+        intro: "Abbiamo ricevuto una richiesta di reimpostazione della password per il tuo account.",
+        cta: { label: "Scegli una nuova password", url },
+        footerNote: "Il link è valido per un'ora e può essere usato una sola volta. Se non hai richiesto tu la reimpostazione, ignora questa email: la tua password resta invariata.",
+      })
+    );
+  } catch (err) {
+    console.error("[email] Failed to send password reset email to", to, err);
+  }
+}

@@ -85,7 +85,7 @@ export default async function MarketplacePage({
             collection: { select: { name: true, vintage: true } },
           },
         },
-        owner: { select: { id: true, name: true, email: true } },
+        owner: { select: { id: true, name: true } },
       },
       orderBy: { updatedAt: "desc" },
     }).catch(() => []),
@@ -343,7 +343,7 @@ export default async function MarketplacePage({
                       </div>
                       <div className="flex justify-between">
                         <span className="text-[var(--wine-muted)]">Venditore:</span>
-                        <span className="text-white/80">{fraction.owner.name || fraction.owner.email}</span>
+                        <span className="text-white/80">{fraction.owner.name || "Collezionista privato"}</span>
                       </div>
                     </div>
                     <div className="space-y-2">

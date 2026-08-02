@@ -70,6 +70,8 @@ model User {
   lockedUntil         DateTime?
   emailVerifyToken    String?
   emailVerifyExpiry   DateTime?
+  passwordResetToken  String?   @unique
+  passwordResetExpiry DateTime?
   twoFactorSecret     String?
   twoFactorEnabled    Boolean  @default(false)
   // Buyer contract

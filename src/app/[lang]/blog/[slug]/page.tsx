@@ -56,10 +56,11 @@ export default async function BlogPostPage({ params }: { params: Promise<{ lang:
           )}
         </div>
 
-        <div
-          className="prose prose-invert max-w-none text-white/80 leading-relaxed"
-          dangerouslySetInnerHTML={{ __html: content.replace(/\n/g, "<br/>") }}
-        />
+        {/* Il contenuto è testo semplice: reso con whitespace-pre-line così gli
+            a-capo restano visibili senza iniettare HTML (previene XSS memorizzato) */}
+        <div className="prose prose-invert max-w-none text-white/80 leading-relaxed whitespace-pre-line">
+          {content}
+        </div>
       </div>
     </div>
   );

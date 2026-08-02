@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Wine, CheckCircle, AlertTriangle, Eye, EyeOff } from "lucide-react";
+import { Wine, CheckCircle, AlertTriangle, Eye, EyeOff, ShieldCheck } from "lucide-react";
 
 function LoginForm({ lang }: { lang: string }) {
   const router = useRouter();
@@ -17,6 +17,8 @@ function LoginForm({ lang }: { lang: string }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [twoFactorCode, setTwoFactorCode] = useState("");
+  const [needsTwoFactor, setNeedsTwoFactor] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const isVerified = searchParams.get("verified") === "1";
@@ -25,8 +27,29 @@ function LoginForm({ lang }: { lang: string }) {
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const result = await signIn("credentials", { email, password, redirect: false });
+    const result = await signIn("credentials", {
+      email, password,
+      ...(needsTwoFactor ? { twoFactorCode } : {}),
+      redirect: false,
+    });
     if (result?.error) {
+      const err = String(result.error);
+      // Credenziali corrette ma manca il secondo fattore: mostra il campo codice
+      if (err.includes("2FA_REQUIRED")) {
+        setNeedsTwoFactor(true);
+        toast.info(lang === "en"
+          ? "Enter the 6-digit code from your authenticator app."
+          : "Inserisci il codice a 6 cifre della tua app di autenticazione.");
+        setLoading(false);
+        return;
+      }
+      if (err.includes("2FA_INVALID")) {
+        setNeedsTwoFactor(true);
+        setTwoFactorCode("");
+        toast.error(lang === "en" ? "Invalid code. Try again." : "Codice non valido. Riprova.");
+        setLoading(false);
+        return;
+      }
       toast.error(lang === "en"
         ? "Incorrect email or password, or account temporarily locked."
         : "Email o password non corretti, oppure account bloccato temporaneamente.");
@@ -124,13 +147,44 @@ function LoginForm({ lang }: { lang: string }) {
                   </button>
                 </div>
               </div>
+
+              {/* Secondo fattore: compare solo per gli account che l'hanno attivato */}
+              {needsTwoFactor && (
+                <div className="space-y-1">
+                  <Label className="flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-amber-600" />
+                    {lang === "en" ? "Authentication code" : "Codice di autenticazione"}
+                  </Label>
+                  <Input
+                    required
+                    autoFocus
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    maxLength={6}
+                    value={twoFactorCode}
+                    onChange={e => setTwoFactorCode(e.target.value.replace(/\D/g, ""))}
+                    placeholder="123456"
+                    className="tracking-[0.4em] text-center font-mono text-lg"
+                  />
+                  <p className="text-xs text-stone-400">
+                    {lang === "en"
+                      ? "Open your authenticator app and enter the 6-digit code."
+                      : "Apri la tua app di autenticazione e inserisci il codice a 6 cifre."}
+                  </p>
+                </div>
+              )}
               <Button type="submit" disabled={loading} className="w-full text-white font-semibold" style={{ background: "var(--wine-gradient)" }}>
                 {loading
                   ? (lang === "en" ? "Signing in..." : "Accesso in corso...")
                   : (lang === "en" ? "Sign in" : "Accedi")}
               </Button>
             </form>
-            <p className="text-center text-sm text-stone-500 mt-4">
+            <p className="text-center text-sm mt-4">
+              <Link href={`/${lang}/forgot-password`} className="text-stone-400 hover:text-amber-600 hover:underline">
+                {lang === "en" ? "Forgot your password?" : "Password dimenticata?"}
+              </Link>
+            </p>
+            <p className="text-center text-sm text-stone-500 mt-2">
               {lang === "en" ? "Don't have an account?" : "Non hai un account?"}{" "}
               <Link href={`/${lang}/register`} className="text-amber-600 hover:underline font-medium">
                 {lang === "en" ? "Sign up" : "Registrati"}

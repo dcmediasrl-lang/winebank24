@@ -15,11 +15,19 @@ const LOCKOUT_MINUTES = 30;
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
+  twoFactorCode: z.string().optional(),
 });
+
+// Errori restituiti al client come messaggio dell'eccezione: la pagina di
+// login li usa per chiedere il codice a 6 cifre senza rivelare altro
+export const TWO_FACTOR_REQUIRED = "2FA_REQUIRED";
+export const TWO_FACTOR_INVALID = "2FA_INVALID";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(db),
-  session: { strategy: "jwt" },
+  // Sessione più corta del default (30 giorni): su una piattaforma con
+  // pagamenti riduce la finestra utile a un token rubato
+  session: { strategy: "jwt", maxAge: 7 * 24 * 60 * 60, updateAge: 24 * 60 * 60 },
   pages: {
     signIn: "/login",
     error: "/login",
@@ -73,6 +81,30 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             await logActivity(user.id, "LOGIN_FAILED", `Tentativo ${newFailCount}/${MAX_FAILED_ATTEMPTS}`);
           }
           return null;
+        }
+
+        // Secondo fattore: se attivo, la password da sola non basta
+        if (user.twoFactorEnabled && user.twoFactorSecret) {
+          const code = parsed.data.twoFactorCode?.trim();
+          if (!code) throw new Error(TWO_FACTOR_REQUIRED);
+
+          const { verify } = await import("otplib");
+          const result = await verify({ token: code, secret: user.twoFactorSecret });
+          if (!result?.valid) {
+            // Un codice errato conta come tentativo fallito (anti forza bruta)
+            const failCount = (user.failedLoginAttempts || 0) + 1;
+            await db.user.update({
+              where: { id: user.id },
+              data: {
+                failedLoginAttempts: failCount,
+                ...(failCount >= MAX_FAILED_ATTEMPTS
+                  ? { lockedUntil: new Date(Date.now() + LOCKOUT_MINUTES * 60 * 1000) }
+                  : {}),
+              },
+            });
+            await logActivity(user.id, "LOGIN_FAILED", "Codice 2FA errato");
+            throw new Error(TWO_FACTOR_INVALID);
+          }
         }
 
         // Reset failed attempts on successful login

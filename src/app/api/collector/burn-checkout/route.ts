@@ -112,7 +112,7 @@ export async function POST(req: Request) {
       vatCents: vatCents.toString(),
       shippingCents: shippingCents.toString(),
     },
-    success_url: `${appUrl}/${lang}/collector/portfolio?delivery=success`,
+    success_url: `${appUrl}/${lang}/collector/collezione?delivery=success`,
     cancel_url: `${appUrl}/${lang}/nft/${nft.id}`,
   };
 

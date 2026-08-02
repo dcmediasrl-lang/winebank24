@@ -21,10 +21,10 @@ export default async function TerminiPage({ params }: { params: Promise<{ lang: 
               la proprietà — totale o parziale — di bottiglie di vino fisiche custodite presso le cantine produttrici certificate.
             </p>
             <p className="mt-3 p-4 bg-[#231515] border border-[#993300] rounded-lg text-sm">
-              <strong>Wine Bank 24 non è una piattaforma di investimento finanziario.</strong> I certificati digitali offerti
-              non costituiscono strumenti finanziari, valori mobiliari, quote di fondi di investimento o prodotti regolamentati
-              ai sensi della Direttiva MiFID II, del Regolamento EMIR, o di qualsiasi altra normativa in materia di servizi
-              di investimento. La piattaforma opera esclusivamente nell’ambito del collezionismo di beni pregiati.
+              <strong>Wine Bank 24 è progettata come piattaforma per il collezionismo e la compravendita di bottiglie fisiche.</strong>{" "}
+              Non offre consulenza finanziaria, rendimenti, interessi o garanzie di rivalutazione. I certificati digitali
+              documentano la proprietà di un bene fisico determinato e non sono emessi con finalità di raccolta di capitale,
+              né attribuiscono diritti sui ricavi della piattaforma.
             </p>
           </section>
 

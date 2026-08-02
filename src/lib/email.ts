@@ -42,7 +42,7 @@ export function emailLayout(opts: {
       <tr>
         <td style="background:#faf7f7;border-top:1px solid #eee;padding:20px 32px">
           <p style="margin:0 0 6px;font-size:11px;line-height:1.5;color:#9c9490">
-            ⚠️ Wine Bank 24 è una piattaforma di collezionismo. I certificati digitali (NFT) non costituiscono strumenti finanziari ai sensi della Direttiva MiFID II.
+            Wine Bank 24 è progettata come piattaforma per il collezionismo e la compravendita di bottiglie fisiche. Non offre consulenza finanziaria, rendimenti, interessi o garanzie di rivalutazione.
           </p>
           <p style="margin:0;font-size:11px;color:#c4bcb8">app.winebank24.eu · © ${new Date().getFullYear()} Wine Bank 24</p>
         </td>
@@ -107,7 +107,7 @@ export async function sendPurchaseEmail(to: string, nftName: string, price: numb
         heading: "Acquisto confermato! 🎉",
         intro: "Il certificato è ora nella tua collezione personale.",
         bodyHtml: infoRow("Certificato", nftName) + infoRow("Importo", `€ ${price.toFixed(2)}`),
-        cta: { label: "Vai alla mia collezione", url: `${APP_URL}/it/collector/portfolio` },
+        cta: { label: "Vai alla mia collezione", url: `${APP_URL}/it/collector/collezione` },
       })
     );
   } catch (err) {

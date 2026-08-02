@@ -180,7 +180,7 @@ export function InvestFractionDialog({
                 {([
                   {
                     key: "c1",
-                    text: "Acquisto questa quota come bene da collezione. Non si tratta di un investimento finanziario né di uno strumento regolamentato MiFID II.",
+                    text: "Acquisto questo diritto sulla bottiglia per interesse collezionistico. La piattaforma non offre rendimenti né garanzie di rivalutazione.",
                   },
                   {
                     key: "c2",

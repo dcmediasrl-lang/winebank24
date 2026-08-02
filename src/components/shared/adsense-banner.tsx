@@ -31,15 +31,9 @@ export function AdSenseBanner({ slot, format = "auto", className = "" }: AdSense
     } catch {}
   }, [consent]);
 
-  // Don't render if no publisher ID configured yet
-  if (!PUBLISHER_ID) {
-    return (
-      <div className={`bg-stone-100 border-2 border-dashed border-stone-300 rounded-lg flex items-center justify-center text-stone-400 text-xs ${className}`}
-        style={{ minHeight: 90 }}>
-        Spazio pubblicitario — Google AdSense (da configurare)
-      </div>
-    );
-  }
+  // §15 — nessun segnaposto in produzione: senza publisher ID lo spazio
+  // pubblicitario semplicemente non esiste per il visitatore
+  if (!PUBLISHER_ID) return null;
 
   if (consent !== "accepted") return null;
 

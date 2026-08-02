@@ -17,7 +17,7 @@ export default async function CollectorDashboardPage({ params }: { params: Promi
     }),
   ]);
 
-  const totaleInvestito = fractions.reduce((acc, f) => acc + Number(f.investedAmount), 0);
+  const costoTotaleAcquisti = fractions.reduce((acc, f) => acc + Number(f.investedAmount), 0);
   const totaleSpeso = transactions.reduce((acc, t) => acc + t.amount, 0);
 
   return (
@@ -51,10 +51,10 @@ export default async function CollectorDashboardPage({ params }: { params: Promi
         <Card>
           <CardContent className="pt-5">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-xs text-[var(--wine-muted)]">Totale quote acquistate</span>
+              <span className="text-xs text-[var(--wine-muted)]">Costo complessivo di acquisto</span>
               <BarChart3 className="w-4 h-4 text-green-600" />
             </div>
-            <div className="text-2xl font-bold text-white">€ {totaleInvestito.toFixed(2)}</div>
+            <div className="text-2xl font-bold text-white">€ {costoTotaleAcquisti.toFixed(2)}</div>
           </CardContent>
         </Card>
         <Card>
@@ -69,7 +69,7 @@ export default async function CollectorDashboardPage({ params }: { params: Promi
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Link href={`/${lang}/collector/portfolio`} className="block">
+        <Link href={`/${lang}/collector/collezione`} className="block">
           <Card className="hover:shadow-md transition-shadow cursor-pointer border-amber-100">
             <CardContent className="pt-5">
               <div className="flex items-center gap-3">

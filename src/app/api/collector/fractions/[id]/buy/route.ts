@@ -81,7 +81,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         buyerId: session.user.id,
         platformFeeCents: platformFeeCents.toString(),
       },
-      success_url: `${appUrl}/${lang}/collector/portfolio?purchase=success`,
+      success_url: `${appUrl}/${lang}/collector/collezione?purchase=success`,
       cancel_url: `${appUrl}/${lang}/marketplace`,
     };
 

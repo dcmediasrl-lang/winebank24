@@ -16,15 +16,17 @@ interface HomeNavProps {
   };
   dashboardUrl?: string | null;
   userName?: string | null;
+  /** §15 — una sezione vuota non deve comparire in navigazione */
+  hasBlogPosts?: boolean;
 }
 
-export function HomeNav({ lang, nav, dashboardUrl, userName }: HomeNavProps) {
+export function HomeNav({ lang, nav, dashboardUrl, userName, hasBlogPosts = false }: HomeNavProps) {
   const [open, setOpen] = useState(false);
   const isLoggedIn = !!dashboardUrl;
 
   const navLinks = [
     { href: `/${lang}/marketplace`, label: nav.marketplace },
-    { href: `/${lang}/blog`, label: nav.blog },
+    ...(hasBlogPosts ? [{ href: `/${lang}/blog`, label: nav.blog }] : []),
   ];
 
   return (

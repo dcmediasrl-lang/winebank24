@@ -22,7 +22,7 @@ type SidebarDict = {
   security: string;
   collections: string;
   my_nfts: string;
-  portfolio?: string;
+  collezione?: string;
   notifications?: string;
   personal_details?: string;
   reports: string;
@@ -71,7 +71,7 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
     homeLink,
     { href: p("/cantina"), label: dict.dashboard, icon: LayoutDashboard },
     { href: p("/cantina/nfts"), label: dict.my_nfts, icon: Gem },
-    { href: p("/cantina/portfolio"), label: dict.portfolio ?? "Collezione", icon: Package },
+    { href: p("/cantina/collezione"), label: dict.collezione ?? "Collezione", icon: Package },
     { href: p("/cantina/blog"), label: dict.blog, icon: FileText },
     { href: p("/cantina/offerte"), label: dict.offerte, icon: Tag },
     { href: p("/cantina/notifiche"), label: dict.notifications ?? "Notifiche", icon: Bell },
@@ -83,7 +83,7 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
   const collectorLinks = [
     homeLink,
     { href: p("/collector"), label: dict.dashboard, icon: LayoutDashboard },
-    { href: p("/collector/portfolio"), label: dict.my_collection, icon: Package },
+    { href: p("/collector/collezione"), label: dict.my_collection, icon: Package },
     { href: p("/marketplace"), label: dict.marketplace, icon: ShoppingCart },
     { href: p("/collector/offerte"), label: dict.offerte, icon: Tag },
     { href: p("/collector/notifiche"), label: dict.notifications ?? "Notifiche", icon: Bell },

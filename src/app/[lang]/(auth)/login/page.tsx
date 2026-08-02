@@ -61,7 +61,7 @@ function LoginForm({ lang }: { lang: string }) {
     const role = session?.user?.role;
     if (role === "ADMIN") router.push(`/${lang}/admin`);
     else if (role === "CANTINA") router.push(`/${lang}/cantina`);
-    else router.push(`/${lang}/collector/portfolio`);
+    else router.push(`/${lang}/collector/collezione`);
   }
 
   return (

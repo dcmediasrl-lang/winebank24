@@ -127,7 +127,7 @@ export function BuyFractionButton({
               {([
                 {
                   key: "c1",
-                  text: "Acquisto questa quota di co-proprietà esclusivamente come bene da collezione. Non si tratta di un investimento finanziario, né di uno strumento regolamentato ai sensi della Direttiva MiFID II o di qualsiasi altra normativa sui servizi di investimento.",
+                  text: "Acquisto questo diritto sulla bottiglia esclusivamente per interesse collezionistico e non con finalità di rendimento. Sono consapevole che il valore dei beni da collezione può variare e che la piattaforma non offre garanzie di rivalutazione.",
                 },
                 {
                   key: "c2",

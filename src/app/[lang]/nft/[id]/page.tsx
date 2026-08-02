@@ -335,7 +335,7 @@ export default async function NftDetailPage({
                     <Archive className="w-4 h-4 text-green-400" /> In collezione
                   </div>
                   <p className="text-xs text-white/40 leading-relaxed">
-                    La bottiglia è custodita presso {nft.cantina.name}. Per metterla in vendita o gestire il certificato vai nel tuo <a href={`/${lang}/collector/portfolio`} className="text-amber-400 underline hover:text-amber-300">portfolio</a>.
+                    La bottiglia è custodita presso {nft.cantina.name}. Per metterla in vendita o gestire il certificato vai nella tua <a href={`/${lang}/collector/collezione`} className="text-amber-400 underline hover:text-amber-300">collezione</a>.
                   </p>
                 </div>
 

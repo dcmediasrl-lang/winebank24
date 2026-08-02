@@ -96,8 +96,8 @@ export function Footer({ dict, lang }: { dict: Dict; lang: string }) {
             <p className="text-xs sm:text-[13px] text-white/55 leading-relaxed">
               <span className="font-semibold text-white/75">{dict.footer.disclaimer}</span>{" "}
               {en
-                ? "Collecting digital certificates does not constitute an investment activity. The value of collectibles may vary."
-                : "L'acquisizione di certificati digitali non costituisce attività di investimento. Il valore dei beni da collezione può variare."}
+                ? "The value of collectible goods may vary over time."
+                : "Il valore dei beni da collezione può variare nel tempo."}
             </p>
           </div>
           <p className="text-xs text-white/30">

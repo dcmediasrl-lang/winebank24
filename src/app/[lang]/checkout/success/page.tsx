@@ -53,8 +53,8 @@ export default async function CheckoutSuccessPage({
           )}
           <p className="text-white/60 text-sm leading-relaxed">
             {isFraction
-              ? "La tua quota di co-proprietà è stata registrata. Puoi visualizzarla nel tuo portfolio."
-              : "Il tuo certificato NFT è ora nel tuo portfolio. Riceverai una email di conferma."}
+              ? "La tua quota di co-proprietà è stata registrata. Puoi vederla nella tua collezione."
+              : "Il tuo certificato è ora nella tua collezione. Riceverai una email di conferma."}
           </p>
         </div>
 
@@ -64,11 +64,11 @@ export default async function CheckoutSuccessPage({
         {/* Actions */}
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
-            href={`/${lang}/collector/portfolio`}
+            href={`/${lang}/collector/collezione`}
             className={cn(buttonVariants(), "bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold gap-2")}
           >
             <Package className="w-4 h-4" />
-            Vai al mio Portfolio
+            Vai alla mia collezione
           </Link>
           <Link
             href={`/${lang}/marketplace`}

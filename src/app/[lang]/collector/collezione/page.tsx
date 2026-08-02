@@ -9,7 +9,7 @@ import { NftImageGallery } from "@/components/shared/nft-image-gallery";
 import { TrendingUp, ExternalLink } from "lucide-react";
 import Link from "next/link";
 
-export default async function CollectorPortfolioPage({ params }: { params: Promise<{ lang: string }> }) {
+export default async function CollectorCollezionePage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
   const session = await auth();
   const [nfts, fractions] = await Promise.all([

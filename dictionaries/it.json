@@ -11,7 +11,7 @@
     "terms": "Termini e Condizioni",
     "privacy": "Privacy Policy",
     "contacts": "Contatti",
-    "disclaimer": "Wine Bank 24 è una piattaforma di collezionismo. I certificati digitali (NFT) non costituiscono strumenti finanziari ai sensi della Direttiva MiFID II.",
+    "disclaimer": "Wine Bank 24 è progettata come piattaforma per il collezionismo e la compravendita di bottiglie fisiche. Non offre consulenza finanziaria, rendimenti, interessi o garanzie di rivalutazione.",
     "rights": "Tutti i diritti riservati."
   },
   "home": {
@@ -120,9 +120,9 @@
     "blog": "Blog",
     "offerte": "Offerte",
     "profilo": "Il mio Profilo",
-    "portfolio": "Collezione",
     "notifications": "Notifiche",
-    "personal_details": "Anagrafica"
+    "personal_details": "Anagrafica",
+    "collezione": "Collezione"
   },
   "blog": {
     "title": "Blog",

@@ -126,7 +126,7 @@ async function handleNftPurchase(
 
   // Notifiche in-app (rispettano le preferenze utente)
   await Promise.allSettled([
-    notify({ userId: buyerId, type: "NFT_PURCHASED", title: "Acquisto completato", body: `Hai acquistato "${nft.name}"`, link: "/collector/portfolio" }),
+    notify({ userId: buyerId, type: "NFT_PURCHASED", title: "Acquisto completato", body: `Hai acquistato "${nft.name}"`, link: "/collector/collezione" }),
     notify({ userId: sellerId, type: "NFT_SOLD", title: "Hai venduto un certificato", body: `"${nft.name}" venduto per € ${(price - sellerFee).toFixed(2)}`, link: "/collector/reports" }),
   ]);
 
@@ -249,7 +249,7 @@ async function handleBurnFeePaid(
       type: "DELIVERY_REQUESTED",
       title: "Richiesta di ritiro registrata",
       body: `Pagamento ricevuto per "${nft.name}". La cantina preparerà la spedizione.`,
-      link: "/collector/portfolio",
+      link: "/collector/collezione",
     }),
   ]);
 }
@@ -314,7 +314,7 @@ async function handleFractionPurchase(
       type: "NFT_PURCHASED",
       title: "Quota acquistata",
       body: `${fractionPct.toFixed(2)}% di "${nft.name}" per € ${investedAmount.toFixed(2)}`,
-      link: "/collector/portfolio",
+      link: "/collector/collezione",
     }),
     notify({
       userId: nft.cantina.userId,

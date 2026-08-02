@@ -42,11 +42,16 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
         { icon: Shield, title: "Sicuro & Trasparente", desc: "Ogni certificato è collegato a una bottiglia fisica identificata. Proprietà documentata e passaggi tracciati dalla piattaforma." },
       ];
 
+  // §15 — la voce Blog compare solo se c'è almeno un articolo
+
+  const hasBlogPosts = (await db.blogPost.count({ where: { isPublished: true } }).catch(() => 0)) > 0;
+
+
   return (
     <div style={{ fontFamily: "var(--font-dm-sans, 'DM Sans', sans-serif)", background: "var(--wine-bg)", color: "var(--wine-text)", minHeight: "100vh" }}>
 
       {/* NAV */}
-      <HomeNav lang={lang} nav={dict.nav} dashboardUrl={dashboardUrl} userName={session?.user?.name || session?.user?.email || null} />
+      <HomeNav lang={lang} nav={dict.nav} dashboardUrl={dashboardUrl} userName={session?.user?.name || session?.user?.email || null} hasBlogPosts={hasBlogPosts} />
 
       {/* Spacer for fixed navbar (logo 160px + py-2 = ~176px) */}
       <div style={{ height: "112px" }} />

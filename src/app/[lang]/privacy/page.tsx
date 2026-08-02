@@ -125,7 +125,7 @@ export default async function PrivacyPage({ params }: { params: Promise<{ lang: 
               <section>
                 <h2 className="text-xl font-bold text-white mb-3">7. I Tuoi Diritti</h2>
                 <p>Accesso, rettifica, cancellazione, limitazione, portabilità, opposizione, revoca consenso.</p>
-                <p className="mt-3"><strong className="text-white">Cancellazione dell'account:</strong> puoi richiederla in autonomia dal tuo profilo, alla voce <em>Anagrafica → Cancella account</em>. Nome, data di nascita, codice identificativo fiscale, documenti e indirizzi di spedizione vengono rimossi definitivamente. Restano, per dieci anni e come impone la normativa fiscale italiana, i soli dati contabili delle transazioni già concluse, privi di collegamento con la tua identità.</p>
+                <p className="mt-3"><strong className="text-white">Cancellazione dell&rsquo;account:</strong> puoi richiederla in autonomia dal tuo profilo, alla voce <em>Anagrafica &rarr; Cancella account</em>. Nome, data di nascita, codice identificativo fiscale, documenti e indirizzi di spedizione vengono rimossi definitivamente. Restano, per dieci anni e come impone la normativa fiscale italiana, i soli dati contabili delle transazioni già concluse, privi di collegamento con la tua identità.</p>
                 <p className="mt-3">Contatta: <a href="mailto:privacy@winebank24.com" className="text-amber-600 hover:underline">privacy@winebank24.com</a></p>
               </section>
               <section>

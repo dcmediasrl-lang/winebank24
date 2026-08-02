@@ -52,7 +52,7 @@ export function NotificationsPanel({
   const unread = items.filter(i => !i.read).length;
 
   // Le notifiche salvano link "/collector/...": per la cantina puntano alle
-  // pagine equivalenti del suo pannello (offerte, portfolio, reports esistono in entrambi)
+  // pagine equivalenti del suo pannello (offerte, collezione, reports esistono in entrambi)
   const resolveLink = (link: string) =>
     `/${lang}${basePath === "cantina" ? link.replace("/collector/", "/cantina/") : link}`;
 

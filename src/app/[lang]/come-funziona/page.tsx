@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, ShieldCheck, Gem, Wine, Truck, BarChart3, Lock, CheckCircle, ChevronDown } from "lucide-react";
 import { HomeNav } from "@/components/shared/home-nav";
 import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { hasLocale } from "../dictionaries";
 
@@ -46,10 +47,10 @@ const STEPS = [
   {
     num: "05",
     icon: BarChart3,
-    title: "Gestisci il tuo portfolio",
-    body: "Dalla tua area personale monitori il valore stimato del tuo portfolio, i tuoi NFT, la cronologia degli acquisti e delle cessioni. Puoi mettere in vendita i tuoi NFT nel marketplace in qualsiasi momento.",
+    title: "Gestisci la tua collezione",
+    body: "Dalla tua area personale consulti i tuoi certificati, la loro provenienza e la cronologia degli acquisti e delle cessioni. Puoi proporre la cessione di un certificato ad altri collezionisti in qualsiasi momento.",
     image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=85",
-    imageAlt: "Dashboard portfolio collezionista",
+    imageAlt: "Area personale del collezionista",
   },
   {
     num: "06",
@@ -89,7 +90,7 @@ const FAQS = [
   },
   {
     q: "Come funziona la consegna fisica?",
-    a: "Richiedi il ritiro dal tuo portfolio. La cantina conferma la disponibilità entro 5 giorni lavorativi e la bottiglia arriva a destinazione entro 15 giorni. Le spese di spedizione sono a tuo carico. All'avvenuta consegna l'NFT viene invalidato.",
+    a: "Richiedi il ritiro dalla tua collezione. La cantina conferma la disponibilità entro 5 giorni lavorativi e la bottiglia arriva a destinazione entro 15 giorni. Le spese di spedizione sono a tuo carico. All'avvenuta consegna l'NFT viene invalidato.",
   },
   {
     q: "Posso comprare come regalo?",
@@ -106,6 +107,8 @@ export default async function ComeFunzionaPage({
   if (!hasLocale(lang)) notFound();
 
   const session = await auth();
+  // §15 — la voce Blog compare solo se c'è almeno un articolo
+  const hasBlogPosts = (await db.blogPost.count({ where: { isPublished: true } }).catch(() => 0)) > 0;
   const dashboardUrl = session
     ? session.user.role === "ADMIN"
       ? `/${lang}/admin`
@@ -117,7 +120,7 @@ export default async function ComeFunzionaPage({
   return (
     <div style={{ fontFamily: "var(--font-dm-sans, 'DM Sans', sans-serif)", background: "var(--wine-bg)", color: "var(--wine-text)", minHeight: "100vh" }}>
 
-      <HomeNav lang={lang} nav={{ marketplace: "Marketplace", blog: "Blog", login: "Accedi", register: "Registrati" }} dashboardUrl={dashboardUrl} userName={session?.user?.name || session?.user?.email || null} />
+      <HomeNav lang={lang} nav={{ marketplace: "Marketplace", blog: "Blog", login: "Accedi", register: "Registrati" }} hasBlogPosts={hasBlogPosts} dashboardUrl={dashboardUrl} userName={session?.user?.name || session?.user?.email || null} />
 
       {/* ── HERO ── */}
       <section className="relative min-h-[72vh] flex items-center overflow-hidden">

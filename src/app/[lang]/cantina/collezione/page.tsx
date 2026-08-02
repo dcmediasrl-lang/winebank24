@@ -6,9 +6,9 @@ import { DeliveryRequestButton } from "@/components/collector/delivery-request-b
 import { NftImageGallery } from "@/components/shared/nft-image-gallery";
 import Link from "next/link";
 
-// Portfolio della cantina: gli NFT acquistati da altri utenti o cantine.
+// Collezione della cantina: gli NFT acquistati da altri utenti o cantine.
 // La produzione propria resta in "I miei NFT".
-export default async function CantinaPortfolioPage({ params }: { params: Promise<{ lang: string }> }) {
+export default async function CantinaCollezionePage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
   const session = await auth();
 

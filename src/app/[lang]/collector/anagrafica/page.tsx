@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { AnagraficaForm } from "@/components/collector/anagrafica-form";
+import { DeleteAccountSection } from "@/components/collector/delete-account-section";
 
 export default async function AnagraficaPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
@@ -31,6 +32,7 @@ export default async function AnagraficaPage({ params }: { params: Promise<{ lan
         </p>
       </div>
       <AnagraficaForm lang={lang} initial={initial} />
+      <DeleteAccountSection lang={lang} />
     </div>
   );
 }

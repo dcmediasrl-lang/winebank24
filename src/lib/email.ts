@@ -287,3 +287,20 @@ export async function sendPasswordResetEmail(to: string, token: string) {
     console.error("[email] Failed to send password reset email to", to, err);
   }
 }
+
+export async function sendAccountDeletedEmail(to: string) {
+  try {
+    await sendEmail(
+      to,
+      "Account cancellato — Wine Bank 24",
+      emailLayout({
+        heading: "Il tuo account è stato cancellato",
+        intro: "Come da tua richiesta, abbiamo rimosso i tuoi dati personali dai nostri sistemi: nome, data di nascita, codice identificativo, documenti ed eventuali indirizzi di spedizione.",
+        bodyHtml: infoRow("Data della richiesta", new Date().toLocaleDateString("it-IT")),
+        footerNote: "Per obbligo di legge (art. 2220 c.c. e normativa fiscale) conserviamo per dieci anni i soli dati contabili delle transazioni già concluse, in forma non riconducibile alla tua identità. Questa è l'ultima email che riceverai da noi.",
+      })
+    );
+  } catch (err) {
+    console.error("[email] Failed to send account deletion email to", to, err);
+  }
+}

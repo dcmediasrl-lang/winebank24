@@ -50,7 +50,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         });
 
         if (!user || !user.password) return null;
-        if (user.isBlocked) return null;
+        if (user.isBlocked || user.deletedAt) return null;
 
         // Check lockout
         if (user.lockedUntil && user.lockedUntil > new Date()) {
@@ -127,10 +127,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (!user.email) return "/it/login?error=google_not_registered";
         const existing = await db.user.findUnique({
           where: { email: user.email },
-          select: { password: true, isBlocked: true },
+          select: { password: true, isBlocked: true, deletedAt: true },
         });
         if (!existing?.password) return "/it/login?error=google_not_registered";
-        if (existing.isBlocked) return "/it/login?error=blocked";
+        if (existing.isBlocked || existing.deletedAt) return "/it/login?error=blocked";
       }
       return true;
     },

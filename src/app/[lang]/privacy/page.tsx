@@ -71,6 +71,7 @@ export default async function PrivacyPage({ params }: { params: Promise<{ lang: 
               <section>
                 <h2 className="text-xl font-bold text-white mb-3">7. Your Rights</h2>
                 <p>Under GDPR you have the right to: access, rectify, erase, restrict processing, data portability, object to processing, and withdraw consent at any time.</p>
+                <p className="mt-3"><strong className="text-white">Deleting your account:</strong> you can request erasure directly from your account, under <em>Personal details → Delete account</em>. Your name, date of birth, tax identification code, documents and shipping addresses are removed permanently. Only the accounting data of completed transactions is kept for ten years, as required by Italian tax law, with no link to your identity.</p>
                 <p className="mt-3">Contact <a href="mailto:privacy@winebank24.com" className="text-amber-600 hover:underline">privacy@winebank24.com</a> to exercise your rights.</p>
               </section>
               <section>
@@ -123,7 +124,9 @@ export default async function PrivacyPage({ params }: { params: Promise<{ lang: 
               </section>
               <section>
                 <h2 className="text-xl font-bold text-white mb-3">7. I Tuoi Diritti</h2>
-                <p>Accesso, rettifica, cancellazione, limitazione, portabilità, opposizione, revoca consenso. Contatta: <a href="mailto:privacy@winebank24.com" className="text-amber-600 hover:underline">privacy@winebank24.com</a></p>
+                <p>Accesso, rettifica, cancellazione, limitazione, portabilità, opposizione, revoca consenso.</p>
+                <p className="mt-3"><strong className="text-white">Cancellazione dell'account:</strong> puoi richiederla in autonomia dal tuo profilo, alla voce <em>Anagrafica → Cancella account</em>. Nome, data di nascita, codice identificativo fiscale, documenti e indirizzi di spedizione vengono rimossi definitivamente. Restano, per dieci anni e come impone la normativa fiscale italiana, i soli dati contabili delle transazioni già concluse, privi di collegamento con la tua identità.</p>
+                <p className="mt-3">Contatta: <a href="mailto:privacy@winebank24.com" className="text-amber-600 hover:underline">privacy@winebank24.com</a></p>
               </section>
               <section>
                 <h2 className="text-xl font-bold text-white mb-3">8. Cookie</h2>

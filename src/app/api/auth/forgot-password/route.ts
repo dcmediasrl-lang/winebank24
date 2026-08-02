@@ -27,11 +27,11 @@ export async function POST(req: Request) {
 
   const user = await db.user.findUnique({
     where: { email: parsed.data.email },
-    select: { id: true, email: true, password: true, isBlocked: true },
+    select: { id: true, email: true, password: true, isBlocked: true, deletedAt: true },
   });
 
   // Nessuna email a utenti inesistenti, bloccati o registrati solo con Google
-  if (!user || !user.password || user.isBlocked) return genericOk;
+  if (!user || !user.password || user.isBlocked || user.deletedAt) return genericOk;
 
   // In database salviamo solo l'hash del token: se il DB trapelasse,
   // i token non sarebbero utilizzabili per prendere il controllo degli account

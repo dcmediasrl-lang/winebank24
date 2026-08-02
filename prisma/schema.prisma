@@ -81,6 +81,11 @@ model User {
   username  String?  @unique
   avatarUrl String?
 
+  // GDPR art. 17: alla richiesta di cancellazione i dati personali vengono
+  // rimossi e l'account anonimizzato. La riga resta per non spezzare la
+  // tracciabilità contabile (obbligo di conservazione decennale).
+  deletedAt DateTime?
+
   accounts         Account[]
   sessions         Session[]
   cantina          Cantina?

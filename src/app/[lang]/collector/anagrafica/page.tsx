@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+import { requireSession } from "@/lib/require-session";
 import { db } from "@/lib/db";
 import { AnagraficaForm } from "@/components/collector/anagrafica-form";
 import { DeleteAccountSection } from "@/components/collector/delete-account-section";
@@ -6,10 +6,10 @@ import { DeleteAccountSection } from "@/components/collector/delete-account-sect
 export default async function AnagraficaPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
   const en = lang === "en";
-  const session = await auth();
+  const session = await requireSession(lang);
 
   const user = await db.user.findUnique({
-    where: { id: session!.user.id },
+    where: { id: session.user.id },
     select: { firstName: true, lastName: true, birthDate: true, country: true, fiscalCode: true },
   });
 

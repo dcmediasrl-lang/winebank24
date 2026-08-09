@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+import { requireSession } from "@/lib/require-session";
 import { db } from "@/lib/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShoppingCart, TrendingUp, Gem, Package } from "lucide-react";
@@ -10,14 +10,14 @@ export default async function CollectorReportsPage({
   params: Promise<{ lang: string }>;
 }) {
   const { lang } = await params;
-  const session = await auth();
+  const session = await requireSession(lang);
 
   const [transactions, nftStats] = await Promise.all([
     db.transaction.findMany({
       where: {
         OR: [
-          { buyerId: session!.user.id },
-          { sellerId: session!.user.id },
+          { buyerId: session.user.id },
+          { sellerId: session.user.id },
         ],
         type: { in: ["BUY", "SELL"] },
       },
@@ -34,15 +34,15 @@ export default async function CollectorReportsPage({
     }),
     db.nft.groupBy({
       by: ["status"],
-      where: { ownerId: session!.user.id },
+      where: { ownerId: session.user.id },
       _count: true,
     }),
   ]);
 
   const totals = transactions.reduce(
     (acc, tx) => ({
-      speso: acc.speso + (tx.buyerId === session!.user.id ? tx.amount : 0),
-      incassato: acc.incassato + (tx.sellerId === session!.user.id ? tx.amount : 0),
+      speso: acc.speso + (tx.buyerId === session.user.id ? tx.amount : 0),
+      incassato: acc.incassato + (tx.sellerId === session.user.id ? tx.amount : 0),
       acquisti: acc.acquisti + (tx.type === "BUY" ? 1 : 0),
       vendite: acc.vendite + (tx.type === "SELL" ? 1 : 0),
     }),
@@ -109,7 +109,7 @@ export default async function CollectorReportsPage({
                 </thead>
                 <tbody className="divide-y divide-[var(--wine-border)]">
                   {transactions.map((tx) => {
-                    const isAcquisto = tx.buyerId === session!.user.id;
+                    const isAcquisto = tx.buyerId === session.user.id;
                     return (
                       <tr key={tx.id} className="hover:bg-[var(--wine-card-hover)]">
                         <td className="py-3 pr-4 font-medium">

@@ -1,12 +1,12 @@
-import { auth } from "@/lib/auth";
+import { requireSession } from "@/lib/require-session";
 import { db } from "@/lib/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, Gem, ShoppingCart, Euro } from "lucide-react";
 
 export default async function CantinaReportsPage() {
-  const session = await auth();
+  const session = await requireSession();
 
-  const cantina = await db.cantina.findUnique({ where: { userId: session!.user.id } });
+  const cantina = await db.cantina.findUnique({ where: { userId: session.user.id } });
   if (!cantina) return <p className="text-[var(--wine-muted)]">Profilo cantina non trovato.</p>;
 
   const [transactions, nftStats, collections] = await Promise.all([

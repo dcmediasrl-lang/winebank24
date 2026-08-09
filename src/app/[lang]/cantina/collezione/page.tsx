@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+import { requireSession } from "@/lib/require-session";
 import { db } from "@/lib/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -10,17 +10,17 @@ import Link from "next/link";
 // La produzione propria resta in "I miei NFT".
 export default async function CantinaCollezionePage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
-  const session = await auth();
+  const session = await requireSession(lang);
 
   const cantina = await db.cantina.findUnique({
-    where: { userId: session!.user.id },
+    where: { userId: session.user.id },
     select: { id: true },
   });
 
   const [nfts, fractions] = await Promise.all([
     db.nft.findMany({
       where: {
-        ownerId: session!.user.id,
+        ownerId: session.user.id,
         status: { not: "BURNED" },
         ...(cantina ? { cantinaId: { not: cantina.id } } : {}),
       },
@@ -33,7 +33,7 @@ export default async function CantinaCollezionePage({ params }: { params: Promis
     }),
     db.nftFraction.findMany({
       where: {
-        ownerId: session!.user.id,
+        ownerId: session.user.id,
         ...(cantina ? { nft: { cantinaId: { not: cantina.id } } } : {}),
       },
       include: {

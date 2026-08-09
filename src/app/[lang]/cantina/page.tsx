@@ -1,12 +1,12 @@
-import { auth } from "@/lib/auth";
+import { requireSession } from "@/lib/require-session";
 import { db } from "@/lib/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Gem, Package, TrendingUp } from "lucide-react";
 
 export default async function CantinaDashboard() {
-  const session = await auth();
+  const session = await requireSession();
   const cantina = await db.cantina.findUnique({
-    where: { userId: session!.user.id },
+    where: { userId: session.user.id },
     include: {
       _count: { select: { collections: true, nfts: true } },
     },

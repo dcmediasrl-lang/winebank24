@@ -1,19 +1,19 @@
-import { auth } from "@/lib/auth";
+import { requireSession } from "@/lib/require-session";
 import { db } from "@/lib/db";
 import { getNotificationPreferences } from "@/lib/notifications";
 import { NotificationsPanel } from "@/components/collector/notifications-panel";
 
 export default async function CantinaNotifichePage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
-  const session = await auth();
+  const session = await requireSession(lang);
 
   const [notifications, prefs] = await Promise.all([
     db.notification.findMany({
-      where: { userId: session!.user.id },
+      where: { userId: session.user.id },
       orderBy: { createdAt: "desc" },
       take: 100,
     }),
-    getNotificationPreferences(session!.user.id),
+    getNotificationPreferences(session.user.id),
   ]);
 
   return (

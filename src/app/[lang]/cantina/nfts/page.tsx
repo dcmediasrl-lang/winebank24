@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { auth } from "@/lib/auth";
+import { requireSession } from "@/lib/require-session";
 import { db } from "@/lib/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreateNftStandalone } from "@/components/cantina/create-nft-standalone";
@@ -32,10 +32,10 @@ const STATUS_LABEL: Record<string, string> = {
 
 export default async function CantinaNftsPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
-  const session = await auth();
+  const session = await requireSession(lang);
 
   const cantina = await db.cantina.findUnique({
-    where: { userId: session!.user.id },
+    where: { userId: session.user.id },
   });
 
   if (!cantina) {

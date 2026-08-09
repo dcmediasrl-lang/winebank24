@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+import { requireSession } from "@/lib/require-session";
 import { db } from "@/lib/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -11,10 +11,10 @@ import Link from "next/link";
 
 export default async function CollectorCollezionePage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
-  const session = await auth();
+  const session = await requireSession(lang);
   const [nfts, fractions] = await Promise.all([
     db.nft.findMany({
-      where: { ownerId: session!.user.id, status: { not: "BURNED" } },
+      where: { ownerId: session.user.id, status: { not: "BURNED" } },
       include: {
         collection: { select: { name: true } },
         cantina: { select: { name: true } },
@@ -23,7 +23,7 @@ export default async function CollectorCollezionePage({ params }: { params: Prom
       orderBy: { createdAt: "desc" },
     }),
     db.nftFraction.findMany({
-      where: { ownerId: session!.user.id },
+      where: { ownerId: session.user.id },
       include: {
         nft: {
           include: {

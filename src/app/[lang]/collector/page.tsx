@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+import { requireSession } from "@/lib/require-session";
 import { db } from "@/lib/db";
 import { Card, CardContent } from "@/components/ui/card";
 import { Gem, TrendingUp, ShoppingCart, BarChart3 } from "lucide-react";
@@ -6,13 +6,13 @@ import Link from "next/link";
 
 export default async function CollectorDashboardPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
-  const session = await auth();
+  const session = await requireSession(lang);
 
   const [nfts, fractions, transactions] = await Promise.all([
-    db.nft.findMany({ where: { ownerId: session!.user.id }, select: { id: true } }),
-    db.nftFraction.findMany({ where: { ownerId: session!.user.id }, select: { id: true, investedAmount: true } }),
+    db.nft.findMany({ where: { ownerId: session.user.id }, select: { id: true } }),
+    db.nftFraction.findMany({ where: { ownerId: session.user.id }, select: { id: true, investedAmount: true } }),
     db.transaction.findMany({
-      where: { buyerId: session!.user.id, type: "BUY" },
+      where: { buyerId: session.user.id, type: "BUY" },
       select: { amount: true },
     }),
   ]);
@@ -24,7 +24,7 @@ export default async function CollectorDashboardPage({ params }: { params: Promi
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-white">
-          Benvenuto, {session!.user.name || session!.user.email}
+          Benvenuto, {session.user.name || session.user.email}
         </h1>
         <p className="text-[var(--wine-muted)] text-sm mt-1">La tua collezione Wine Bank 24</p>
       </div>

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { auth } from "@/lib/auth";
+import { requireSession } from "@/lib/require-session";
 import { db } from "@/lib/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -7,8 +7,8 @@ import { CreateCollectionDialog } from "@/components/cantina/create-collection-d
 import { MintNftDialog } from "@/components/cantina/mint-nft-dialog";
 
 export default async function CantinaCollectionsPage() {
-  const session = await auth();
-  const cantina = await db.cantina.findUnique({ where: { userId: session!.user.id } });
+  const session = await requireSession();
+  const cantina = await db.cantina.findUnique({ where: { userId: session.user.id } });
 
   const collections = await db.collection.findMany({
     where: { cantinaId: cantina?.id },

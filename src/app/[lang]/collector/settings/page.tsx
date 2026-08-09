@@ -1,12 +1,12 @@
-import { auth } from "@/lib/auth";
+import { requireSession } from "@/lib/require-session";
 import { db } from "@/lib/db";
 import { SecuritySettings } from "@/components/collector/security-settings";
 import { ProfileSettings } from "@/components/collector/profile-settings";
 
 export default async function SettingsPage() {
-  const session = await auth();
+  const session = await requireSession();
   const user = await db.user.findUnique({
-    where: { id: session!.user.id },
+    where: { id: session.user.id },
     select: {
       id: true,
       firstName: true,

@@ -33,10 +33,10 @@ export default async function CantinaReportsPage() {
   const totals = transactions.reduce(
     (acc, tx) => ({
       fatturato: acc.fatturato + (tx.type === "BUY" ? tx.amount : 0),
-      royalties: acc.royalties + tx.cantinaFee,
+      ricavoNetto: acc.ricavoNetto + tx.cantinaFee,
       vendite: acc.vendite + (tx.type === "BUY" ? 1 : 0),
     }),
-    { fatturato: 0, royalties: 0, vendite: 0 }
+    { fatturato: 0, ricavoNetto: 0, vendite: 0 }
   );
 
   const statusMap = Object.fromEntries(nftStats.map(s => [s.status, s._count]));
@@ -59,7 +59,7 @@ export default async function CantinaReportsPage() {
       {/* KPI */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard label="Fatturato totale" value={`€ ${totals.fatturato.toFixed(2)}`} icon={Euro} color="text-green-600" />
-        <KpiCard label="Royalties incassate" value={`€ ${totals.royalties.toFixed(2)}`} icon={TrendingUp} color="text-[#df071b]" />
+        <KpiCard label="Ricavo netto incassato" value={`€ ${totals.ricavoNetto.toFixed(2)}`} icon={TrendingUp} color="text-[#df071b]" />
         <KpiCard label="NFT venduti" value={totals.vendite} icon={ShoppingCart} color="text-blue-600" />
         <KpiCard label="NFT mintati totali" value={Object.values(statusMap).reduce((a, b) => a + b, 0)} icon={Gem} color="text-purple-600" />
       </div>
@@ -127,7 +127,7 @@ export default async function CantinaReportsPage() {
                     <th className="pb-3 pr-4">Tipo</th>
                     <th className="pb-3 pr-4">Acquirente</th>
                     <th className="pb-3 pr-4">Importo</th>
-                    <th className="pb-3 pr-4">Royalty</th>
+                    <th className="pb-3 pr-4">Ricavo netto</th>
                     <th className="pb-3">Data</th>
                   </tr>
                 </thead>

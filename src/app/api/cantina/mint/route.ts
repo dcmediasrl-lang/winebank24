@@ -41,6 +41,21 @@ export async function POST(req: Request) {
     const body = schema.parse(await req.json());
 
     const cantina = await db.cantina.findUnique({ where: { userId: session.user.id } });
+
+    // La polizza All Risks è un obbligo contrattuale (art. A.3) e uno dei tre
+    // impegni comunicati pubblicamente ai collezionisti: senza documento
+    // caricato non si emettono certificati, altrimenti si venderebbe un bene
+    // dichiarato assicurato senza che l'assicurazione risulti alla piattaforma.
+    if (cantina && !cantina.insuranceDocUrl) {
+      return NextResponse.json(
+        {
+          error:
+            "Per emettere certificati devi prima caricare la polizza assicurativa All Risks, come previsto dal contratto (art. A.3). La trovi in Impostazioni → Documenti.",
+        },
+        { status: 403 }
+      );
+    }
+
     if (!cantina || cantina.id !== body.cantinaId) {
       return NextResponse.json({ error: "Non autorizzato" }, { status: 403 });
     }

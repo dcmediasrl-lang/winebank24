@@ -180,7 +180,7 @@ export default async function TerminiPage({ params }: { params: Promise<{ lang: 
 
         <div className="mt-16 pt-8 border-t border-[var(--wine-border)] text-center text-white/40 text-sm">
           <p>Wine Bank 24 — Piattaforma di collezionismo digitale per vini pregiati</p>
-          <p className="mt-1">Per informazioni: <a href="mailto:info@winebank24.com" className="text-amber-600 hover:underline">info@winebank24.com</a></p>
+          <p className="mt-1">Per informazioni: <a href="mailto:info@winebank24.eu" className="text-amber-600 hover:underline">info@winebank24.eu</a></p>
         </div>
       </div>
     </div>

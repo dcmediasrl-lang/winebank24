@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { z } from "zod";
 import { logActivity } from "@/lib/activity";
 import { validateTaxId, normalizeTaxId, getTaxIdSpec } from "@/lib/tax-id";
+import { SUPPORT_EMAIL } from "@/lib/contatti";
 
 const schema = z.object({
   firstName:  z.string().min(2, "Nome obbligatorio"),
@@ -20,6 +21,25 @@ export async function PATCH(req: Request) {
 
   try {
     const body = schema.parse(await req.json());
+
+    // I dati anagrafici si inseriscono una sola volta: una volta verificati
+    // non sono più modificabili dall'utente. Una modifica autonoma del codice
+    // fiscale o della data di nascita, senza riscontro documentale, vanificherebbe
+    // la verifica dell'identità e dell'età. Le correzioni passano dal supporto.
+    const attuale = await db.user.findUnique({
+      where: { id: session.user.id },
+      select: { firstName: true, lastName: true, birthDate: true, fiscalCode: true, country: true },
+    });
+    if (attuale?.fiscalCode || attuale?.birthDate) {
+      return NextResponse.json(
+        {
+          error:
+            "I dati anagrafici sono già stati verificati e non sono modificabili in autonomia. Per una correzione scrivi a " +
+            SUPPORT_EMAIL + ", allegando un documento d'identità.",
+        },
+        { status: 403 }
+      );
+    }
 
     // Verify age >= 18
     const birth = new Date(body.birthDate);

@@ -101,7 +101,7 @@ function KycCard({ user }: { user: User }) {
           )}
         </div>
         <p className="text-xs text-stone-400 mt-2">
-          Per modificare i tuoi dati anagrafici contatta il supporto: <a href="mailto:privacy@winebank24.com" className="text-amber-600 hover:underline">privacy@winebank24.com</a>
+          I dati verificati non sono modificabili in autonomia. Per una correzione scrivi a <a href="mailto:info@winebank24.eu" className="text-amber-600 hover:underline">info@winebank24.eu</a> allegando un documento d&rsquo;identità.
         </p>
       </CardContent>
     </Card>

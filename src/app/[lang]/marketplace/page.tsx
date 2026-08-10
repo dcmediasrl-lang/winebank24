@@ -12,6 +12,14 @@ import { AdSenseBanner } from "@/components/shared/adsense-banner";
 import { auth } from "@/lib/auth";
 import Link from "next/link";
 import { Wine, Users, Filter } from "lucide-react";
+import type { Metadata } from "next";
+import { metadatiPagina, testo } from "@/lib/seo";
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+  const { lang } = await params;
+  const t = testo("marketplace", lang);
+  return metadatiPagina({ lang, path: "/marketplace", titolo: t.titolo, descrizione: t.descrizione });
+}
 
 export default async function MarketplacePage({
   params,

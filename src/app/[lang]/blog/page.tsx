@@ -4,6 +4,14 @@ import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import Link from "next/link";
 import { Wine, Calendar } from "lucide-react";
+import type { Metadata } from "next";
+import { metadatiPagina, testo } from "@/lib/seo";
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+  const { lang } = await params;
+  const t = testo("blog", lang);
+  return metadatiPagina({ lang, path: "/blog", titolo: t.titolo, descrizione: t.descrizione });
+}
 
 export default async function BlogPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;

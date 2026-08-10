@@ -49,6 +49,8 @@ Next.js 16 (App Router) · TypeScript · React 19 · NextAuth v5 · Prisma 7 + P
 | Generatori documenti | `scripts/genera-*.py` — business plan, mappa concettuale, checklist legale |
 | Regola contenuti demo | `src/lib/demo-content.ts` |
 | Validazione codici fiscali | `src/lib/tax-id.ts` (28 paesi) |
+| Metadati e posizionamento SEO | `src/lib/seo.ts` — titoli, hreflang, Open Graph |
+| Recapiti ufficiali | `src/lib/contatti.ts` — mai scrivere email a mano |
 | Trasferimenti dopo pagamento | `src/lib/offer-transfer.ts` |
 
 ---

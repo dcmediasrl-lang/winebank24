@@ -1,3 +1,6 @@
+import type { Metadata } from "next";
+import { metadatiPagina } from "@/lib/seo";
+import { DatiBottiglia, DatiPercorso } from "@/components/shared/dati-strutturati";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { notFound } from "next/navigation";
@@ -26,6 +29,52 @@ import {
   Warehouse,
   Archive,
 } from "lucide-react";
+
+/**
+ * La scheda bottiglia è la pagina che intercetta le ricerche specifiche
+ * ("Barolo 2016 provenienza", "bottiglia da collezione Brunello"): il titolo
+ * mette davanti produttore, vino e annata, cioè come la persona cerca.
+ * I contenuti dimostrativi non vengono indicizzati.
+ */
+export async function generateMetadata({ params }: { params: Promise<{ lang: string; id: string }> }): Promise<Metadata> {
+  const { lang, id } = await params;
+  const en = lang === "en";
+  const nft = await db.nft.findUnique({
+    where: { id },
+    select: {
+      name: true, vintage: true, bottleFormat: true, description: true, imageUrl: true,
+      cantina: { select: { name: true, isDemo: true } },
+      denomination: { select: { name: true, type: true, region: true } },
+    },
+  }).catch(() => null);
+
+  if (!nft) {
+    return metadatiPagina({
+      lang, path: `/nft/${id}`, noIndex: true,
+      titolo: en ? "Bottle not found" : "Bottiglia non trovata",
+      descrizione: en ? "This certificate is no longer available." : "Questo certificato non è più disponibile.",
+    });
+  }
+
+  const annata = nft.vintage ? ` ${nft.vintage}` : "";
+  const titolo = `${nft.name}${annata} — ${nft.cantina.name}`;
+
+  const dettagli = [
+    nft.denomination ? `${nft.denomination.name} ${nft.denomination.type}` : null,
+    nft.denomination?.region,
+    nft.bottleFormat,
+  ].filter(Boolean).join(" · ");
+
+  const descrizione = en
+    ? `${titolo}${dettagli ? ` — ${dettagli}.` : "."} Documented provenance and verified authenticity. The bottle is kept in the winery under controlled conditions.`
+    : `${titolo}${dettagli ? ` — ${dettagli}.` : "."} Provenienza documentata e autenticità verificata. La bottiglia è custodita in cantina in condizioni controllate.`;
+
+  return metadatiPagina({
+    lang, path: `/nft/${id}`, titolo, descrizione,
+    immagine: nft.imageUrl ?? undefined,
+    noIndex: nft.cantina.isDemo,
+  });
+}
 
 export default async function NftDetailPage({
   params,
@@ -121,6 +170,31 @@ export default async function NftDetailPage({
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8" style={{ color: "white" }}>
+      <DatiBottiglia
+        lang={lang}
+        b={{
+          id: nft.id,
+          nome: nft.name,
+          descrizione: nft.description,
+          immagine: nft.imageUrl,
+          annata: nft.vintage,
+          formato: nft.bottleFormat,
+          prezzo: nft.price ?? (nft.totalValue ? Number(nft.totalValue) : null),
+          disponibile: nft.isListed && nft.status === "LISTED",
+          produttore: nft.cantina.name,
+          denominazione: nft.denomination?.name ?? null,
+          regione: nft.denomination?.region ?? null,
+        }}
+      />
+      <DatiPercorso
+        lang={lang}
+        voci={[
+          { nome: "Home", path: "" },
+          { nome: "Marketplace", path: "/marketplace" },
+          { nome: nft.name, path: `/nft/${nft.id}` },
+        ]}
+      />
+
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1.5 text-xs text-white/40 mb-6">
         <Link href={`/${lang}`} className="hover:text-white transition-colors">

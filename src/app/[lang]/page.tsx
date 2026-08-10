@@ -5,6 +5,7 @@ import { getDictionary, hasLocale } from "./dictionaries";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { HomeNav } from "@/components/shared/home-nav";
+import { DatiOrganizzazione } from "@/components/shared/dati-strutturati";
 import { AdSenseBanner } from "@/components/shared/adsense-banner";
 import { HeroSlider } from "@/components/shared/hero-slider";
 import { auth } from "@/lib/auth";
@@ -51,6 +52,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
     <div style={{ fontFamily: "var(--font-dm-sans, 'DM Sans', sans-serif)", background: "var(--wine-bg)", color: "var(--wine-text)", minHeight: "100vh" }}>
 
       {/* NAV */}
+      <DatiOrganizzazione lang={lang} />
       <HomeNav lang={lang} nav={dict.nav} dashboardUrl={dashboardUrl} userName={session?.user?.name || session?.user?.email || null} hasBlogPosts={hasBlogPosts} />
 
       {/* Spacer for fixed navbar (logo 160px + py-2 = ~176px) */}

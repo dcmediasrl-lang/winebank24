@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
+import { CredentialsSignin } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
@@ -18,10 +19,22 @@ const loginSchema = z.object({
   twoFactorCode: z.string().optional(),
 });
 
-// Errori restituiti al client come messaggio dell'eccezione: la pagina di
-// login li usa per chiedere il codice a 6 cifre senza rivelare altro
+// Errori restituiti al client tramite result.code: la pagina di login li usa
+// per chiedere il codice a 6 cifre o spiegare il blocco, senza rivelare altro.
+// Auth.js propaga solo istanze di CredentialsSignin (con il relativo `code`)
+// nell'URL di redirect: un `throw new Error(...)` generico viene sostituito
+// da un codice muto ("Configuration") e il messaggio si perde — per questo
+// non basta più lanciare un Error semplice come si faceva prima.
 export const TWO_FACTOR_REQUIRED = "2FA_REQUIRED";
 export const TWO_FACTOR_INVALID = "2FA_INVALID";
+export const EMAIL_NOT_VERIFIED = "EMAIL_NOT_VERIFIED";
+
+class LoginError extends CredentialsSignin {
+  constructor(code: string) {
+    super();
+    this.code = code;
+  }
+}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(db),
@@ -83,10 +96,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return null;
         }
 
+        // La registrazione crea l'account subito e invia l'email di verifica,
+        // ma senza questo controllo chiunque poteva accedere inserendo un
+        // indirizzo email inesistente o non proprio: la password da sola
+        // dimostra solo che l'utente conosce quella password, non che
+        // l'email sia reale o gli appartenga.
+        if (!user.emailVerified) {
+          await logActivity(user.id, "LOGIN_FAILED", "Email non verificata");
+          throw new LoginError(EMAIL_NOT_VERIFIED);
+        }
+
         // Secondo fattore: se attivo, la password da sola non basta
         if (user.twoFactorEnabled && user.twoFactorSecret) {
           const code = parsed.data.twoFactorCode?.trim();
-          if (!code) throw new Error(TWO_FACTOR_REQUIRED);
+          if (!code) throw new LoginError(TWO_FACTOR_REQUIRED);
 
           const { verify } = await import("otplib");
           const result = await verify({ token: code, secret: user.twoFactorSecret });
@@ -103,7 +126,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               },
             });
             await logActivity(user.id, "LOGIN_FAILED", "Codice 2FA errato");
-            throw new Error(TWO_FACTOR_INVALID);
+            throw new LoginError(TWO_FACTOR_INVALID);
           }
         }
 

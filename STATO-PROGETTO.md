@@ -78,6 +78,14 @@ account (vincolo anche sul database).
 
 **Accesso Google** — non crea account: consente solo l'accesso a chi si è già registrato.
 
+**Login** — richiede l'email verificata: senza clic sul link ricevuto via email l'accesso è
+bloccato, anche con password corretta. Prima del 23 agosto 2026 questo controllo mancava —
+bastava conoscere la password per entrare con un'email mai verificata, anche inesistente.
+Corretto in `src/lib/auth.ts` (blocco) e propagato correttamente al frontend tramite
+`CredentialsSignin`/`result.code` — il precedente `throw new Error(...)` non arrivava più al
+client con le versioni recenti di NextAuth (bug dormiente anche sul flusso 2FA, risolto
+insieme).
+
 ---
 
 ## Decisioni prese

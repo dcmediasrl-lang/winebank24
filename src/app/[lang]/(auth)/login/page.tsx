@@ -33,9 +33,12 @@ function LoginForm({ lang }: { lang: string }) {
       redirect: false,
     });
     if (result?.error) {
-      const err = String(result.error);
+      // Auth.js non propaga più il messaggio di un Error generico: il codice
+      // specifico (2FA_REQUIRED, 2FA_INVALID, EMAIL_NOT_VERIFIED) arriva in
+      // result.code, non in result.error (che resta sempre "CredentialsSignin")
+      const code = result.code;
       // Credenziali corrette ma manca il secondo fattore: mostra il campo codice
-      if (err.includes("2FA_REQUIRED")) {
+      if (code === "2FA_REQUIRED") {
         setNeedsTwoFactor(true);
         toast.info(lang === "en"
           ? "Enter the 6-digit code from your authenticator app."
@@ -43,10 +46,17 @@ function LoginForm({ lang }: { lang: string }) {
         setLoading(false);
         return;
       }
-      if (err.includes("2FA_INVALID")) {
+      if (code === "2FA_INVALID") {
         setNeedsTwoFactor(true);
         setTwoFactorCode("");
         toast.error(lang === "en" ? "Invalid code. Try again." : "Codice non valido. Riprova.");
+        setLoading(false);
+        return;
+      }
+      if (code === "EMAIL_NOT_VERIFIED") {
+        toast.error(lang === "en"
+          ? "Confirm your email before signing in: check the inbox for the address you registered with."
+          : "Conferma la tua email prima di accedere: controlla la posta in arrivo dell'indirizzo con cui ti sei registrato.");
         setLoading(false);
         return;
       }

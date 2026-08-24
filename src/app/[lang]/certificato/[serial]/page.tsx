@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { metadatiPagina } from "@/lib/seo";
-import { ShieldCheck, ShieldAlert, Hash, Calendar, Wine, Package } from "lucide-react";
+import { ShieldCheck, ShieldAlert, Hash, Calendar, Wine, Package, PieChart } from "lucide-react";
 
 /**
  * Pagina pubblica dietro al QR code stampato sul certificato PDF. Non mostra
@@ -42,6 +42,7 @@ export default async function CertificatoPage({ params }: { params: Promise<{ la
           cantina: { select: { name: true } },
         },
       },
+      fraction: { select: { ownerId: true, percentage: true, certificateVersion: true } },
     },
   });
 
@@ -61,9 +62,13 @@ export default async function CertificatoPage({ params }: { params: Promise<{ la
     );
   }
 
-  const { nft } = certificate;
+  const { nft, fraction } = certificate;
+  const isFraction = !!fraction;
   const isBurned = nft.status === "BURNED";
-  const isValid = certificate.version === nft.certificateVersion && !isBurned;
+  const fractionSold = isFraction && (Number(fraction.percentage) <= 0 || fraction.ownerId !== certificate.ownerId);
+  const isValid = isFraction
+    ? certificate.version === fraction.certificateVersion && !fractionSold && !isBurned
+    : certificate.version === nft.certificateVersion && !isBurned;
 
   return (
     <div className="max-w-lg mx-auto px-4 py-10" style={{ color: "white" }}>
@@ -88,19 +93,35 @@ export default async function CertificatoPage({ params }: { params: Promise<{ la
           </p>
           <p className="text-sm text-white/60 mt-1">
             {isValid
-              ? en
+              ? isFraction
+                ? en
+                  ? `Ownership of this ${Number(fraction.percentage).toFixed(4)}% share matches what was recorded when this document was issued.`
+                  : `Il possesso di questa quota del ${Number(fraction.percentage).toFixed(4)}% corrisponde a quanto registrato al momento dell'emissione.`
+                : en
                 ? "Ownership of this bottle's certificate matches what was recorded when this document was issued."
                 : "La proprietà del certificato di questa bottiglia corrisponde a quanto registrato al momento dell'emissione."
               : isBurned
               ? en
                 ? "This bottle has been physically redeemed: the digital certificate has been withdrawn."
                 : "Questa bottiglia è stata riscattata fisicamente: il certificato digitale è stato ritirato."
+              : isFraction
+              ? en
+                ? "The share this certificate refers to has changed since this document was issued."
+                : "La quota a cui si riferisce questo certificato è cambiata da quando è stato emesso questo documento."
               : en
               ? "Ownership of this certificate has changed since this document was issued."
               : "La proprietà di questo certificato è cambiata da quando è stato emesso questo documento."}
           </p>
         </div>
       </div>
+
+      {isFraction && (
+        <div className="rounded-xl border border-amber-700/30 bg-amber-900/10 px-4 py-3 mb-6 text-xs text-amber-300/80 leading-relaxed">
+          {en
+            ? "This certificate attests co-ownership of a share of the digital certificate linked to the bottle below. It does not by itself entitle the holder to physical redemption of the bottle, which requires acquiring 100% of the shares."
+            : "Questo certificato attesta la comproprietà di una quota del certificato digitale collegato alla bottiglia sottostante. Non dà da solo diritto al ritiro fisico della bottiglia, possibile solo acquisendo il 100% delle quote."}
+        </div>
+      )}
 
       {/* Bottle card */}
       <div className="rounded-2xl border border-[var(--wine-border)] bg-[#1a0f0f] overflow-hidden">
@@ -136,6 +157,14 @@ export default async function CertificatoPage({ params }: { params: Promise<{ la
                 #{nft.bottleNumber}{nft.bottleFormat ? ` · ${nft.bottleFormat}` : ""}
               </p>
             </div>
+            {isFraction && (
+              <div>
+                <p className="text-white/40 text-xs flex items-center gap-1 mb-0.5">
+                  <PieChart className="w-3 h-3" /> {en ? "Share" : "Quota"}
+                </p>
+                <p className="text-white/80 font-semibold">{Number(certificate.percentage).toFixed(4)}%</p>
+              </div>
+            )}
             <div className="col-span-2">
               <p className="text-white/40 text-xs flex items-center gap-1 mb-0.5">
                 <Calendar className="w-3 h-3" /> {en ? "Issued on" : "Emesso il"}

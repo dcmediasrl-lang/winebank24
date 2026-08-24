@@ -54,6 +54,22 @@ export default async function CollectorCollezionePage({ params }: { params: Prom
       .filter((x): x is readonly [string, (typeof certificates)[number]] => x !== null)
   );
 
+  // Stessa logica, per il certificato di comproprietà di ogni quota
+  const fractionCertificates = await db.certificate.findMany({
+    where: {
+      ownerId: session.user.id,
+      fractionId: { in: fractions.map((f) => f.id) },
+    },
+  });
+  const certificateByFraction = new Map(
+    fractions
+      .map((f) => {
+        const cert = fractionCertificates.find((c) => c.fractionId === f.id && c.version === f.certificateVersion);
+        return cert ? ([f.id, cert] as const) : null;
+      })
+      .filter((x): x is readonly [string, (typeof fractionCertificates)[number]] => x !== null)
+  );
+
   return (
     <div className="space-y-10">
       <div>
@@ -190,6 +206,16 @@ export default async function CollectorCollezionePage({ params }: { params: Prom
                     investedAmount={Number(fraction.investedAmount)}
                     listedPercentage={fraction.listedPercentage ? Number(fraction.listedPercentage) : null}
                   />
+                  {certificateByFraction.has(fraction.id) && (
+                    <a
+                      href={certificateByFraction.get(fraction.id)!.pdfUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-1.5 text-xs font-semibold text-white/70 hover:text-white border border-white/15 hover:border-white/30 rounded-lg py-1.5 transition-colors"
+                    >
+                      <Download className="w-3.5 h-3.5" /> Certificato di comproprietà
+                    </a>
+                  )}
                 </CardContent>
               </Card>
             ))}

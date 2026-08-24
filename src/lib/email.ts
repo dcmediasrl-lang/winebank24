@@ -232,6 +232,34 @@ export async function sendCertificateEmail(to: string, nftName: string, pdfBytes
   }
 }
 
+// Inviata solo dopo la conferma di pagamento. Attesta la sola percentuale
+// posseduta, non il diritto al ritiro fisico della bottiglia.
+export async function sendFractionCertificateEmail(
+  to: string,
+  nftName: string,
+  percentage: number,
+  pdfBytes: Uint8Array,
+  serial: string,
+) {
+  const base64 = Buffer.from(pdfBytes).toString("base64");
+  try {
+    await sendEmail(
+      to,
+      `Certificato di comproprietà: ${nftName}`,
+      emailLayout({
+        heading: "Il tuo certificato di comproprietà",
+        intro: `In allegato trovi il certificato PDF che attesta il possesso del ${percentage.toFixed(4)}% di "${nftName}", con QR code e numero di serie per la verifica pubblica. Perde validità automaticamente se la quota posseduta cambia.`,
+        bodyHtml: infoRow("Numero di serie", serial) + infoRow("Quota posseduta", `${percentage.toFixed(4)}%`),
+        cta: { label: "Vai alla mia collezione", url: `${APP_URL}/it/collector/collezione` },
+        footerNote: "Puoi riscaricare il certificato in qualsiasi momento dalla tua area riservata. Il ritiro fisico della bottiglia è possibile solo acquisendo il 100% delle quote.",
+      }),
+      [{ name: `certificato-quota-${serial}.pdf`, content: base64 }],
+    );
+  } catch (err) {
+    console.error("[email] Failed to send fraction certificate email to", to, err);
+  }
+}
+
 export async function sendBurnRequestEmail(adminEmail: string, nftName: string, address: string) {
   try {
     await sendEmail(

@@ -98,8 +98,15 @@ confronta la versione stampata sul certificato con quella corrente e segnala "no
 se non coincidono. Scoperto due difetti minori nella scheda bottiglia mentre ci si lavorava:
 titolo duplicato quando l'annata era già nel nome ("2018 2018", corretto) e residui di lessico
 "NFT" in testi pubblici sostituiti con "certificato" (marketplace, collezione, dashboard,
-dizionari IT/EN). Le co-proprietà frazionate restano fuori dall'emissione del certificato PDF
-(nessuna prova di possesso al 100% finché non si riscatta) — da valutare in futuro.
+dizionari IT/EN).
+
+Anche le quote (co-proprietà frazionata) emettono un certificato — di **comproprietà**, non di
+proprietà piena: riporta la percentuale posseduta e dichiara esplicitamente che non dà da solo
+diritto al ritiro fisico (serve il 100% delle quote). Stessa logica di invalidazione, ma su
+`NftFraction.certificateVersion`: si incrementa a ogni acquisto aggiuntivo, cessione parziale o
+totale della quota. Una cessione parziale riemette **due** certificati (venditore con la quota
+residua, acquirente con quella nuova); una cessione totale della stessa riga ne emette uno solo,
+per l'acquirente.
 
 ---
 

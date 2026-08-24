@@ -285,6 +285,13 @@ model Nft {
 model Certificate {
   id            String   @id @default(cuid())
   nftId         String
+  // Valorizzato solo per un certificato di comproprietà (quota): in quel
+  // caso `percentage` fissa la quota posseduta al momento dell'emissione e
+  // `version` si confronta con NftFraction.certificateVersion, non con
+  // quella dell'Nft — un certificato di quota non attesta la proprietà
+  // dell'intera bottiglia
+  fractionId    String?
+  percentage    Decimal? @db.Decimal(8,4)
   ownerId       String
   serial        String   @unique
   version       Int
@@ -293,10 +300,12 @@ model Certificate {
   createdAt     DateTime @default(now())
 
   nft         Nft          @relation(fields: [nftId], references: [id])
+  fraction    NftFraction? @relation(fields: [fractionId], references: [id])
   owner       User         @relation(fields: [ownerId], references: [id])
   transaction Transaction? @relation(fields: [transactionId], references: [id])
 
   @@index([nftId])
+  @@index([fractionId])
   @@index([ownerId])
 }
 
@@ -344,12 +353,17 @@ model NftFraction {
   // Partial sale: how much of this fraction is listed for sale
   // If null when isListed=true, the entire fraction is for sale
   listedPercentage Decimal? @db.Decimal(8,4)
+  // Si incrementa a ogni variazione della quota (acquisto aggiuntivo, cessione
+  // parziale o totale): invalida il certificato di comproprietà emesso in
+  // precedenza, che riportava una percentuale non più attuale
+  certificateVersion Int    @default(0)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
   nft     Nft     @relation(fields: [nftId], references: [id])
   owner   User    @relation(fields: [ownerId], references: [id])
   offers  Offer[]
+  certificates Certificate[]
 }
 
 model PlatformConfig {

@@ -19,6 +19,8 @@ export interface CertificateData {
   issuedAt: Date;
   imageUrl: string | null;
   verifyUrl: string;
+  /** Presente solo per un certificato di comproprietà (quota), non di proprietà piena */
+  percentage?: number | null;
 }
 
 /** Scarica un'immagine remota e ne rileva il formato per l'embed in pdf-lib */
@@ -42,6 +44,8 @@ async function fetchImage(url: string): Promise<{ bytes: Uint8Array; type: "jpg"
  * verifica online conferma che la versione non è cambiata (vedi Nft.certificateVersion).
  */
 export async function generateCertificatePdf(data: CertificateData): Promise<Uint8Array> {
+  const isFraction = data.percentage != null;
+
   const doc = await PDFDocument.create();
   const bold = await doc.embedFont(StandardFonts.HelveticaBold);
   const regular = await doc.embedFont(StandardFonts.Helvetica);
@@ -57,9 +61,12 @@ export async function generateCertificatePdf(data: CertificateData): Promise<Uin
   // Header
   page.drawRectangle({ x: 0, y: pageHeight - 76, width: pageWidth, height: 76, color: WINE_RED });
   page.drawText("WINE BANK 24", { x: margin, y: pageHeight - 32, size: 20, font: bold, color: WHITE });
-  page.drawText("Certificato di Proprietà — Bottiglia da Collezione", {
-    x: margin, y: pageHeight - 52, size: 10, font: regular, color: rgb(1, 0.85, 0.7),
-  });
+  page.drawText(
+    isFraction
+      ? "Certificato di Comproprietà — Bottiglia da Collezione"
+      : "Certificato di Proprietà — Bottiglia da Collezione",
+    { x: margin, y: pageHeight - 52, size: 10, font: regular, color: rgb(1, 0.85, 0.7) },
+  );
   page.drawText(`Seriale ${data.serial} · v${data.version}`, {
     x: margin, y: pageHeight - 66, size: 8.5, font: italic, color: rgb(1, 0.85, 0.7),
   });
@@ -113,6 +120,7 @@ export async function generateCertificatePdf(data: CertificateData): Promise<Uin
 
   detail("Bottiglia", `${data.nftName}${data.vintage ? ` — ${data.vintage}` : ""}`, 13);
   detail("Cantina produttrice", data.cantinaName);
+  if (isFraction) detail("Quota posseduta", `${data.percentage!.toFixed(4)}%`, 13);
   if (data.bottleFormat) detail("Formato", data.bottleFormat);
   detail("Numero bottiglia", `#${data.bottleNumber}`);
   detail("Intestato a", data.ownerName);
@@ -134,7 +142,9 @@ export async function generateCertificatePdf(data: CertificateData): Promise<Uin
   page.drawText("VERIFICA LA VALIDITÀ", { x: verifyX, y: vy, size: 9, font: bold, color: WINE_RED });
   vy -= 16;
   const verifyLines = wrapText(
-    "Inquadra il QR code o apri il link per controllare in tempo reale se questo certificato è ancora valido. Diventa automaticamente non valido in caso di cessione del certificato o di riscatto della bottiglia.",
+    isFraction
+      ? "Inquadra il QR code o apri il link per controllare in tempo reale se questo certificato è ancora valido. Diventa automaticamente non valido se la quota posseduta cambia, in tutto o in parte."
+      : "Inquadra il QR code o apri il link per controllare in tempo reale se questo certificato è ancora valido. Diventa automaticamente non valido in caso di cessione del certificato o di riscatto della bottiglia.",
     regular, 9, verifyWidth,
   );
   for (const line of verifyLines) {
@@ -155,9 +165,15 @@ export async function generateCertificatePdf(data: CertificateData): Promise<Uin
   page.drawLine({ start: { x: margin, y }, end: { x: pageWidth - margin, y }, thickness: 0.5, color: rgb(0.85, 0.8, 0.78) });
   y -= 16;
   const disclaimer = wrapText(
-    "Wine Bank 24 è progettata come piattaforma per il collezionismo e la compravendita di bottiglie fisiche. " +
-    "Non offre consulenza finanziaria, rendimenti, interessi o garanzie di rivalutazione. Questo documento attesta la " +
-    "proprietà del certificato digitale collegato alla bottiglia descritta, alla data e alla versione indicate sopra.",
+    isFraction
+      ? "Wine Bank 24 è progettata come piattaforma per il collezionismo e la compravendita di bottiglie fisiche. " +
+        "Non offre consulenza finanziaria, rendimenti, interessi o garanzie di rivalutazione. Questo documento attesta la " +
+        "comproprietà, nella percentuale indicata sopra, del certificato digitale collegato alla bottiglia descritta. " +
+        "Non costituisce da solo diritto al ritiro fisico della bottiglia: il riscatto è possibile solo acquisendo il 100% " +
+        "delle quote e con l'autorizzazione della cantina."
+      : "Wine Bank 24 è progettata come piattaforma per il collezionismo e la compravendita di bottiglie fisiche. " +
+        "Non offre consulenza finanziaria, rendimenti, interessi o garanzie di rivalutazione. Questo documento attesta la " +
+        "proprietà del certificato digitale collegato alla bottiglia descritta, alla data e alla versione indicate sopra.",
     italic, 7.5, contentWidth,
   );
   for (const line of disclaimer) {

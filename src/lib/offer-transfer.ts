@@ -1,5 +1,10 @@
 import { db } from "@/lib/db";
-import { issueCertificate } from "@/lib/certificate";
+import { issueCertificate, issueFractionCertificate } from "@/lib/certificate";
+
+interface FractionCertTargets {
+  buyerFractionId: string;
+  sellerFractionId?: string;
+}
 
 /**
  * Esegue il trasferimento di proprietà per un'offerta ACCETTATA e PAGATA.
@@ -19,11 +24,13 @@ export async function executeOfferTransfer(params: {
   });
   if (!offer || offer.status !== "ACCEPTED") return false;
 
-  // Popolato solo per la cessione di un NFT intero (non frazionato): il
-  // valore di ritorno della transazione, non una variabile catturata dalla
-  // closure, serve a emettere il certificato dopo il commit
-  const wholeNftTransfer = await db.$transaction(async (tx) => {
-    let result: { nftId: string; buyerId: string; transactionId: string } | null = null;
+  // Il valore di ritorno della transazione (non una variabile catturata dalla
+  // closure) indica quale certificato emettere dopo il commit: o quello di un
+  // NFT intero, o quello di una/due quote coinvolte nella cessione
+  const transferResult = await db.$transaction(async (tx) => {
+    let wholeNft: { nftId: string; buyerId: string; transactionId: string } | null = null;
+    let fractions: FractionCertTargets | null = null;
+    let transactionId: string | undefined;
 
     if (offer.nftId && offer.nft) {
       const nft = offer.nft;
@@ -51,16 +58,19 @@ export async function executeOfferTransfer(params: {
         const existing = await tx.nftFraction.findFirst({
           where: { nftId: nft.id, ownerId: offer.buyerId },
         });
+        let buyerFractionId: string;
         if (existing) {
-          await tx.nftFraction.update({
+          const updated = await tx.nftFraction.update({
             where: { id: existing.id },
             data: {
               percentage: Number(existing.percentage) + pct,
               investedAmount: Number(existing.investedAmount) + offer.amount,
+              certificateVersion: { increment: 1 },
             },
           });
+          buyerFractionId = updated.id;
         } else {
-          await tx.nftFraction.create({
+          const created = await tx.nftFraction.create({
             data: {
               nftId: nft.id,
               ownerId: offer.buyerId,
@@ -68,7 +78,9 @@ export async function executeOfferTransfer(params: {
               investedAmount: offer.amount,
             },
           });
+          buyerFractionId = created.id;
         }
+        fractions = { buyerFractionId };
       } else {
         // ── NFT intero: verifica che il venditore sia ancora proprietario ───
         if (nft.ownerId !== offer.sellerId) {
@@ -106,7 +118,9 @@ export async function executeOfferTransfer(params: {
       });
 
       if (!nft.isFractionable) {
-        result = { nftId: offer.nftId, buyerId: offer.buyerId, transactionId: createdTransaction.id };
+        wholeNft = { nftId: offer.nftId, buyerId: offer.buyerId, transactionId: createdTransaction.id };
+      } else {
+        transactionId = createdTransaction.id;
       }
     } else if (offer.fractionId && offer.fraction) {
       // ── Quota di co-proprietà (liquidazione tra collezionisti) ────────────
@@ -126,8 +140,11 @@ export async function executeOfferTransfer(params: {
       const remainingPct = totalPct - listedPct;
       const remainingInvestedAmount = Number(fraction.investedAmount) - soldInvestedAmount;
 
+      let buyerFractionId: string;
+      let sellerFractionId: string | undefined;
+
       if (isPartialSale) {
-        await tx.nftFraction.update({
+        const updatedSeller = await tx.nftFraction.update({
           where: { id: offer.fractionId },
           data: {
             percentage: remainingPct,
@@ -135,22 +152,28 @@ export async function executeOfferTransfer(params: {
             isListed: false,
             askingPrice: null,
             listedPercentage: null,
+            certificateVersion: { increment: 1 },
           },
         });
+        // Il venditore ha ancora una quota (parziale): il suo vecchio
+        // certificato riportava una percentuale non più corretta, va riemesso
+        sellerFractionId = updatedSeller.id;
 
         const existingBuyerFraction = await tx.nftFraction.findFirst({
           where: { nftId: fraction.nftId, ownerId: offer.buyerId },
         });
         if (existingBuyerFraction) {
-          await tx.nftFraction.update({
+          const updated = await tx.nftFraction.update({
             where: { id: existingBuyerFraction.id },
             data: {
               percentage: Number(existingBuyerFraction.percentage) + listedPct,
               investedAmount: Number(existingBuyerFraction.investedAmount) + askingPrice,
+              certificateVersion: { increment: 1 },
             },
           });
+          buyerFractionId = updated.id;
         } else {
-          await tx.nftFraction.create({
+          const created = await tx.nftFraction.create({
             data: {
               nftId: fraction.nftId,
               ownerId: offer.buyerId,
@@ -159,9 +182,11 @@ export async function executeOfferTransfer(params: {
               isListed: false,
             },
           });
+          buyerFractionId = created.id;
         }
       } else {
-        await tx.nftFraction.update({
+        // Cessione totale della quota: stessa riga, cambia solo il proprietario
+        const updated = await tx.nftFraction.update({
           where: { id: offer.fractionId },
           data: {
             ownerId: offer.buyerId,
@@ -169,11 +194,13 @@ export async function executeOfferTransfer(params: {
             isListed: false,
             askingPrice: null,
             listedPercentage: null,
+            certificateVersion: { increment: 1 },
           },
         });
+        buyerFractionId = updated.id;
       }
 
-      await tx.transaction.create({
+      const createdTransaction = await tx.transaction.create({
         data: {
           nftId: fraction.nftId,
           buyerId: offer.buyerId,
@@ -185,6 +212,8 @@ export async function executeOfferTransfer(params: {
           stripeId,
         },
       });
+      transactionId = createdTransaction.id;
+      fractions = { buyerFractionId, sellerFractionId };
 
       await tx.offer.updateMany({
         where: { fractionId: offer.fractionId, status: "PENDING", id: { not: offerId } },
@@ -193,15 +222,25 @@ export async function executeOfferTransfer(params: {
     }
 
     await tx.offer.update({ where: { id: offerId }, data: { status: "COMPLETED" } });
-    return result;
+    return { wholeNft, fractions, transactionId };
   });
 
-  if (wholeNftTransfer) {
+  if (transferResult.wholeNft) {
     await issueCertificate({
-      nftId: wholeNftTransfer.nftId,
-      ownerId: wholeNftTransfer.buyerId,
-      transactionId: wholeNftTransfer.transactionId,
+      nftId: transferResult.wholeNft.nftId,
+      ownerId: transferResult.wholeNft.buyerId,
+      transactionId: transferResult.wholeNft.transactionId,
     });
+  } else if (transferResult.fractions) {
+    // Il transactionId va solo sul certificato dell'acquirente: la stessa
+    // transazione non può essere collegata a due certificati (vincolo @unique)
+    await issueFractionCertificate({
+      fractionId: transferResult.fractions.buyerFractionId,
+      transactionId: transferResult.transactionId,
+    });
+    if (transferResult.fractions.sellerFractionId) {
+      await issueFractionCertificate({ fractionId: transferResult.fractions.sellerFractionId });
+    }
   }
 
   return true;
@@ -236,9 +275,12 @@ export async function executeFractionResaleTransfer(params: {
   const remainingPct = totalPct - listedPct;
   const remainingInvestedAmount = Number(fraction.investedAmount) - soldInvestedAmount;
 
-  await db.$transaction(async (tx) => {
+  const { buyerFractionId, sellerFractionId, transactionId } = await db.$transaction(async (tx) => {
+    let buyerFractionId: string;
+    let sellerFractionId: string | undefined;
+
     if (isPartialSale) {
-      await tx.nftFraction.update({
+      const updatedSeller = await tx.nftFraction.update({
         where: { id: fractionId },
         data: {
           percentage: remainingPct,
@@ -246,22 +288,26 @@ export async function executeFractionResaleTransfer(params: {
           isListed: false,
           askingPrice: null,
           listedPercentage: null,
+          certificateVersion: { increment: 1 },
         },
       });
+      sellerFractionId = updatedSeller.id;
 
       const existingBuyerFraction = await tx.nftFraction.findFirst({
         where: { nftId: fraction.nftId, ownerId: buyerId },
       });
       if (existingBuyerFraction) {
-        await tx.nftFraction.update({
+        const updated = await tx.nftFraction.update({
           where: { id: existingBuyerFraction.id },
           data: {
             percentage: Number(existingBuyerFraction.percentage) + listedPct,
             investedAmount: Number(existingBuyerFraction.investedAmount) + askingPrice,
+            certificateVersion: { increment: 1 },
           },
         });
+        buyerFractionId = updated.id;
       } else {
-        await tx.nftFraction.create({
+        const created = await tx.nftFraction.create({
           data: {
             nftId: fraction.nftId,
             ownerId: buyerId,
@@ -270,9 +316,10 @@ export async function executeFractionResaleTransfer(params: {
             isListed: false,
           },
         });
+        buyerFractionId = created.id;
       }
     } else {
-      await tx.nftFraction.update({
+      const updated = await tx.nftFraction.update({
         where: { id: fractionId },
         data: {
           ownerId: buyerId,
@@ -280,11 +327,13 @@ export async function executeFractionResaleTransfer(params: {
           isListed: false,
           askingPrice: null,
           listedPercentage: null,
+          certificateVersion: { increment: 1 },
         },
       });
+      buyerFractionId = updated.id;
     }
 
-    await tx.transaction.create({
+    const createdTransaction = await tx.transaction.create({
       data: {
         nftId: fraction.nftId,
         buyerId,
@@ -302,7 +351,15 @@ export async function executeFractionResaleTransfer(params: {
       where: { fractionId, status: "PENDING" },
       data: { status: "REJECTED" },
     });
+
+    return { buyerFractionId, sellerFractionId, transactionId: createdTransaction.id };
   });
+
+  // Il transactionId va solo sul certificato dell'acquirente (vincolo @unique)
+  await issueFractionCertificate({ fractionId: buyerFractionId, transactionId });
+  if (sellerFractionId) {
+    await issueFractionCertificate({ fractionId: sellerFractionId });
+  }
 
   return true;
 }

@@ -2,12 +2,27 @@ import { randomBytes } from "crypto";
 import { db } from "@/lib/db";
 import { uploadToR2 } from "@/lib/storage";
 import { generateCertificatePdf } from "@/lib/certificate-pdf";
-import { sendCertificateEmail } from "@/lib/email";
+import { sendCertificateEmail, sendFractionCertificateEmail } from "@/lib/email";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://app.winebank24.eu";
 
 function generateSerial(): string {
   return `WB24-${randomBytes(5).toString("hex").toUpperCase()}`;
+}
+
+/** Un seriale univoco, con qualche tentativo in più in caso di collisione (trascurabile ma non impossibile) */
+async function uniqueSerial(): Promise<string> {
+  let serial = generateSerial();
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const existing = await db.certificate.findUnique({ where: { serial }, select: { id: true } });
+    if (!existing) break;
+    serial = generateSerial();
+  }
+  return serial;
+}
+
+function ownerDisplayName(owner: { name: string | null; email: string; firstName: string | null; lastName: string | null }): string {
+  return owner.firstName && owner.lastName ? `${owner.firstName} ${owner.lastName}` : owner.name || owner.email;
 }
 
 /**
@@ -41,19 +56,8 @@ export async function issueCertificate(params: {
     });
     if (!nft || !owner) return;
 
-    const ownerName =
-      owner.firstName && owner.lastName ? `${owner.firstName} ${owner.lastName}` : owner.name || owner.email;
-
-    let serial = generateSerial();
-    // Probabilità di collisione trascurabile (10 caratteri esadecimali), ma un
-    // seriale duplicato romperebbe il vincolo @unique: qualche tentativo in più
-    // costa nulla ed evita di far fallire un'emissione per sfortuna statistica.
-    for (let attempt = 0; attempt < 5; attempt++) {
-      const existing = await db.certificate.findUnique({ where: { serial }, select: { id: true } });
-      if (!existing) break;
-      serial = generateSerial();
-    }
-
+    const ownerName = ownerDisplayName(owner);
+    const serial = await uniqueSerial();
     const verifyUrl = `${APP_URL}/it/certificato/${serial}`;
 
     const pdfBytes = await generateCertificatePdf({
@@ -91,5 +95,90 @@ export async function issueCertificate(params: {
     await sendCertificateEmail(owner.email, nft.name, pdfBytes, serial);
   } catch (err) {
     console.error("[certificate] Emissione fallita per NFT", params.nftId, err);
+  }
+}
+
+/**
+ * Emette il certificato di comproprietà per il titolare attuale di una quota,
+ * dopo che il pagamento è stato confermato. Attesta solo la percentuale
+ * posseduta, non il diritto al ritiro fisico della bottiglia (possibile solo
+ * acquisendo il 100% delle quote). Va riemesso a ogni variazione della quota:
+ * chi chiama questa funzione deve aver già incrementato
+ * NftFraction.certificateVersion nella stessa transazione che ha modificato
+ * la percentuale, così il certificato precedente risulta automaticamente
+ * superato nella pagina di verifica pubblica.
+ */
+export async function issueFractionCertificate(params: {
+  fractionId: string;
+  transactionId?: string;
+}): Promise<void> {
+  try {
+    const fraction = await db.nftFraction.findUnique({
+      where: { id: params.fractionId },
+      select: {
+        nftId: true,
+        ownerId: true,
+        percentage: true,
+        certificateVersion: true,
+        nft: {
+          select: {
+            name: true, vintage: true, bottleFormat: true, bottleNumber: true, imageUrl: true,
+            cantina: { select: { name: true } },
+          },
+        },
+      },
+    });
+    // Percentuale a zero: la quota è stata interamente ceduta, nulla da certificare
+    if (!fraction || Number(fraction.percentage) <= 0) return;
+
+    const owner = await db.user.findUnique({
+      where: { id: fraction.ownerId },
+      select: { name: true, email: true, firstName: true, lastName: true },
+    });
+    if (!owner) return;
+
+    const ownerName = ownerDisplayName(owner);
+    const serial = await uniqueSerial();
+    const verifyUrl = `${APP_URL}/it/certificato/${serial}`;
+    const percentage = Number(fraction.percentage);
+
+    const pdfBytes = await generateCertificatePdf({
+      serial,
+      version: fraction.certificateVersion,
+      nftName: fraction.nft.name,
+      vintage: fraction.nft.vintage,
+      cantinaName: fraction.nft.cantina.name,
+      bottleFormat: fraction.nft.bottleFormat,
+      bottleNumber: fraction.nft.bottleNumber,
+      ownerName,
+      issuedAt: new Date(),
+      imageUrl: fraction.nft.imageUrl,
+      verifyUrl,
+      percentage,
+    });
+
+    const { url: pdfUrl } = await uploadToR2(
+      Buffer.from(pdfBytes),
+      `${serial}.pdf`,
+      "application/pdf",
+      "certificati",
+    );
+
+    await db.certificate.create({
+      data: {
+        nftId: fraction.nftId,
+        fractionId: params.fractionId,
+        percentage,
+        ownerId: fraction.ownerId,
+        serial,
+        version: fraction.certificateVersion,
+        pdfUrl,
+        transactionId: params.transactionId,
+      },
+    });
+
+    await sendFractionCertificateEmail(owner.email, fraction.nft.name, percentage, pdfBytes, serial);
+  } catch (err) {
+    console.error("[certificate] Emissione quota fallita per frazione", params.fractionId, err);
   }
 }

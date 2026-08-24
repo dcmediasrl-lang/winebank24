@@ -6,7 +6,7 @@ import { sendPurchaseEmail, sendSaleEmail } from "@/lib/email";
 import type Stripe from "stripe";
 import { executeOfferTransfer, executeFractionResaleTransfer } from "@/lib/offer-transfer";
 import { notify } from "@/lib/notifications";
-import { issueCertificate } from "@/lib/certificate";
+import { issueCertificate, issueFractionCertificate } from "@/lib/certificate";
 
 export async function POST(req: Request) {
   const body = await req.text();
@@ -283,7 +283,7 @@ async function handleFractionPurchase(
   const available = Number(nft.availableValue);
   const newAvailable = Math.max(0, available - investedAmount);
 
-  await db.$transaction([
+  const [createdFraction, , createdTransaction] = await db.$transaction([
     db.nftFraction.create({
       data: {
         nftId,
@@ -331,4 +331,6 @@ async function handleFractionPurchase(
     }),
     sendPurchaseEmail(buyer.email, `${nft.name} — quota ${fractionPct.toFixed(2)}%`, investedAmount),
   ]);
+
+  await issueFractionCertificate({ fractionId: createdFraction.id, transactionId: createdTransaction.id });
 }

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import {
-  Wine, User, Mail, Lock, MapPin, Globe, Receipt,
+  Wine, User, Mail, MapPin, Globe, Receipt,
   ArrowLeft, CheckCircle, Send, Percent,
 } from "lucide-react";
 
@@ -26,7 +26,6 @@ export default function NewCantinaPage() {
 
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
-  const [sendEmail, setSendEmail] = useState(true);
   const [form, setForm] = useState({
     cantinaName: "",
     description: "",
@@ -36,18 +35,10 @@ export default function NewCantinaPage() {
     royaltyPct: "5",
     contactName: "",
     email: "",
-    password: "",
   });
 
   function set(field: string, value: string) {
     setForm(f => ({ ...f, [field]: value }));
-  }
-
-  function generatePassword() {
-    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#";
-    let pwd = "";
-    for (let i = 0; i < 12; i++) pwd += chars[Math.floor(Math.random() * chars.length)];
-    set("password", pwd);
   }
 
   async function submit(e: React.FormEvent) {
@@ -60,7 +51,6 @@ export default function NewCantinaPage() {
         body: JSON.stringify({
           ...form,
           royaltyPct: parseFloat(form.royaltyPct) || 5,
-          sendWelcomeEmail: sendEmail,
         }),
       });
       const data = await res.json();
@@ -88,17 +78,15 @@ export default function NewCantinaPage() {
           <p className="text-white/60">
             <strong className="text-white">{form.cantinaName}</strong> è ora attiva su Wine Bank 24.
           </p>
-          {sendEmail && (
-            <p className="text-white/50 text-sm mt-2 flex items-center justify-center gap-1.5">
-              <Send className="w-3.5 h-3.5 text-amber-400" />
-              Email di benvenuto inviata a <span className="text-amber-400">{form.email}</span>
-            </p>
-          )}
+          <p className="text-white/50 text-sm mt-2 flex items-center justify-center gap-1.5">
+            <Send className="w-3.5 h-3.5 text-amber-400" />
+            Email con il link di attivazione inviata a <span className="text-amber-400">{form.email}</span>
+          </p>
         </div>
         <div className="flex gap-3 justify-center">
           <Button
             variant="outline"
-            onClick={() => { setDone(false); setForm({ cantinaName: "", description: "", location: "", vatNumber: "", website: "", royaltyPct: "5", contactName: "", email: "", password: "" }); }}
+            onClick={() => { setDone(false); setForm({ cantinaName: "", description: "", location: "", vatNumber: "", website: "", royaltyPct: "5", contactName: "", email: "" }); }}
             className="border-white/20 text-white hover:bg-white/10"
           >
             + Crea un&apos;altra cantina
@@ -131,7 +119,7 @@ export default function NewCantinaPage() {
             <Wine className="w-6 h-6 text-amber-400" />
             Nuova Cantina
           </h1>
-          <p className="text-white/50 text-sm">Crea un account cantina e invia le credenziali via email</p>
+          <p className="text-white/50 text-sm">Crea un account cantina e invia il link di attivazione via email</p>
         </div>
       </div>
 
@@ -220,9 +208,9 @@ export default function NewCantinaPage() {
           </div>
         </div>
 
-        {/* Credenziali accesso */}
+        {/* Referente */}
         <div className={sectionClass}>
-          <p className={headerClass}>Credenziali di accesso</p>
+          <p className={headerClass}>Referente</p>
 
           <div className="space-y-1.5">
             <Label className="text-white font-semibold flex items-center gap-1.5">
@@ -248,47 +236,16 @@ export default function NewCantinaPage() {
               placeholder="cantina@email.com"
             />
           </div>
-
-          <div className="space-y-1.5">
-            <Label className="text-white font-semibold flex items-center gap-1.5">
-              <Lock className="w-3.5 h-3.5 text-amber-400" /> Password temporanea <span className="text-red-400">*</span>
-            </Label>
-            <div className="flex gap-2">
-              <Input
-                required
-                type="text"
-                minLength={6}
-                value={form.password}
-                onChange={e => set("password", e.target.value)}
-                placeholder="min. 6 caratteri"
-                className="font-mono"
-              />
-              <button
-                type="button"
-                onClick={generatePassword}
-                className="shrink-0 px-3 h-10 rounded-lg border border-white/20 text-white/70 hover:text-white hover:border-amber-500 text-xs transition-colors whitespace-nowrap"
-              >
-                Genera
-              </button>
-            </div>
-            <p className="text-xs text-white/40">Verrà inclusa nell&apos;email di benvenuto — consiglia di cambiarla al primo accesso</p>
-          </div>
         </div>
 
-        {/* Email benvenuto */}
+        {/* Attivazione */}
         <div className="flex items-start gap-3 p-4 bg-[#2a1010] rounded-xl border border-white/15">
-          <div
-            className={`w-5 h-5 mt-0.5 rounded border-2 shrink-0 flex items-center justify-center cursor-pointer transition-colors ${
-              sendEmail ? "bg-amber-500 border-amber-500" : "border-white/30 hover:border-amber-400"
-            }`}
-            onClick={() => setSendEmail(v => !v)}
-          >
-            {sendEmail && <CheckCircle className="w-3 h-3 text-white" />}
-          </div>
+          <Send className="w-5 h-5 mt-0.5 text-amber-400 shrink-0" />
           <div>
-            <p className="text-white font-semibold text-sm">Invia email di benvenuto</p>
+            <p className="text-white font-semibold text-sm">Attivazione via email</p>
             <p className="text-white/50 text-xs mt-0.5">
-              Manda automaticamente a <span className="text-amber-400">{form.email || "cantina@email.com"}</span> le credenziali di accesso e il link alla piattaforma
+              A <span className="text-amber-400">{form.email || "cantina@email.com"}</span> arriverà un link, valido 48 ore,
+              con cui la cantina imposta da sola la propria password. Nessuna credenziale viaggia via email.
             </p>
           </div>
         </div>

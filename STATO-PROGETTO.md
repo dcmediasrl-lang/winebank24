@@ -108,6 +108,20 @@ totale della quota. Una cessione parziale riemette **due** certificati (venditor
 residua, acquirente con quella nuova); una cessione totale della stessa riga ne emette uno solo,
 per l'acquirente.
 
+**Registrazione cantina** — rivista su 4 punti dopo un audit:
+1. La creazione da Admin → Cantine → Nuova Cantina non manda più la password in chiaro via
+   email: crea l'account senza password e invia un link di attivazione a scadenza 48h
+   (`src/lib/cantina-invite.ts`, condiviso col "Reinvia invito" — prima erano due meccanismi
+   diversi per lo stesso problema).
+2. Il badge pubblico **"Verificata"** non basta più il solo interruttore admin: richiede anche
+   che la cantina abbia caricato la polizza assicurativa (`isCantinaPubliclyVerified()` in
+   `src/lib/cantina.ts`). Prima poteva comparire ai collezionisti senza alcun documento
+   assicurativo caricato — coincide con un punto già segnalato dalla revisione esterna.
+3. La dashboard cantina mostra una checklist ("Prossimi passi per iniziare": polizza, Stripe
+   Connect, primo certificato) finché non è tutto completo, poi sparisce da sola. Prima non
+   c'era alcuna guida: si scopriva il blocco sulla polizza solo provando a mintare.
+4. Ripulito altro lessico "NFT" residuo (dashboard cantina, pagina pubblica cantina, email).
+
 ---
 
 ## Decisioni prese

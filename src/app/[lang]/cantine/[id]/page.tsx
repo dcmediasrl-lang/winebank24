@@ -6,6 +6,7 @@ import { NftImageGallery } from "@/components/shared/nft-image-gallery";
 import Image from "next/image";
 import Link from "next/link";
 import { MapPin, Globe, Wine, FileText, Calendar } from "lucide-react";
+import { isCantinaPubliclyVerified } from "@/lib/cantina";
 
 export default async function CantinaPublicPage({
   params,
@@ -24,6 +25,7 @@ export default async function CantinaPublicPage({
       website: true,
       logoUrl: true,
       isVerified: true,
+      insuranceDocUrl: true,
       nfts: {
         where: { isListed: true, status: "LISTED" },
         select: {
@@ -74,7 +76,7 @@ export default async function CantinaPublicPage({
         <div className="flex-1">
           <div className="flex items-center gap-2 flex-wrap">
             <h1 className="text-3xl font-bold text-white">{cantina.name}</h1>
-            {cantina.isVerified && (
+            {isCantinaPubliclyVerified(cantina) && (
               <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Verificata</Badge>
             )}
           </div>
@@ -103,16 +105,16 @@ export default async function CantinaPublicPage({
         </div>
       </div>
 
-      {/* NFT gallery */}
+      {/* Galleria certificati */}
       <h2 className="text-xl font-bold text-white mb-5 flex items-center gap-2">
         <Wine className="w-5 h-5 text-amber-600" />
-        NFT disponibili ({cantina.nfts.length})
+        Certificati disponibili ({cantina.nfts.length})
       </h2>
 
       {cantina.nfts.length === 0 ? (
         <div className="text-center py-16 text-white/40">
           <Wine className="w-12 h-12 mx-auto mb-4 text-white/20" />
-          <p>Nessun NFT disponibile al momento</p>
+          <p>Nessun certificato disponibile al momento</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">

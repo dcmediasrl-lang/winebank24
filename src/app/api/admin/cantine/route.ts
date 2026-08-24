@@ -2,9 +2,8 @@ export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import bcrypt from "bcryptjs";
 import { z } from "zod";
-import { sendWelcomeCantinaEmail } from "@/lib/email";
+import { sendCantinaInvite } from "@/lib/cantina-invite";
 
 const schema = z.object({
   cantinaName: z.string().min(2),
@@ -16,8 +15,6 @@ const schema = z.object({
   royaltyPct: z.number().min(0).max(50).optional(),
   contactName: z.string().min(2),
   email: z.string().email(),
-  password: z.string().min(6),
-  sendWelcomeEmail: z.boolean().optional(),
 });
 
 export async function POST(req: Request) {
@@ -34,15 +31,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Email già registrata" }, { status: 400 });
     }
 
-    const hashed = await bcrypt.hash(body.password, 12);
-
-    await db.user.create({
+    // Nessuna password: la cantina la imposta lei stessa dal link di
+    // attivazione, senza che transiti mai in un'email
+    const user = await db.user.create({
       data: {
         name: body.contactName,
         email: body.email,
-        password: hashed,
         role: "CANTINA",
-        emailVerified: new Date(), // auto-verified since created by admin
         cantina: {
           create: {
             name: body.cantinaName,
@@ -58,10 +53,12 @@ export async function POST(req: Request) {
       },
     });
 
-    // Send welcome email if requested
-    if (body.sendWelcomeEmail !== false) {
-      await sendWelcomeCantinaEmail(body.email, body.contactName, body.cantinaName, body.password);
-    }
+    await sendCantinaInvite({
+      userId: user.id,
+      email: body.email,
+      contactName: body.contactName,
+      cantinaName: body.cantinaName,
+    });
 
     return NextResponse.json({ success: true });
   } catch (err) {

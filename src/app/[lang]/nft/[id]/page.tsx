@@ -14,6 +14,7 @@ import { NftImageGallery } from "@/components/shared/nft-image-gallery";
 import Link from "next/link";
 import Image from "next/image";
 import QRCode from "qrcode";
+import { isCantinaPubliclyVerified } from "@/lib/cantina";
 import {
   Wine,
   MapPin,
@@ -103,6 +104,7 @@ export default async function NftDetailPage({
           website: true,
           logoUrl: true,
           isVerified: true,
+          insuranceDocUrl: true,
           userId: true,
         },
       },
@@ -571,7 +573,7 @@ export default async function NftDetailPage({
                   <p className="font-semibold text-white text-sm group-hover:text-amber-400 transition-colors truncate">
                     {nft.cantina.name}
                   </p>
-                  {nft.cantina.isVerified && (
+                  {isCantinaPubliclyVerified(nft.cantina) && (
                     <ShieldCheck className="w-3.5 h-3.5 text-green-400 shrink-0" />
                   )}
                 </div>

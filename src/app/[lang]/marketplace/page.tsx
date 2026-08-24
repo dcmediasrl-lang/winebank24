@@ -134,7 +134,7 @@ export default async function MarketplacePage({
           <Wine className="w-8 h-8 text-[#df071b]" />
           <div>
             <h1 className="text-3xl font-bold text-white">Marketplace</h1>
-            <p className="text-[var(--wine-muted)]">Acquista NFT di bottiglie di vino pregiate</p>
+            <p className="text-[var(--wine-muted)]">Certificati di proprietà per bottiglie di vino pregiate</p>
           </div>
         </div>
 
@@ -392,7 +392,7 @@ export default async function MarketplacePage({
         {/* Regular NFTs */}
         {nfts.length === 0 && fractionableNfts.length === 0 && mintedNfts.length === 0 ? (
           <div className="text-center py-20 text-white/40">
-            <p className="text-lg">Nessun NFT disponibile al momento</p>
+            <p className="text-lg">Nessun certificato disponibile al momento</p>
           </div>
         ) : nfts.length > 0 ? (
           <>
@@ -470,7 +470,7 @@ export default async function MarketplacePage({
                         />
                       </div>
                     ) : (
-                      <Badge variant="outline" className="w-full justify-center py-1.5">Il tuo NFT</Badge>
+                      <Badge variant="outline" className="w-full justify-center py-1.5">Il tuo certificato</Badge>
                     )}
                   </CardContent>
                 </Card>

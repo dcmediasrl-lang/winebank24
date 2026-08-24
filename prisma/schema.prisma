@@ -100,6 +100,7 @@ model User {
   favoriteNfts     FavoriteNft[]
   notifications    Notification[]
   notificationPref NotificationPreference?
+  certificates     Certificate[]
 }
 
 model Notification {
@@ -252,6 +253,11 @@ model Nft {
   mintFeeStripeId          String?
   physicalDeliveryUnlocked Boolean   @default(false)
   shippingCost             Float?
+  // Si incrementa a ogni passaggio di proprietà (vendita, cessione) e al
+  // riscatto fisico: il certificato PDF emesso per una versione precedente
+  // risulta automaticamente non più valido nella pagina di verifica pubblica,
+  // senza dover revocare il file già scaricato dal collezionista.
+  certificateVersion Int  @default(0)
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
@@ -266,6 +272,32 @@ model Nft {
   fractions    NftFraction[]
   offers       Offer[]
   favoritedBy  FavoriteNft[]
+  certificates Certificate[]
+}
+
+/**
+ * Prova di possesso emessa alla conclusione di una vendita (dopo la conferma
+ * di pagamento Stripe). Il PDF include seriale e QR verso la pagina pubblica
+ * di verifica; `version` fissa il certificato allo stato del bene al momento
+ * dell'emissione — se `Nft.certificateVersion` cambia (cessione o riscatto),
+ * la verifica pubblica lo segnala come non più valido senza toccare il file.
+ */
+model Certificate {
+  id            String   @id @default(cuid())
+  nftId         String
+  ownerId       String
+  serial        String   @unique
+  version       Int
+  pdfUrl        String
+  transactionId String?  @unique
+  createdAt     DateTime @default(now())
+
+  nft         Nft          @relation(fields: [nftId], references: [id])
+  owner       User         @relation(fields: [ownerId], references: [id])
+  transaction Transaction? @relation(fields: [transactionId], references: [id])
+
+  @@index([nftId])
+  @@index([ownerId])
 }
 
 model Transaction {
@@ -285,6 +317,7 @@ model Transaction {
   nft    Nft   @relation(fields: [nftId], references: [id])
   buyer  User? @relation("Buyer", fields: [buyerId], references: [id])
   seller User? @relation("Seller", fields: [sellerId], references: [id])
+  certificate Certificate?
 }
 
 model BurnRequest {

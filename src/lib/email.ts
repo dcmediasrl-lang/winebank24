@@ -210,6 +210,28 @@ export async function sendContractEmail(to: string, cantinaName: string, pdfByte
   );
 }
 
+// Inviata solo dopo la conferma di pagamento dal webhook Stripe: il
+// certificato prova un possesso già pagato, mai un ordine in corso.
+export async function sendCertificateEmail(to: string, nftName: string, pdfBytes: Uint8Array, serial: string) {
+  const base64 = Buffer.from(pdfBytes).toString("base64");
+  try {
+    await sendEmail(
+      to,
+      `Certificato di proprietà: ${nftName}`,
+      emailLayout({
+        heading: "Il tuo certificato di proprietà",
+        intro: `In allegato trovi il certificato PDF per "${nftName}", con QR code e numero di serie per la verifica pubblica. Conservalo: perde validità automaticamente se in futuro cedi il certificato o riscatti la bottiglia.`,
+        bodyHtml: infoRow("Numero di serie", serial),
+        cta: { label: "Vai alla mia collezione", url: `${APP_URL}/it/collector/collezione` },
+        footerNote: "Puoi riscaricare il certificato in qualsiasi momento dalla tua area riservata.",
+      }),
+      [{ name: `certificato-${serial}.pdf`, content: base64 }],
+    );
+  } catch (err) {
+    console.error("[email] Failed to send certificate email to", to, err);
+  }
+}
+
 export async function sendBurnRequestEmail(adminEmail: string, nftName: string, address: string) {
   try {
     await sendEmail(

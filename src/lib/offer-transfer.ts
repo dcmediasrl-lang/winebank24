@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { issueCertificate } from "@/lib/certificate";
 
 /**
  * Esegue il trasferimento di proprietà per un'offerta ACCETTATA e PAGATA.
@@ -18,7 +19,12 @@ export async function executeOfferTransfer(params: {
   });
   if (!offer || offer.status !== "ACCEPTED") return false;
 
-  await db.$transaction(async (tx) => {
+  // Popolato solo per la cessione di un NFT intero (non frazionato): il
+  // valore di ritorno della transazione, non una variabile catturata dalla
+  // closure, serve a emettere il certificato dopo il commit
+  const wholeNftTransfer = await db.$transaction(async (tx) => {
+    let result: { nftId: string; buyerId: string; transactionId: string } | null = null;
+
     if (offer.nftId && offer.nft) {
       const nft = offer.nft;
 
@@ -75,6 +81,7 @@ export async function executeOfferTransfer(params: {
             isListed: false,
             status: "SOLD",
             price: null,
+            certificateVersion: { increment: 1 },
           },
         });
 
@@ -85,7 +92,7 @@ export async function executeOfferTransfer(params: {
         });
       }
 
-      await tx.transaction.create({
+      const createdTransaction = await tx.transaction.create({
         data: {
           nftId: offer.nftId,
           buyerId: offer.buyerId,
@@ -97,6 +104,10 @@ export async function executeOfferTransfer(params: {
           stripeId,
         },
       });
+
+      if (!nft.isFractionable) {
+        result = { nftId: offer.nftId, buyerId: offer.buyerId, transactionId: createdTransaction.id };
+      }
     } else if (offer.fractionId && offer.fraction) {
       // ── Quota di co-proprietà (liquidazione tra collezionisti) ────────────
       const fraction = offer.fraction;
@@ -182,7 +193,16 @@ export async function executeOfferTransfer(params: {
     }
 
     await tx.offer.update({ where: { id: offerId }, data: { status: "COMPLETED" } });
+    return result;
   });
+
+  if (wholeNftTransfer) {
+    await issueCertificate({
+      nftId: wholeNftTransfer.nftId,
+      ownerId: wholeNftTransfer.buyerId,
+      transactionId: wholeNftTransfer.transactionId,
+    });
+  }
 
   return true;
 }

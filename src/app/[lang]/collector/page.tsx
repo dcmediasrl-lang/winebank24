@@ -33,7 +33,7 @@ export default async function CollectorDashboardPage({ params }: { params: Promi
         <Card>
           <CardContent className="pt-5">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-xs text-[var(--wine-muted)]">NFT posseduti</span>
+              <span className="text-xs text-[var(--wine-muted)]">Certificati posseduti</span>
               <Gem className="w-4 h-4 text-amber-600" />
             </div>
             <div className="text-2xl font-bold text-white">{nfts.length}</div>
@@ -76,7 +76,7 @@ export default async function CollectorDashboardPage({ params }: { params: Promi
                 <Gem className="w-8 h-8 text-amber-500" />
                 <div>
                   <p className="font-semibold text-white">La mia Collezione</p>
-                  <p className="text-xs text-[var(--wine-muted)]">Gestisci i tuoi NFT e quote</p>
+                  <p className="text-xs text-[var(--wine-muted)]">Gestisci i tuoi certificati e quote</p>
                 </div>
               </div>
             </CardContent>
@@ -89,7 +89,7 @@ export default async function CollectorDashboardPage({ params }: { params: Promi
                 <ShoppingCart className="w-8 h-8 text-blue-500" />
                 <div>
                   <p className="font-semibold text-white">Marketplace</p>
-                  <p className="text-xs text-[var(--wine-muted)]">Acquista NFT e quote di bottiglie</p>
+                  <p className="text-xs text-[var(--wine-muted)]">Acquista certificati e quote di bottiglie</p>
                 </div>
               </div>
             </CardContent>

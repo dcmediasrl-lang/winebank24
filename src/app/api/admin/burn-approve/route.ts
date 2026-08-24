@@ -33,7 +33,9 @@ export async function POST(req: Request) {
   await db.$transaction([
     db.nft.update({
       where: { id: nftId },
-      data: { status: "BURNED", isListed: false },
+      // Il certificato digitale non esiste più: incrementare la versione lo
+      // invalida nella pagina di verifica pubblica, senza emetterne uno nuovo
+      data: { status: "BURNED", isListed: false, certificateVersion: { increment: 1 } },
     }),
     db.burnRequest.update({
       where: { id: burnRequestId },

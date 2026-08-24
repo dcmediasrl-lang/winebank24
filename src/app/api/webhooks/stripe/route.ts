@@ -6,6 +6,7 @@ import { sendPurchaseEmail, sendSaleEmail } from "@/lib/email";
 import type Stripe from "stripe";
 import { executeOfferTransfer, executeFractionResaleTransfer } from "@/lib/offer-transfer";
 import { notify } from "@/lib/notifications";
+import { issueCertificate } from "@/lib/certificate";
 
 export async function POST(req: Request) {
   const body = await req.text();
@@ -102,11 +103,12 @@ async function handleNftPurchase(
   // cantinaFee = royalty on secondary sales (seller is a collector, not the cantina)
   const cantinaFee = isSecondary ? price * (parseFloat(cantinaRoyaltyPct) / 100) : 0;
 
-  await db.$transaction([
-    // Transfer ownership
+  const [, createdTransaction] = await db.$transaction([
+    // Transfer ownership — la versione del certificato cambia insieme alla
+    // proprietà: invalida da sola il PDF già in mano al vecchio proprietario
     db.nft.update({
       where: { id: nftId },
-      data: { ownerId: buyerId, isListed: false, status: "SOLD" },
+      data: { ownerId: buyerId, isListed: false, status: "SOLD", certificateVersion: { increment: 1 } },
     }),
     // Record transaction with full split detail
     db.transaction.create({
@@ -139,6 +141,10 @@ async function handleNftPurchase(
       ? sendSaleEmail(nft.cantina.user.email, `${nft.name} (royalty)`, cantinaFee)
       : Promise.resolve(),
   ]);
+
+  // Certificato inviato solo ora: il pagamento è confermato e la proprietà
+  // già trasferita in transazione
+  await issueCertificate({ nftId, ownerId: buyerId, transactionId: createdTransaction.id });
 }
 
 // ─── Mint fee ─────────────────────────────────────────────────────────────────

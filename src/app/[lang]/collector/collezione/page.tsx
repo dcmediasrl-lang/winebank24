@@ -6,7 +6,7 @@ import { ListNftButton } from "@/components/collector/list-nft-button";
 import { DeliveryRequestButton } from "@/components/collector/delivery-request-button";
 import { ListFractionButton } from "@/components/collector/list-fraction-button";
 import { NftImageGallery } from "@/components/shared/nft-image-gallery";
-import { TrendingUp, ExternalLink } from "lucide-react";
+import { TrendingUp, ExternalLink, Download } from "lucide-react";
 import Link from "next/link";
 
 export default async function CollectorCollezionePage({ params }: { params: Promise<{ lang: string }> }) {
@@ -36,14 +36,32 @@ export default async function CollectorCollezionePage({ params }: { params: Prom
     }),
   ]);
 
+  // Certificato attualmente valido per ogni bottiglia intera posseduta —
+  // scaricabile direttamente da qui senza dover riaprire l'email ricevuta
+  // al momento dell'acquisto
+  const certificates = await db.certificate.findMany({
+    where: {
+      ownerId: session.user.id,
+      nftId: { in: nfts.map((n) => n.id) },
+    },
+  });
+  const certificateByNft = new Map(
+    nfts
+      .map((n) => {
+        const cert = certificates.find((c) => c.nftId === n.id && c.version === n.certificateVersion);
+        return cert ? ([n.id, cert] as const) : null;
+      })
+      .filter((x): x is readonly [string, (typeof certificates)[number]] => x !== null)
+  );
+
   return (
     <div className="space-y-10">
       <div>
         <h1 className="text-2xl font-bold text-white mb-6">La mia Collezione</h1>
         {nfts.length === 0 ? (
           <div className="text-center py-16 text-white/40">
-            <p className="text-lg mb-2">Nessun NFT in tuo possesso</p>
-            <p className="text-sm">Visita il Marketplace per acquistare il tuo primo NFT</p>
+            <p className="text-lg mb-2">Nessun certificato in tuo possesso</p>
+            <p className="text-sm">Visita il Marketplace per acquistare il tuo primo certificato</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -89,6 +107,16 @@ export default async function CollectorCollezionePage({ params }: { params: Prom
                         alreadyRequested={!!nft.burnRequest}
                         compact
                       />
+                    )}
+                    {certificateByNft.has(nft.id) && (
+                      <a
+                        href={certificateByNft.get(nft.id)!.pdfUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-1.5 text-xs font-semibold text-white/70 hover:text-white border border-white/15 hover:border-white/30 rounded-lg py-1.5 transition-colors"
+                      >
+                        <Download className="w-3.5 h-3.5" /> Certificato PDF
+                      </a>
                     )}
                   </div>
                 </CardContent>

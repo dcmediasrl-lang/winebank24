@@ -13,11 +13,15 @@ import { DeliveryRequestButton } from "@/components/collector/delivery-request-b
 import { NftImageGallery } from "@/components/shared/nft-image-gallery";
 import Link from "next/link";
 import Image from "next/image";
+import QRCode from "qrcode";
 import {
   Wine,
   MapPin,
   Globe,
   ChevronRight,
+  QrCode,
+  Download,
+  BadgeCheck,
   Hash,
   Calendar,
   Grape,
@@ -56,7 +60,10 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     });
   }
 
-  const annata = nft.vintage ? ` ${nft.vintage}` : "";
+  // Molte cantine scrivono già l'annata nel nome ("Barolo Riserva 2018"): non
+  // ripeterla se è già presente, altrimenti il titolo diventa "2018 2018"
+  const nomeContieneAnnata = !!nft.vintage && nft.name.includes(String(nft.vintage));
+  const annata = nft.vintage && !nomeContieneAnnata ? ` ${nft.vintage}` : "";
   const titolo = `${nft.name}${annata} — ${nft.cantina.name}`;
 
   const dettagli = [
@@ -156,6 +163,21 @@ export default async function NftDetailPage({
   }
 
   const isOwner = session?.user?.id === nft.owner.id;
+
+  // Il certificato valido è sempre quello la cui versione coincide con
+  // Nft.certificateVersion: una cessione o un riscatto la incrementa e
+  // rende automaticamente superati i certificati precedenti
+  const currentCertificate = isOwner
+    ? await db.certificate.findFirst({
+        where: { nftId: id, ownerId: session!.user.id, version: nft.certificateVersion },
+        orderBy: { createdAt: "desc" },
+      })
+    : null;
+  const verifyUrl = currentCertificate
+    ? `${process.env.NEXT_PUBLIC_APP_URL || "https://app.winebank24.eu"}/${lang}/certificato/${currentCertificate.serial}`
+    : null;
+  const certificateQr = verifyUrl ? await QRCode.toDataURL(verifyUrl, { margin: 1, width: 160 }) : null;
+
   const totalValue = Number(nft.totalValue ?? 0);
   const availableValue = Number(nft.availableValue ?? 0);
   const soldPct =
@@ -277,6 +299,39 @@ export default async function NftDetailPage({
                   </a>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Certificato di proprietà — solo il proprietario lo vede */}
+          {isOwner && currentCertificate && certificateQr && (
+            <div className="rounded-xl border border-[var(--wine-border)] bg-[#1a0f0f] p-4 space-y-3">
+              <p className="text-xs font-semibold text-white/50 uppercase tracking-wide flex items-center gap-1.5">
+                <BadgeCheck className="w-3.5 h-3.5" />
+                Certificato di proprietà
+              </p>
+              <div className="flex items-center gap-4">
+                <img src={certificateQr} alt="QR di verifica" className="w-20 h-20 rounded-lg bg-white p-1.5 shrink-0" />
+                <div className="min-w-0 space-y-1">
+                  <div className="text-xs text-white/40 flex items-center gap-1">
+                    <QrCode className="w-3 h-3" /> Numero di serie
+                  </div>
+                  <p className="font-mono text-sm text-amber-400 truncate">{currentCertificate.serial}</p>
+                  <Link
+                    href={`/${lang}/certificato/${currentCertificate.serial}`}
+                    className="text-xs text-white/40 hover:text-white underline block"
+                  >
+                    Verifica pubblica
+                  </Link>
+                </div>
+              </div>
+              <a
+                href={currentCertificate.pdfUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 text-sm font-semibold text-white bg-white/5 hover:bg-white/10 border border-white/15 rounded-lg py-2 transition-colors"
+              >
+                <Download className="w-4 h-4" /> Scarica il PDF
+              </a>
             </div>
           )}
         </div>

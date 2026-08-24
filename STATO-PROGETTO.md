@@ -52,6 +52,7 @@ Next.js 16 (App Router) · TypeScript · React 19 · NextAuth v5 · Prisma 7 + P
 | Metadati e posizionamento SEO | `src/lib/seo.ts` — titoli, hreflang, Open Graph |
 | Recapiti ufficiali | `src/lib/contatti.ts` — mai scrivere email a mano |
 | Trasferimenti dopo pagamento | `src/lib/offer-transfer.ts` |
+| Certificato di proprietà (PDF + QR + seriale) | `src/lib/certificate.ts`, `src/lib/certificate-pdf.ts` |
 
 ---
 
@@ -85,6 +86,20 @@ Corretto in `src/lib/auth.ts` (blocco) e propagato correttamente al frontend tra
 `CredentialsSignin`/`result.code` — il precedente `throw new Error(...)` non arrivava più al
 client con le versioni recenti di NextAuth (bug dormiente anche sul flusso 2FA, risolto
 insieme).
+
+**Certificato di proprietà** — emesso automaticamente solo dopo la conferma di pagamento
+Stripe (mai prima), inviato via email al proprietario e scaricabile dalla collezione. Ogni
+certificato ha un seriale univoco (`WB24-XXXXXXXXXX`) e un QR verso una pagina pubblica di
+verifica (`/certificato/[seriale]`) che mostra sempre lo stato aggiornato, senza mai rivelare
+l'identità del proprietario. Il PDF scaricato non può essere revocato da remoto — l'invalidazione
+è sulla verifica, non sul file: `Nft.certificateVersion` si incrementa a ogni cessione (vendita
+diretta o offerta accettata su un NFT intero) e al riscatto fisico; la pagina di verifica
+confronta la versione stampata sul certificato con quella corrente e segnala "non più valido"
+se non coincidono. Scoperto due difetti minori nella scheda bottiglia mentre ci si lavorava:
+titolo duplicato quando l'annata era già nel nome ("2018 2018", corretto) e residui di lessico
+"NFT" in testi pubblici sostituiti con "certificato" (marketplace, collezione, dashboard,
+dizionari IT/EN). Le co-proprietà frazionate restano fuori dall'emissione del certificato PDF
+(nessuna prova di possesso al 100% finché non si riscatta) — da valutare in futuro.
 
 ---
 

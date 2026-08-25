@@ -21,7 +21,7 @@ export default async function AdminDashboard() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard title="Utenti totali" value={stats.users} icon={Users} color="text-blue-600" />
-        <StatCard title="NFT mintati" value={stats.nfts} icon={Gem} color="text-amber-600" />
+        <StatCard title="Certificati emessi" value={stats.nfts} icon={Gem} color="text-amber-600" />
         <StatCard title="Transazioni" value={stats.transactions} icon={ShoppingCart} color="text-green-600" />
         <StatCard title="Fatturato (€)" value={`€ ${stats.revenue.toFixed(2)}`} icon={TrendingUp} color="text-purple-600" />
       </div>

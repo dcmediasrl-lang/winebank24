@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import {
-  LayoutDashboard, Users, Gem, ShoppingCart, BarChart3,
+  Users, Gem, ShoppingCart, BarChart3,
   Settings, LogOut, Wine, Package, FileText, Shield, Tag,
   Menu, X, Heart, BookmarkPlus, Database, Home, Banknote, UserCog, Bell,
 } from "lucide-react";
@@ -56,7 +56,6 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
 
   const adminLinks = [
     homeLink,
-    { href: p("/admin"), label: dict.dashboard, icon: LayoutDashboard },
     { href: p("/admin/users"), label: dict.users, icon: Users },
     { href: p("/admin/cantine"), label: dict.wineries, icon: Wine },
     { href: p("/admin/nfts"), label: dict.nft_minting, icon: Gem },
@@ -69,7 +68,6 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
 
   const cantinaLinks = [
     homeLink,
-    { href: p("/cantina"), label: dict.dashboard, icon: LayoutDashboard },
     { href: p("/cantina/nfts"), label: dict.my_nfts, icon: Gem },
     { href: p("/cantina/collezione"), label: dict.collezione ?? "Collezione", icon: Package },
     { href: p("/cantina/blog"), label: dict.blog, icon: FileText },
@@ -82,7 +80,6 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
 
   const collectorLinks = [
     homeLink,
-    { href: p("/collector"), label: dict.dashboard, icon: LayoutDashboard },
     { href: p("/collector/collezione"), label: dict.my_collection, icon: Package },
     { href: p("/marketplace"), label: dict.marketplace, icon: ShoppingCart },
     { href: p("/collector/offerte"), label: dict.offerte, icon: Tag },
@@ -100,9 +97,6 @@ export function Sidebar({ role, userName, lang, dict }: SidebarProps) {
   const navContent = (
     <>
       <div className="mb-8 px-2">
-        <div className="mb-3">
-          <Image src="/logo.svg" alt="Wine Bank 24" width={120} height={60} className="h-11 w-auto object-contain" priority />
-        </div>
         <div className="text-xs text-stone-400 uppercase tracking-wide">{roleLabel}</div>
         <div className="text-sm text-stone-800 font-semibold truncate mt-1">{userName}</div>
       </div>

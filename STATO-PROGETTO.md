@@ -44,7 +44,9 @@ Next.js 16 (App Router) · TypeScript · React 19 · NextAuth v5 · Prisma 7 + P
 
 | Cosa | Dove |
 |---|---|
-| Deploy | `npx vercel deploy --prod` |
+| Deploy produzione | `npx vercel deploy --prod` |
+| Deploy staging | `npx vercel deploy` (senza `--prod`) — usa il database separato `winebank24-staging` su Supabase (progetto Paris, eu-west-3), configurato solo sull'ambiente "Preview" di Vercel. Protetto da login Vercel: per aprirlo serve `npx vercel curl <url>` oppure accedere da browser autenticati sul team. |
+| Monitoraggio errori | Sentry (org `dcmediasrl`, progetto Winebank24) — attivo in produzione da fine agosto 2026. `src/instrumentation.ts` / `src/instrumentation-client.ts` |
 | Variabili d'ambiente | `.env` (mai su git) — modello in `.env.example`, valori con `npx vercel env pull .env` |
 | Generatori documenti | `scripts/genera-*.py` — business plan, mappa concettuale, checklist legale |
 | Regola contenuti demo | `src/lib/demo-content.ts` |

@@ -1,0 +1,37 @@
+name: CI
+
+# Ad ogni push e ad ogni pull request verso main: type-check, lint e test.
+# Non esegue "next build" — richiederebbe le variabili d'ambiente di produzione
+# (database, Stripe, R2, ecc.) come segreti GitHub, una scelta da fare a parte.
+# Nessuna credenziale è necessaria per questo workflow.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      # Genera il client Prisma dallo schema: serve ai tipi TypeScript,
+      # non richiede una connessione al database
+      - run: npx prisma generate
+
+      - name: Type check
+        run: npx tsc --noEmit -p .
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test

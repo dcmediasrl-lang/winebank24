@@ -53,6 +53,8 @@ Next.js 16 (App Router) · TypeScript · React 19 · NextAuth v5 · Prisma 7 + P
 | Recapiti ufficiali | `src/lib/contatti.ts` — mai scrivere email a mano |
 | Trasferimenti dopo pagamento | `src/lib/offer-transfer.ts` |
 | Certificato di proprietà (PDF + QR + seriale) | `src/lib/certificate.ts`, `src/lib/certificate-pdf.ts` |
+| Test automatici | `npm test` (Vitest) — `src/**/*.test.ts`, oggi su `tax-id.ts` e `offer-transfer.ts` |
+| CI | `.github/workflows/ci.yml` — type-check, lint, test ad ogni push/PR su `main` |
 
 ---
 

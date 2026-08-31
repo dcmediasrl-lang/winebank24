@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs/config";
 
 const nextConfig: NextConfig = {
   images: {
@@ -36,4 +37,13 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+// L'upload dei source map a Sentry (per stack trace leggibili) si attiva da
+// solo quando SENTRY_ORG/SENTRY_PROJECT/SENTRY_AUTH_TOKEN sono impostate;
+// finché non esiste un account Sentry, questo wrapping non cambia nulla nel
+// comportamento della build.
+export default withSentryConfig(nextConfig, {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  silent: true,
+  telemetry: false,
+});

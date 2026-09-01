@@ -4,7 +4,8 @@
 > tecnologie, su quali server è ospitato, e valuta lo stato di sicurezza e scalabilità
 > della piattaforma così com'è oggi — non un piano futuro, una fotografia dello stato reale.
 
-**Data:** 31 agosto 2026 · **Repository:** `dcmediasrl-lang/winebank24` · **Branch:** `main`
+**Data:** 31 agosto 2026 (aggiornato dopo l'introduzione di test, CI, monitoraggio e staging)
+**Repository:** `dcmediasrl-lang/winebank24` · **Branch:** `main`
 **Produzione:** `https://app.winebank24.eu`
 
 ---
@@ -74,8 +75,11 @@ embedding immagine — avviene in linea, dentro la stessa richiesta HTTP che l'h
 | Blockchain (non attiva) | ethers.js, Solidity + OpenZeppelin, Hardhat | ethers ^6 | Contratto ERC-721 scritto e compilabile, mai deployato in produzione |
 | Validazione | zod | ^4 | Su tutti gli endpoint API che accettano input utente |
 | Stato client | zustand, `@tanstack/react-query` | — | |
-| Hosting | Vercel | — | Deploy automatico da CLI, funzioni serverless |
+| Hosting | Vercel | — | Deploy da CLI, funzioni serverless |
 | Analytics | Google Analytics 4 (`@next/third-parties`) | — | Caricato solo dopo consenso cookie |
+| Test | Vitest | ^4 | `npm test` — `src/**/*.test.ts` |
+| CI | GitHub Actions | — | `.github/workflows/ci.yml` |
+| Monitoraggio errori | Sentry (`@sentry/nextjs`) | ^10 | Server, client e route handler |
 
 ---
 
@@ -86,8 +90,11 @@ parti.
 
 | Servizio | Ruolo | Piano/regione | Note operative |
 |---|---|---|---|
-| **Vercel** | Hosting, build, funzioni serverless, CDN statico | Team `dcmedia-s-projects` | Deploy manuale via `npx vercel deploy --prod` — **nessuna pipeline CI/CD**, nessun deploy automatico su push |
-| **Supabase** | PostgreSQL gestito | `aws-0-eu-west-3` (Parigi) | Si usa il **session pooler** (host `aws-0-eu-west-3.pooler.supabase.com:5432`); la stringa di connessione "diretta" richiede IPv6 e non funziona da ogni rete — motivo per cui si usa sempre il pooler |
+| **Vercel** | Hosting, build, funzioni serverless, CDN statico | Team `dcmedia-s-projects` | Deploy manuale via CLI (`vercel deploy --prod` per produzione, `vercel deploy` per staging) — il repository non è collegato all'integrazione Git di Vercel, quindi non ci sono deploy automatici su push; il controllo automatico prima del merge lo fa GitHub Actions (vedi sotto), non Vercel |
+| **Supabase — produzione** | PostgreSQL gestito | `aws-0-eu-west-3` (Parigi) | Si usa il **session pooler** (host `aws-0-eu-west-3.pooler.supabase.com:5432`); la stringa di connessione "diretta" richiede IPv6 e non funziona da ogni rete — motivo per cui si usa sempre il pooler |
+| **Supabase — staging** | PostgreSQL separato per l'ambiente di anteprima | `aws-1-eu-west-3` (Parigi), progetto `winebank24-staging` | Stesso schema, dati indipendenti. `DATABASE_URL` è impostata **solo** sull'ambiente "Preview" di Vercel — mai condivisa con produzione |
+| **GitHub Actions** | CI: type-check, lint, test | — | `.github/workflows/ci.yml`, ad ogni push/PR su `main`. Non esegue `next build` (richiederebbe i segreti di produzione come variabili GitHub, scelta non ancora presa) |
+| **Sentry** | Monitoraggio errori applicativi | Org `dcmediasrl` | Attivo solo in produzione (`SENTRY_DSN` non impostata su staging/locale) |
 | **Cloudflare R2** | Storage oggetti (immagini bottiglie, PDF contratti e certificati) | — | Bucket con accesso pubblico in lettura; le chiavi sono UUID casuali (non enumerabili), non c'è un vero controllo d'accesso |
 | **Stripe** | Pagamenti, split automatico (Connect) | — | **Chiavi di test**, non ancora passate a chiavi live |
 | **Brevo** | Invio email transazionali | — | API key in variabile d'ambiente, nessun dominio di invio dedicato verificato al momento della scrittura |
@@ -140,19 +147,26 @@ erDiagram
 
 ## 5. Processo di deploy
 
-1. Sviluppo e verifica in locale (`npm run dev`, stesso database di produzione — **non
-   esiste un database di sviluppo separato**).
-2. `npx prisma db push` per applicare eventuali modifiche allo schema (non si usano
+1. Sviluppo in locale (`npm run dev`). **Punto da correggere**: il database usato in
+   locale è ancora quello di produzione, non lo staging — l'ambiente di staging esiste
+   oggi solo per i deploy Vercel di anteprima, non per lo sviluppo quotidiano.
+2. `npm test` e `npx tsc --noEmit` in locale prima di proporre una modifica (la stessa
+   cosa gira automaticamente su GitHub Actions ad ogni push, vedi sotto).
+3. `npx prisma db push` per applicare eventuali modifiche allo schema (non si usano
    migration file versionate: `prisma db push` sincronizza lo schema direttamente,
    approccio adatto a un progetto in fase iniziale ma da rivedere quando il numero di
-   sviluppatori o la criticità dei dati cresce).
-3. `git commit` + `git push` su GitHub.
-4. `npx vercel deploy --prod` — deploy manuale, nessuna pipeline automatica lo attiva.
-5. Verifica manuale in produzione dopo ogni deploy.
+   sviluppatori o la criticità dei dati cresce). Va lanciato a mano sia su produzione sia
+   sullo staging quando lo schema cambia — non è automatizzato.
+4. `git commit` + `git push` su GitHub → **GitHub Actions** esegue type-check, lint e test.
+5. Facoltativo: `npx vercel deploy` (senza `--prod`) per un deploy di anteprima sul
+   database di staging, protetto da login Vercel.
+6. `npx vercel deploy --prod` — deploy di produzione, manuale.
+7. Verifica manuale in produzione dopo ogni deploy (ora affiancata da Sentry per gli
+   errori che sfuggono al controllo manuale).
 
-**Non esiste**: ambiente di staging separato, suite di test automatici, pipeline CI/CD,
-build gate che blocchi un deploy con errori di tipo o lint (il controllo è manuale, fatto
-prima del deploy).
+**Non esiste ancora**: un build gate che impedisca il deploy in produzione se la CI su
+GitHub è rossa — le due cose (push su GitHub e `vercel deploy --prod`) restano comandi
+separati, è responsabilità di chi fa il deploy controllare che la CI sia passata prima.
 
 ---
 
@@ -229,17 +243,32 @@ dedicato (es. Vercel encrypted env vars sono usate come unico livello).
 - Google Analytics si carica **solo dopo consenso cookie** esplicito.
 - Nessun endpoint di **portabilità dei dati** (art. 20) al momento della scrittura.
 
-### 6.9 Lacune note, da valutare con priorità
-- **Nessuna suite di test automatici** — nessun file `*.test.*`/`*.spec.*` nel repository.
-  Il rischio più alto del progetto: un bug sui flussi di pagamento è un danno economico
-  diretto, e oggi l'unica rete di sicurezza è la verifica manuale.
+### 6.9 Lacune colmate di recente
+
+Al momento della prima stesura di questo documento, i quattro punti seguenti erano lacune
+aperte. Sono stati chiusi:
+
+- ~~Nessuna suite di test automatici~~ → **Vitest**, 32 test su `tax-id.ts` (validazione
+  fiscale) e `offer-transfer.ts` (trasferimento di proprietà) — i due punti dove un bug è
+  un danno economico diretto. Non è copertura totale: mint, webhook Stripe end-to-end e
+  generazione certificati restano da coprire.
+- ~~Nessuna pipeline CI/CD~~ → GitHub Actions esegue type-check, lint e test ad ogni push
+  e pull request su `main`.
+- ~~Nessun monitoraggio applicativo~~ → Sentry attivo in produzione (server, client, errori
+  di route). Verificato in produzione dopo l'attivazione, non solo configurato.
+- ~~Nessun ambiente di staging~~ → database Supabase separato, collegato solo all'ambiente
+  "Preview" di Vercel. **Attenzione**: `NEXTAUTH_URL` e `NEXT_PUBLIC_APP_URL` restano
+  condivise tra produzione e staging (a differenza di `DATABASE_URL`, ormai separata) — un
+  deploy di anteprima genera comunque link e callback che puntano al dominio di
+  produzione. Da sistemare se lo staging deve diventare un ambiente di test end-to-end
+  completo, non solo un database isolato.
+
+### 6.10 Lacune ancora aperte
+
 - **NextAuth in versione beta** — comportamenti della libreria sono cambiati durante lo
-  sviluppo (es. propagazione degli errori di `authorize()`, richiesto un fix non banale);
+  sviluppo (es. propagazione degli errori di `authorize()` a `result.code` invece che al
+  messaggio dell'eccezione, richiesto un fix non banale su tutto il flusso di login e 2FA);
   possibili altre sorprese prima della release stabile.
-- **Nessun monitoraggio applicativo** — nessun Sentry, Datadog o equivalente. Gli errori si
-  vedono solo nei log di Vercel, consultati manualmente.
-- **Nessuna pipeline CI/CD** — niente impedisce un deploy con errori di tipo, test falliti
-  (che non esistono) o codice non revisionato.
 - **Cifratura a riposo dei dati sensibili** (documenti d'identità, codice fiscale) dipende
   interamente dalla configurazione di Supabase — non verificata a livello applicativo.
 - **Bucket R2 pubblico**: le immagini e i PDF dei certificati sono raggiungibili da chiunque
@@ -247,6 +276,8 @@ dedicato (es. Vercel encrypted env vars sono usate come unico livello).
 - **Vendita frazionata**: in attesa di parere legale scritto sulla compatibilità con
   MiFID II — non un problema tecnico, ma un rischio normativo che il team di sviluppo deve
   conoscere prima di intervenire su quel flusso.
+- **Nessun build gate**: la CI su GitHub Actions non blocca ancora il deploy in produzione
+  se rossa — sono due comandi separati (§5).
 
 ---
 
@@ -269,6 +300,11 @@ web ordinario.
   non solo un problema di sicurezza ma anche di performance.
 - Nessuna cache applicativa (Redis o simili) davanti alle query più ripetute (es. il
   marketplace, le pagine cantina pubbliche).
+- **Non è un rischio teorico**: durante una build di produzione in locale (7 processi
+  paralleli per la generazione delle pagine) sono comparsi ripetuti errori
+  `EMAXCONNSESSION — max clients reached in session mode` dal pooler Supabase (limite 15
+  connessioni). La build è comunque riuscita, ma è la prova diretta che il limite del
+  pooler è vicino anche con un solo processo di build, figurarsi sotto traffico reale.
 
 ### 7.3 Storage e distribuzione contenuti
 - Le immagini transitano tramite `next/image` (ottimizzazione automatica lato Vercel), ma
@@ -313,13 +349,24 @@ percorso sincrono di emissione dei certificati, non nel frontend o nell'hosting.
 
 Il codice supera lo stadio di prototipo: i flussi di pagamento, trasferimento di proprietà,
 KYC internazionale e sicurezza di base sono implementati e funzionanti, con pagamenti reali
-via Stripe (in modalità test). Quello che manca per un salto di maturità vero è meno
-codice applicativo e più **infrastruttura di sviluppo**: test automatici, CI/CD, ambiente di
-staging, monitoraggio. Sono tutte cose che si possono aggiungere senza riscrivere nulla di
-esistente — non è debito tecnico nel senso di codice da rifare, è assenza di reti di
-sicurezza attorno a un codice che, dai controlli fatti finora, è già ragionevolmente solido.
+via Stripe (in modalità test). L'infrastruttura di sviluppo che mancava — test automatici,
+CI/CD, monitoraggio, staging — è stata aggiunta senza riscrivere nulla dell'esistente: non
+era debito tecnico nel senso di codice da rifare, era assenza di reti di sicurezza attorno
+a un codice che, dai controlli fatti finora, era già ragionevolmente solido.
 
-**Primo consiglio pratico per un nuovo sviluppatore**: prima di toccare `src/lib/offer-transfer.ts`
-o `src/app/api/webhooks/stripe/route.ts` (il cuore transazionale), leggere `STATO-PROGETTO.md`
+Quello che resta, in ordine di priorità per un nuovo sviluppatore:
+
+1. **Ampliare i test** oltre a `tax-id.ts` e `offer-transfer.ts` — in particolare il
+   webhook Stripe end-to-end e la generazione dei certificati, oggi verificati solo a mano.
+2. **Allineare `NEXTAUTH_URL`/`NEXT_PUBLIC_APP_URL` tra produzione e staging** (§6.9): oggi
+   condivise, un deploy di anteprima genera link che puntano al dominio di produzione.
+3. **Affrontare il collo di bottiglia sul database** (§7.2, evidenza empirica in §7.4)
+   prima che diventi un problema in produzione, non dopo.
+4. Il resto del debito tecnico elencato in §6.10 (NextAuth beta, cifratura a riposo,
+   bucket R2 pubblico, parere legale sulla vendita frazionata) è noto ma meno urgente.
+
+**Primo consiglio pratico**: prima di toccare `src/lib/offer-transfer.ts` o
+`src/app/api/webhooks/stripe/route.ts` (il cuore transazionale), leggere `STATO-PROGETTO.md`
 per il contesto di business e le regole non negoziabili (nessun linguaggio finanziario,
-nessun trasferimento senza pagamento confermato).
+nessun trasferimento senza pagamento confermato) — e lanciare `npm test` dopo ogni modifica
+a quei due file: sono gli unici già coperti da test automatici.
